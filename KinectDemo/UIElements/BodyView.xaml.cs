@@ -1,6 +1,8 @@
-﻿using Microsoft.Kinect;
+﻿using KinectDemo.Util;
+using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -22,6 +25,10 @@ namespace KinectDemo.UIElements
     /// </summary>
     public partial class BodyView : UserControl
     {
+
+        //      TODO: bind workspacelist
+
+        public List<Workspace> workspaceList = new List<Workspace>();
 
         private WriteableBitmap colorBitmap = null;
 
@@ -105,7 +112,7 @@ namespace KinectDemo.UIElements
         /// <summary>
         /// Array for the bodies
         /// </summary>
-        private Body[] bodies = null;
+        public Body[] bodies = null;
 
         /// <summary>
         /// definition of bones
@@ -252,135 +259,176 @@ namespace KinectDemo.UIElements
 
         private void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
-            BodyFrame bodyFrame = null;
-            ColorFrame colorFrame = null;
 
-            MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
-
-            // If the Frame has expired by the time we process this event, return.
-            if (multiSourceFrame == null)
+            if (this.IsVisible)
             {
-                return;
-            }
+                BodyFrame bodyFrame = null;
+                ColorFrame colorFrame = null;
 
-            try
-            {
-                bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame();
-                colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
+                MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
 
-                // If any frame has expired by the time we process this event, return.
-                // The "finally" statement will Dispose any that are not null.
-                if ((bodyFrame == null) || (colorFrame == null))
+                // If the Frame has expired by the time we process this event, return.
+                if (multiSourceFrame == null)
                 {
                     return;
                 }
 
-                using (colorFrame)
+                try
                 {
-                    if (colorFrame != null)
+                    bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame();
+                    colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
+
+                    // If any frame has expired by the time we process this event, return.
+                    // The "finally" statement will Dispose any that are not null.
+                    if ((bodyFrame == null) || (colorFrame == null))
                     {
-                        FrameDescription colorFrameDescription = colorFrame.FrameDescription;
-                        this.displayHeight = colorFrameDescription.Height;
-                        this.displayWidth = colorFrameDescription.Width;
+                        return;
+                    }
 
-                        using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
+                    using (colorFrame)
+                    {
+                        if (colorFrame != null)
                         {
-                            this.colorBitmap.Lock();
+                            FrameDescription colorFrameDescription = colorFrame.FrameDescription;
+                            this.displayHeight = colorFrameDescription.Height;
+                            this.displayWidth = colorFrameDescription.Width;
 
-                            // verify data and write the new color frame data to the display bitmap
-                            if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                            using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
                             {
-                                colorFrame.CopyConvertedFrameDataToIntPtr(
-                                    this.colorBitmap.BackBuffer,
-                                    (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
-                                    ColorImageFormat.Bgra);
+                                this.colorBitmap.Lock();
 
-                                this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                                // verify data and write the new color frame data to the display bitmap
+                                if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                                {
+                                    colorFrame.CopyConvertedFrameDataToIntPtr(
+                                        this.colorBitmap.BackBuffer,
+                                        (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
+                                        ColorImageFormat.Bgra);
+
+                                    this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                                }
+
+                                this.colorBitmap.Unlock();
+                            }
+                        }
+
+                    }
+
+
+                    bool dataReceived = false;
+
+                    using (bodyFrame)
+                    {
+                        if (bodyFrame != null)
+                        {
+                            if (this.bodies == null)
+                            {
+                                this.bodies = new Body[bodyFrame.BodyCount];
                             }
 
-                            this.colorBitmap.Unlock();
+                            // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
+                            // As long as those body objects are not disposed and not set to null in the array,
+                            // those body objects will be re-used.
+                            bodyFrame.GetAndRefreshBodyData(this.bodies);
+                            dataReceived = true;
+                        }
+                        if (dataReceived)
+                        {
+                            using (DrawingContext dc = this.drawingGroup.Open())
+                            {
+                                dc.DrawImage(this.ColorImageSource, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                                // Draw a transparent background to set the render size
+                                //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+
+
+                                int penIndex = 0;
+                                foreach (Body body in this.bodies)
+                                {
+                                    Pen drawPen = this.bodyColors[penIndex++];
+
+                                    if (body.IsTracked)
+                                    {
+                                        IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
+                                        // convert the joint points to depth (display) space
+                                        Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+
+                                        foreach (JointType jointType in joints.Keys)
+                                        {
+                                            // sometimes the depth(Z) of an inferred joint may show as negative
+                                            // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
+                                            CameraSpacePoint position = joints[jointType].Position;
+                                            if (position.Z < 0)
+                                            {
+                                                position.Z = InferredZPositionClamp;
+                                            }
+                                            ColorSpacePoint colorSpacePoint = this.coordinateMapper.MapCameraPointToColorSpace(position);
+                                            jointPoints[jointType] = new Point(colorSpacePoint.X, colorSpacePoint.Y);
+                                        }
+
+                                        checkActiveWorkspace(body, dc);
+
+                                        this.DrawBody(joints, jointPoints, dc, drawPen);
+
+                                        this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
+                                        this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
+                                    }
+                                }
+
+                                // prevent drawing outside of our render area
+                                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                            }
                         }
                     }
 
                 }
-
-
-                bool dataReceived = false;
-
-                using (bodyFrame)
+                finally
                 {
                     if (bodyFrame != null)
                     {
-                        if (this.bodies == null)
-                        {
-                            this.bodies = new Body[bodyFrame.BodyCount];
-                        }
-
-                        // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
-                        // As long as those body objects are not disposed and not set to null in the array,
-                        // those body objects will be re-used.
-                        bodyFrame.GetAndRefreshBodyData(this.bodies);
-                        dataReceived = true;
+                        bodyFrame.Dispose();
                     }
-                    if (dataReceived)
+                    if (colorFrame != null)
                     {
-                        using (DrawingContext dc = this.drawingGroup.Open())
-                        {
-                            dc.DrawImage(this.ColorImageSource,new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-                            // Draw a transparent background to set the render size
-                            //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-
-
-                            int penIndex = 0;
-                            foreach (Body body in this.bodies)
-                            {
-                                Pen drawPen = this.bodyColors[penIndex++];
-
-                                if (body.IsTracked)
-                                {
-                                    IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-                                    // convert the joint points to depth (display) space
-                                    Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
-                                    foreach (JointType jointType in joints.Keys)
-                                    {
-                                        // sometimes the depth(Z) of an inferred joint may show as negative
-                                        // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-                                        CameraSpacePoint position = joints[jointType].Position;
-                                        if (position.Z < 0)
-                                        {
-                                            position.Z = InferredZPositionClamp;
-                                        }
-                                        ColorSpacePoint colorSpacePoint = this.coordinateMapper.MapCameraPointToColorSpace(position);
-                                        jointPoints[jointType] = new Point(colorSpacePoint.X, colorSpacePoint.Y);
-                                    }
-
-                                    this.DrawBody(joints, jointPoints, dc, drawPen);
-
-                                    this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
-                                    this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
-                                }
-                            }
-
-                            // prevent drawing outside of our render area
-                            this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-                        }
+                        colorFrame.Dispose();
                     }
                 }
+            }
+        }
+
+
+        private void checkActiveWorkspace(Body body, DrawingContext dc)
+        {
+            foreach (Workspace workspace in workspaceList)
+            {
+                ObservableCollection<Point3D> vertices = workspace.FittedVertices;
+
+                Point nearLeft = new Point(vertices.Min(p => p.X), vertices.Min(p => p.Z));
+
+                Point nearRight = new Point(vertices.Max(p => p.X), vertices.Min(p => p.Z));
+
+                Point farLeft = new Point(vertices.Min(p => p.X), vertices.Max(p => p.Z));
+
+                Point farRight  = new Point(vertices.Max(p => p.X), vertices.Max(p => p.Z));
+
+                Polygon poly = new Polygon();
+                poly.Points = new PointCollection() {nearLeft,nearRight,farRight,farLeft};
+
+                CameraSpacePoint handPos = body.Joints[JointType.HandRight].Position;
+
+                Point hand2D = new Point(handPos.X, handPos.Z);
+
+                if (GeometryHelper.insidePolygon(poly, hand2D))
+                {
+                    if (handPos.Y <= workspace.Center.Y + 0.05)
+                    {
+                        //
+                    }
+                }
+                
 
             }
-            finally
-            {
-                if (bodyFrame != null)
-                {
-                    bodyFrame.Dispose();
-                }
-                if (colorFrame != null)
-                {
-                    colorFrame.Dispose();
-                }
-            }
+
 
         }
 

@@ -217,7 +217,7 @@ namespace KinectDemo.UIElements
                     DepthSpacePoint dsp = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(csp);
                     dspList.Add(dsp);
 
-                    if (insidePolygon(polygon, new Point(dsp.X, dsp.Y)))
+                    if (GeometryHelper.insidePolygon(polygon, new Point(dsp.X, dsp.Y)))
                     {
                         double x = csp.X;
                         double y = csp.Y;
@@ -294,22 +294,6 @@ namespace KinectDemo.UIElements
             ModelVisual3D model = new ModelVisual3D();
             model.Content = tetragon;
             this.MainViewPort.Children.Add(model);
-        }
-
-        bool insidePolygon(Polygon polygon, Point point)
-        {
-            int i, j;
-            bool c = false;
-            int nvert = polygon.Points.Count;
-            Point[] polyPoints = new Point[nvert];
-            polygon.Points.CopyTo(polyPoints, 0);
-            for (i = 0, j = nvert - 1; i < nvert; j = i++)
-            {
-                if (((polyPoints[i].Y > point.Y) != (polyPoints[j].Y > point.Y)) &&
-                 (point.X < (polyPoints[j].X - polyPoints[i].X) * (point.Y - polyPoints[i].Y) / (polyPoints[j].Y - polyPoints[i].Y) + polyPoints[i].X))
-                    c = !c;
-            }
-            return c;
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)

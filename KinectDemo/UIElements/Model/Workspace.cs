@@ -21,7 +21,7 @@ namespace KinectDemo
         public Point3D[] Vertices3D { get; set; }
 
         // Vertices adjusted to the fitted plane
-        public Point3D[] FittedVertices { get; set; }
+        public ObservableCollection<Point3D> FittedVertices { get; set; }
 
         public Point3D Center { get; set; }
 
@@ -70,7 +70,7 @@ namespace KinectDemo
         {
             vertices = new ObservableCollection<Point> { new Point(), new Point(), new Point(), new Point() };
             Vertices3D = new Point3D[] { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
-            FittedVertices = new Point3D[] { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
+            FittedVertices = new ObservableCollection<Point3D>() { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
         }
 
         public Workspace(string name, ObservableCollection<Point> points)

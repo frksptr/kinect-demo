@@ -113,5 +113,22 @@ namespace KinectDemo.Util
                 Z = pointVector[2]
             };
         }
+
+        public static bool insidePolygon(Polygon polygon, Point point)
+        {
+            int i, j;
+            bool c = false;
+            int nvert = polygon.Points.Count;
+            Point[] polyPoints = new Point[nvert];
+            polygon.Points.CopyTo(polyPoints, 0);
+            for (i = 0, j = nvert - 1; i < nvert; j = i++)
+            {
+                if (((polyPoints[i].Y > point.Y) != (polyPoints[j].Y > point.Y)) &&
+                 (point.X < (polyPoints[j].X - polyPoints[i].X) * (point.Y - polyPoints[i].Y) / (polyPoints[j].Y - polyPoints[i].Y) + polyPoints[i].X))
+                    c = !c;
+            }
+            return c;
+        }
+
     }
 }

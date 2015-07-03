@@ -28,7 +28,7 @@
         </TabItem>
 
 
-        <TabItem Header="Hand check">
+        <TabItem Name="HandCheck" Header="Hand check" IsVisibleChanged="HandCheck_IsVisibleChanged" >
             <DockPanel Name="handCheckHolder">
                 <DockPanel DockPanel.Dock="Left">
                     <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="handCheck_WorkspaceListHolder" Background="#FFF0F0F0" Margin="5" >

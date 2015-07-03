@@ -60,6 +60,8 @@ namespace KinectDemo
             bodyView = new BodyView(KinectSensor.GetDefault());
 
             handCheck_BodyViewHolder.Children.Add(bodyView);
+
+            
         }
 
         private void addCameraWorkspace()
@@ -191,6 +193,11 @@ namespace KinectDemo
                     }
                 }
             }
+        }
+
+        private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bodyView.workspaceList = this.workspaceList;
         }
     }
 }
