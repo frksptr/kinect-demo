@@ -28,17 +28,17 @@
         </TabItem>
 
 
-        <TabItem Header="Other Functions">
-
-
-
-
-
-
-            Placeholder
-
-
-
+        <TabItem Header="Hand check">
+            <DockPanel Name="handCheckHolder">
+                <DockPanel DockPanel.Dock="Left">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="handCheck_WorkspaceListHolder" Background="#FFF0F0F0" Margin="5" >
+                    </StackPanel>
+                </DockPanel>
+                <DockPanel DockPanel.Dock="Right">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="handCheck_BodyViewHolder" Background="#FFF0F0F0" Margin="5" >
+                    </StackPanel>
+                </DockPanel>
+            </DockPanel>
         </TabItem>
 
 

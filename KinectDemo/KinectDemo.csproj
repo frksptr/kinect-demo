@@ -61,6 +61,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UIElements\BodyView.xaml.cs">
+      <DependentUpon>BodyView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIElements\CameraWorkspace.xaml.cs">
       <DependentUpon>CameraWorkspace.xaml</DependentUpon>
     </Compile>
@@ -75,6 +78,10 @@
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\GeometryHelper.cs" />
+    <Page Include="UIElements\BodyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIElements\CameraWorkspace.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

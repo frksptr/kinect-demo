@@ -36,6 +36,9 @@ namespace KinectDemo
         // Displays point clouds
         private CloudView cloudView;
 
+        // Displays skeleton model and indicates active workspace
+        private BodyView bodyView;
+
         private List<Workspace> workspaceList = new List<Workspace>();
 
         private const int MARGIN = 5;
@@ -53,6 +56,10 @@ namespace KinectDemo
             cloudView = new CloudView(KinectSensor.GetDefault());
 
             pointCloudHolder.Children.Add(cloudView);
+
+            bodyView = new BodyView(KinectSensor.GetDefault());
+
+            handCheck_BodyViewHolder.Children.Add(bodyView);
         }
 
         private void addCameraWorkspace()
