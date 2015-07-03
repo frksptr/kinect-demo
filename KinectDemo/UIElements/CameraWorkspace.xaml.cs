@@ -22,6 +22,7 @@ namespace KinectDemo
     /// </summary>
     public partial class CameraWorkspace : UserControl
     {
+        private const int MapDepthToByte = 8000 / 256;
 
         private KinectSensor kinectSensor = null;
 
@@ -33,7 +34,11 @@ namespace KinectDemo
         
         private WriteableBitmap colorBitmap = null;
 
+        private WriteableBitmap depthBitmap = null;
+
         private byte[] colorPixels;
+
+        private byte[] depthPixels = null;
 
         public int[] depthFrameSize;
         
@@ -53,7 +58,11 @@ namespace KinectDemo
 
             this.colorPixels = new byte[this.colorFrameDescription.Width * this.colorFrameDescription.Height];
 
+            this.depthPixels = new byte[this.depthFrameDescription.Width * this.depthFrameDescription.Height];
+
             this.colorBitmap = new WriteableBitmap(this.colorFrameDescription.Width, this.colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+            this.depthBitmap = new WriteableBitmap(this.depthFrameDescription.Width, this.depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
 
             this.kinectSensor.Open();
 
@@ -66,7 +75,7 @@ namespace KinectDemo
         {
             get
             {
-                return this.colorBitmap;
+                return this.depthBitmap;
             }
         }
 
@@ -121,59 +130,66 @@ namespace KinectDemo
                 depthWidth = depthFrameDescription.Width;
                 depthHeight = depthFrameDescription.Height;
 
-                using (colorFrame)
+                //using (colorFrame)
+                //{
+                //    if (colorFrame != null)
+                //    {
+                //        FrameDescription colorFrameDescription = colorFrame.FrameDescription;
+
+                //        using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
+                //        {
+                //            this.colorBitmap.Lock();
+
+                //            // verify data and write the new color frame data to the display bitmap
+                //            if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                //            {
+                //                colorFrame.CopyConvertedFrameDataToIntPtr(
+                //                    this.colorBitmap.BackBuffer,
+                //                    (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
+                //                    ColorImageFormat.Bgra);
+
+                //                this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                //            }
+
+                //            this.colorBitmap.Unlock();
+                //        }
+                //    }
+                //}
+
+                bool depthFrameProcessed = false;
+                
+                using (depthFrame)
                 {
-                    if (colorFrame != null)
+                    if (depthFrame != null)
                     {
-                        FrameDescription colorFrameDescription = colorFrame.FrameDescription;
 
-                        using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
+                        // the fastest way to process the body index data is to directly access 
+                        // the underlying buffer
+                        using (Microsoft.Kinect.KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
                         {
-                            this.colorBitmap.Lock();
-
-                            // verify data and write the new color frame data to the display bitmap
-                            if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                            // verify data and write the color data to the display bitmap
+                            if (((this.depthFrameDescription.Width * this.depthFrameDescription.Height) == (depthBuffer.Size / this.depthFrameDescription.BytesPerPixel)) &&
+                                (this.depthFrameDescription.Width == this.depthBitmap.PixelWidth) && (this.depthFrameDescription.Height == this.depthBitmap.PixelHeight))
                             {
-                                colorFrame.CopyConvertedFrameDataToIntPtr(
-                                    this.colorBitmap.BackBuffer,
-                                    (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
-                                    ColorImageFormat.Bgra);
+                                // Note: In order to see the full range of depth (including the less reliable far field depth)
+                                // we are setting maxDepth to the extreme potential depth threshold
+                                ushort maxDepth = ushort.MaxValue;
 
-                                this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                                // If you wish to filter by reliable depth distance, uncomment the following line:
+                                //// maxDepth = depthFrame.DepthMaxReliableDistance
+
+                                this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
+                                depthFrameProcessed = true;
                             }
-
-                            this.colorBitmap.Unlock();
                         }
+
                     }
                 }
 
-                //using (depthFrame)
-                //{
-                //    if (depthFrame != null)
-                //    {
-
-                //        // the fastest way to process the body index data is to directly access 
-                //        // the underlying buffer
-                //        using (Microsoft.Kinect.KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
-                //        {
-                //            // verify data and write the color data to the display bitmap
-                //            if (((this.depthFrameDescription.Width * this.depthFrameDescription.Height) == (depthBuffer.Size / this.depthFrameDescription.BytesPerPixel)) &&
-                //                (this.depthFrameDescription.Width == this.depthBitmap.PixelWidth) && (this.depthFrameDescription.Height == this.depthBitmap.PixelHeight))
-                //            {
-                //                // Note: In order to see the full range of depth (including the less reliable far field depth)
-                //                // we are setting maxDepth to the extreme potential depth threshold
-                //                ushort maxDepth = ushort.MaxValue;
-
-                //                // If you wish to filter by reliable depth distance, uncomment the following line:
-                //                //// maxDepth = depthFrame.DepthMaxReliableDistance
-
-                //                this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
-                //                depthFrameProcessed = true;
-                //            }
-                //        }
-
-                //    }
-                //}
+                if (depthFrameProcessed)
+                {
+                    this.RenderDepthPixels();
+                }
 
             }
             finally
@@ -188,5 +204,32 @@ namespace KinectDemo
                 }
             }
         }
+
+        private void RenderDepthPixels()
+        {
+            this.depthBitmap.WritePixels(
+                new Int32Rect(0, 0, this.depthBitmap.PixelWidth, this.depthBitmap.PixelHeight),
+                this.depthPixels,
+                this.depthBitmap.PixelWidth,
+                0);
+        }
+
+        private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
+        {
+            // depth frame data is a 16 bit value
+            ushort* frameData = (ushort*)depthFrameData;
+
+            // convert depth to a visual representation
+            for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
+            {
+                // Get the depth for this pixel
+                ushort depth = frameData[i];
+
+                // To convert to a byte, we're mapping the depth value to the byte range.
+                // Values outside the reliable depth range are mapped to 0 (black).
+                this.depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
+            }
+        }
+
     }
 }

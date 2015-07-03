@@ -90,7 +90,7 @@ namespace KinectDemo.UIElements
             mymesh.Normals.Add(Normal);
             mymesh.Normals.Add(Normal);
             Material Material = new DiffuseMaterial(
-                new SolidColorBrush(color));
+                new SolidColorBrush(color) {Opacity = 0.5 });
             GeometryModel3D model = new GeometryModel3D(
                 mymesh, Material);
             Model3DGroup Group = new Model3DGroup();
@@ -139,21 +139,7 @@ namespace KinectDemo.UIElements
 
             foreach (Point3D point in ActiveWorkspace.PointCloud)
             {
-                Model3DGroup triangle = new Model3DGroup();
-
-                double x = point.X;
-                double y = point.Y;
-                double z = point.Z;
-
-                Point3D p0 = new Point3D(x, y, z);
-                Point3D p1 = new Point3D(x + 0.005, y, z);
-                Point3D p2 = new Point3D(x, y + 0.005, z);
-
-                triangle.Children.Add(CreateTriangleModel(p0, p2, p1, Colors.Black));
-
-                ModelVisual3D model = new ModelVisual3D();
-                model.Content = triangle;
-                this.MainViewPort.Children.Add(model);
+                drawTriangle(point, Colors.Black);
             }
 
             Point3D center = ActiveWorkspace.Center;
@@ -171,6 +157,30 @@ namespace KinectDemo.UIElements
             this.scale.CenterZ = center.Z;
 
             this.Camera.Position = new Point3D(center.X, center.Y, -3);
+        }
+
+        private void drawTriangle(Point3D point, Color color)
+        {
+            drawTriangle(point, 0.005, color);
+        }
+
+        private void drawTriangle(Point3D point, double size, Color color)
+        {
+            Model3DGroup triangle = new Model3DGroup();
+
+            double x = point.X;
+            double y = point.Y;
+            double z = point.Z;
+
+            Point3D p0 = new Point3D(x, y, z);
+            Point3D p1 = new Point3D(x + size, y, z);
+            Point3D p2 = new Point3D(x, y + size, z);
+
+            triangle.Children.Add(CreateTriangleModel(p0, p2, p1, color));
+
+            ModelVisual3D model = new ModelVisual3D();
+            model.Content = triangle;
+            this.MainViewPort.Children.Add(model);
         }
 
         private void setWorkspaceCloudAndCenter()
@@ -233,10 +243,10 @@ namespace KinectDemo.UIElements
         public void setRealVertices()
         {
             Vector<double> fittedPlaneVector = GeometryHelper.fitPlaneToPoints(ActiveWorkspace.PointCloud.ToArray());
-
+            
             Point3D projectedPoint = GeometryHelper.projectPoint3DToPlane(ActiveWorkspace.PointCloud.First(), fittedPlaneVector);
 
-            Vector<double> planeNormal = new DenseVector(new double[] { projectedPoint.X, projectedPoint.Y, projectedPoint.Z });
+            Vector<double> planeNormal = new DenseVector(new double[] { fittedPlaneVector[0], fittedPlaneVector[1], fittedPlaneVector[2] });
 
             CameraSpacePoint[] csps = new CameraSpacePoint[] { new CameraSpacePoint() };
 
@@ -257,14 +267,12 @@ namespace KinectDemo.UIElements
                 Vector<double> pointOnPlane = new DenseVector(new double[] { projectedPoint.X, projectedPoint.Y, projectedPoint.Z });
                 Vector<double> pointOnLine = new DenseVector(new double[] { csps[0].X, csps[0].Y, csps[0].Z });
 
-                double d = (pointOnPlane - pointOnLine).DotProduct(planeNormal) / (pointOnLine.DotProduct(planeNormal));
+                double d = (pointOnPlane.Subtract(pointOnLine)).DotProduct(planeNormal) / (pointOnLine.DotProduct(planeNormal));
 
                 Vector<double> intersection = pointOnLine + pointOnLine.Multiply(d);
 
                 ActiveWorkspace.FittedVertices[i] = new Point3D(intersection[0], intersection[1], intersection[2]);
             }
-
-            CameraSpacePoint[] cameraSpaceVertices = new CameraSpacePoint[vertices.Length];
 
             drawFittedPlane(fittedPlaneVector);
 

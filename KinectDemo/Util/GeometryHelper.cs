@@ -24,15 +24,15 @@ namespace KinectDemo.Util
             return isNumber((float)point.X) && isNumber((float)point.Y) && isNumber((float)point.Z);
         }
 
-        public static float[] normalize(float[] points)
+        public static double[] normalize(double[] points)
         {
-            float squareSum = 0;
-            float[] normalizedPoints = new float[points.Length];
+            double squareSum = 0;
+            double[] normalizedPoints = new double[points.Length];
             for (int i = 0; i < points.Length; ++i)
             {
                 squareSum += points[i] * points[i];
             }
-            float length = (float)Math.Sqrt(squareSum);
+            double length = Math.Sqrt(squareSum);
 
             for (int i = 0; i < points.Length; ++i)
             {
