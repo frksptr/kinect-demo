@@ -1,4 +1,6 @@
 ﻿using KinectDemo.Util;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
@@ -134,6 +136,13 @@ namespace KinectDemo.UIElements
         /// </summary>
         private List<Pen> bodyColors;
 
+        private bool workspacesDrawn = false;
+
+        private Pen workspacePen;
+
+        // Distance tolerance in meters
+        private const double DISTANCE_TOLERANCE = 0.05;
+
         public BodyView(KinectSensor kinectSensor)
         {
             // one sensor is currently supported
@@ -156,6 +165,10 @@ namespace KinectDemo.UIElements
 
             // a bone defined as a line between two joints
             this.bones = new List<Tuple<JointType, JointType>>();
+
+            this.workspacePen = new Pen();
+            this.workspacePen.Brush = Brushes.LightBlue;
+            this.workspacePen.Thickness = 5;
 
             // Torso
             this.bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
@@ -307,11 +320,9 @@ namespace KinectDemo.UIElements
 
                                     this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
                                 }
-
                                 this.colorBitmap.Unlock();
                             }
                         }
-
                     }
 
 
@@ -337,6 +348,10 @@ namespace KinectDemo.UIElements
                             using (DrawingContext dc = this.drawingGroup.Open())
                             {
                                 dc.DrawImage(this.ColorImageSource, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                                if (!workspacesDrawn)
+                                {
+                                    drawWorksapces(dc);
+                                }
                                 // Draw a transparent background to set the render size
                                 //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
 
@@ -374,13 +389,11 @@ namespace KinectDemo.UIElements
                                         this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
                                     }
                                 }
-
                                 // prevent drawing outside of our render area
                                 this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                             }
                         }
                     }
-
                 }
                 finally
                 {
@@ -399,37 +412,52 @@ namespace KinectDemo.UIElements
 
         private void checkActiveWorkspace(Body body, DrawingContext dc)
         {
+
             foreach (Workspace workspace in workspaceList)
             {
                 ObservableCollection<Point3D> vertices = workspace.FittedVertices;
 
-                Point nearLeft = new Point(vertices.Min(p => p.X), vertices.Min(p => p.Z));
+                Point3D nearLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z < b.Z ? a : b);// new Point(vertices.Min(p => p.X), vertices.Min(p => p.Z));
 
-                Point nearRight = new Point(vertices.Max(p => p.X), vertices.Min(p => p.Z));
+                Point3D nearRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z < b.Z ? a : b);// new Point(vertices.Max(p => p.X), vertices.Min(p => p.Z));
 
-                Point farLeft = new Point(vertices.Min(p => p.X), vertices.Max(p => p.Z));
+                Point3D farLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z > b.Z ? a : b); //new Point(vertices.Min(p => p.X), vertices.Max(p => p.Z));
 
-                Point farRight  = new Point(vertices.Max(p => p.X), vertices.Max(p => p.Z));
+                Point3D farRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z > b.Z ? a : b); //new Point(vertices.Max(p => p.X), vertices.Max(p => p.Z));
 
                 Polygon poly = new Polygon();
-                poly.Points = new PointCollection() {nearLeft,nearRight,farRight,farLeft};
+                poly.Points = new PointCollection() { 
+                    new Point(nearLeft.X, nearLeft.Y),
+                    new Point(nearRight.X, nearRight.Y),
+                    new Point(farRight.X, farRight.Y),
+                    new Point(farLeft.X, farLeft.Y) };
 
                 CameraSpacePoint handPos = body.Joints[JointType.HandRight].Position;
 
-                Point hand2D = new Point(handPos.X, handPos.Z);
+                Vector<double> handVector = new DenseVector( new double[] {
+                    (double)handPos.X,
+                    (double)handPos.Y,
+                    (double)handPos.Z
+                });
 
-                if (GeometryHelper.insidePolygon(poly, hand2D))
+                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(cameraSpacePointToPoint3D(handPos),workspace.planeVector) ))
                 {
-                    if (handPos.Y <= workspace.Center.Y + 0.05)
+                    double distance = GeometryHelper.calculatePointPlaneDistance(cameraSpacePointToPoint3D(handPos), workspace.planeVector);
+
+                    if (Math.Abs(distance) <= DISTANCE_TOLERANCE)
                     {
-                        //
+                        this.workspacePen.Brush = Brushes.Red;
+                    }
+                    else
+                    {
+                        this.workspacePen.Brush = Brushes.Blue;
                     }
                 }
-                
-
+                else
+                {
+                    this.workspacePen.Brush = Brushes.Blue;
+                }
             }
-
-
         }
 
 
@@ -524,6 +552,51 @@ namespace KinectDemo.UIElements
                     drawingContext.DrawEllipse(this.handLassoBrush, null, handPosition, HandSize, HandSize);
                     break;
             }
+        }
+
+        private void drawWorksapces(DrawingContext dc)
+        {
+            Pen pen = this.workspacePen;
+            CoordinateMapper coordinateMapper = this.kinectSensor.CoordinateMapper;
+
+            foreach (Workspace workspace in workspaceList)
+            {
+                CameraSpacePoint p0 = point3DtoCameraSpacePoint(workspace.FittedVertices[0]);
+                CameraSpacePoint p1 = point3DtoCameraSpacePoint(workspace.FittedVertices[1]);
+                CameraSpacePoint p2 = point3DtoCameraSpacePoint(workspace.FittedVertices[2]);
+                CameraSpacePoint p3 = point3DtoCameraSpacePoint(workspace.FittedVertices[3]);
+
+                ColorSpacePoint[] colorPoints = new ColorSpacePoint[4];
+                coordinateMapper.MapCameraPointsToColorSpace(new CameraSpacePoint[] { p0, p1, p2, p3 }, colorPoints);
+
+                for (int i = 0; i < colorPoints.Length; i++)
+                {
+                    dc.DrawLine(pen,
+                        new Point(colorPoints[i % colorPoints.Length].X, colorPoints[i % colorPoints.Length].Y),
+                        new Point(colorPoints[(i + 1) % colorPoints.Length].X, colorPoints[(i + 1) % colorPoints.Length].Y));
+                }
+            }
+            //this.workspacesDrawn = true;
+        }
+
+        private CameraSpacePoint point3DtoCameraSpacePoint(Point3D point3D)
+        {
+            return new CameraSpacePoint()
+            {
+                X = (float)point3D.X,
+                Y = (float)point3D.Y,
+                Z = (float)point3D.Z
+            };
+        }
+
+        private Point3D cameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
+        {
+            return new Point3D()
+            {
+                X = cameraSpacePoint.X,
+                Y = cameraSpacePoint.Y,
+                Z = cameraSpacePoint.Z
+            };
         }
 
     }

@@ -16,6 +16,10 @@ using System.Collections.ObjectModel;
 using Microsoft.Kinect;
 using KinectDemo.UIElements;
 using System.ComponentModel;
+using MathNet.Numerics.LinearAlgebra;
+using KinectDemo.Util;
+using System.Windows.Media.Media3D;
+using MathNet.Numerics.LinearAlgebra.Double;
 namespace KinectDemo
 {
     /// <summary>
@@ -34,7 +38,7 @@ namespace KinectDemo
         private CameraWorkspace cameraWorkspace;
 
         // Displays point clouds
-        private CloudView cloudView;
+        private CloudView workspaceCloudView;
 
         // Displays skeleton model and indicates active workspace
         private BodyView bodyView;
@@ -45,6 +49,8 @@ namespace KinectDemo
 
         private string statusText = null;
 
+        private KinectSensor kinectSensor;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -53,13 +59,16 @@ namespace KinectDemo
 
             addCameraWorkspace();
 
-            cloudView = new CloudView(KinectSensor.GetDefault());
+            this.kinectSensor = KinectSensor.GetDefault();
 
-            pointCloudHolder.Children.Add(cloudView);
+            workspaceCloudView = new CloudView(this.kinectSensor);
 
-            bodyView = new BodyView(KinectSensor.GetDefault());
+            workspacePointCloudHolder.Children.Add(workspaceCloudView);
+
+            bodyView = new BodyView(this.kinectSensor);
 
             handCheck_BodyViewHolder.Children.Add(bodyView);
+
 
             
         }
@@ -93,11 +102,11 @@ namespace KinectDemo
 
         void addButton_Click(object sender, RoutedEventArgs e)
         {
+            
             // New Workspace added
             if (workspaceControl.Mode == WorkspaceControl.WorkspaceControlMode.Add)
             {
                 workspaceList.Add(workspaceControl.Workspace);
-
                 WorkspaceView workspaceView = new WorkspaceView(workspaceControl.Workspace);
                 workspaceView.wsName.MouseDown += selectWorkspace;
                 workspaceView.Margin = new Thickness(MARGIN);
@@ -108,10 +117,12 @@ namespace KinectDemo
             else
             {
                 workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
-                cloudView.updatePointCloudAndCenter();
+                workspaceCloudView.updatePointCloudAndCenter();
             }
             workspaceControl.setSource(new Workspace());
         }
+
+       
 
         private void deleteWorkspace(object sender, RoutedEventArgs e)
         {
@@ -140,7 +151,7 @@ namespace KinectDemo
 
             workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Edit;
 
-            this.cloudView.setWorkspace(activeWorkspace.Workspace);
+            this.workspaceCloudView.setWorkspace(activeWorkspace.Workspace);
         }
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -166,11 +177,6 @@ namespace KinectDemo
                 TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
                 focusedTextBox.MoveFocus(tRequest);
             }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            cloudView.setRealVertices();
         }
 
         public string StatusText

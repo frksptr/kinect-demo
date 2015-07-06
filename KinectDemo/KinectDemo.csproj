@@ -67,8 +67,8 @@
     <Compile Include="UIElements\CameraWorkspace.xaml.cs">
       <DependentUpon>CameraWorkspace.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UIElements\CloudView.xaml.cs">
-      <DependentUpon>CloudView.xaml</DependentUpon>
+    <Compile Include="UIElements\WorkspaceCloudView.xaml.cs">
+      <DependentUpon>WorkspaceCloudView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIElements\Model\Workspace.cs" />
     <Compile Include="UIElements\WorkspaceControl.xaml.cs">
@@ -98,7 +98,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UIElements\CloudView.xaml">
+    <Page Include="UIElements\WorkspaceCloudView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

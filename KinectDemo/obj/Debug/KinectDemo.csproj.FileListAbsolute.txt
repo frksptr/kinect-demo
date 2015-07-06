@@ -21,7 +21,7 @@ C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\bin\D
 C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\bin\Debug\Microsoft.Kinect.xml
 C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceControl.baml
 C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceControl.g.cs
-C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\CloudView.baml
-C:\Users\SANXO\Documents\Visual Studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\CloudView.g.cs
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\BodyView.baml
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\BodyView.g.cs
+C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.baml
+C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.g.cs

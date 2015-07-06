@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 
@@ -83,16 +84,17 @@ namespace KinectDemo.Util
                 projectedPoints[i] = projectPoint3DToPlane(points[i], planeVectors);
             }
 
-            return null;
+            return projectedPoints;
         }
 
         public static Point3D projectPoint3DToPlane(Point3D point, Vector<double> planeVectors)
         {
-            // ax + by + cz + d = 0
+
+            double distance = calculatePointPlaneDistance(point, planeVectors);
+
             double a = planeVectors[0];
             double b = planeVectors[1];
             double c = planeVectors[2];
-            double d = planeVectors[3];
 
             Vector<double> planeNormal = new DenseVector(new double[] { a, b, c });
 
@@ -102,8 +104,6 @@ namespace KinectDemo.Util
 
             Vector<double> pointVector = new DenseVector(new double[] { x, y, z });
 
-            double distance = (a * x + b * y + z * 0 + d) / Math.Sqrt(a * a + b * b + c * c);
-
             pointVector.Subtract(planeNormal.Multiply(distance));
 
             return new Point3D()
@@ -112,6 +112,26 @@ namespace KinectDemo.Util
                 Y = pointVector[1],
                 Z = pointVector[2]
             };
+        }
+
+        public static double calculatePointPlaneDistance(Point3D point, Vector<double> planeVector)
+        {
+            // ax + by + cz + d = 0
+            double a = planeVector[0];
+            double b = planeVector[1];
+            double c = planeVector[2];
+            double d = planeVector[3];
+
+            Vector<double> planeNormal = new DenseVector(new double[] { a, b, c });
+
+            double x = point.X;
+            double y = point.Y;
+            double z = point.Z;
+
+            Vector<double> pointVector = new DenseVector(new double[] { x, y, z });
+
+            double distance = (a * x + b * y + c * z + d) / Math.Sqrt(a * a + b * b + c * c);
+            return distance;
         }
 
         public static bool insidePolygon(Polygon polygon, Point point)
@@ -128,6 +148,48 @@ namespace KinectDemo.Util
                     c = !c;
             }
             return c;
+        }
+
+        public static bool insidePolygon3D(Point3D[] polyVertices, Point3D projectedPoint)
+        {
+            PointCollection points = new PointCollection();
+            foreach (Point3D point in polyVertices)
+            {
+                points.Add(new Point(point.X, point.Z));
+            }
+            return insidePolygon(new Polygon() { Points = points }, new Point(projectedPoint.X, projectedPoint.Z));
+        }
+
+
+        public static Model3DGroup CreateTriangleModel(Point3D p0, Point3D p1, Point3D p2, Color color)
+        {
+            MeshGeometry3D mymesh = new MeshGeometry3D();
+            mymesh.Positions.Add(p0);
+            mymesh.Positions.Add(p1);
+            mymesh.Positions.Add(p2);
+            mymesh.TriangleIndices.Add(0);
+            mymesh.TriangleIndices.Add(1);
+            mymesh.TriangleIndices.Add(2);
+            Vector3D Normal = CalculateTraingleNormal(p0, p1, p2);
+            mymesh.Normals.Add(Normal);
+            mymesh.Normals.Add(Normal);
+            mymesh.Normals.Add(Normal);
+            Material Material = new DiffuseMaterial(
+                new SolidColorBrush(color) { Opacity = 0.5 });
+            GeometryModel3D model = new GeometryModel3D(
+                mymesh, Material);
+            Model3DGroup Group = new Model3DGroup();
+            Group.Children.Add(model);
+            return Group;
+        }
+
+        public static Vector3D CalculateTraingleNormal(Point3D p0, Point3D p1, Point3D p2)
+        {
+            Vector3D v0 = new Vector3D(
+                p1.X - p0.X, p1.Y - p0.Y, p1.Z - p0.Z);
+            Vector3D v1 = new Vector3D(
+                p2.X - p1.X, p2.Y - p1.Y, p2.Z - p1.Z);
+            return Vector3D.CrossProduct(v0, v1);
         }
 
     }

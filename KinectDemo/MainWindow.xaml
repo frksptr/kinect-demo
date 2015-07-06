@@ -12,8 +12,7 @@
                 <DockPanel Name="rightBarHolder" DockPanel.Dock="Right">
                     <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="listHolder" Background="#FFF0F0F0" Margin="5" >
                     </StackPanel>
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical" Name="pointCloudHolder"  Margin="5" Height="400" >
-                        <Button Content="Fit plane" Click="Button_Click"/>
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical" Name="workspacePointCloudHolder"  Margin="5" Height="400" >
                     </StackPanel>
                 </DockPanel>
 

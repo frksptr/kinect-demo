@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\App.xaml
-6306343132
+6162640885
 
-12-560656234
+121407246680
 171702928777
-UIElements\BodyView.xaml;UIElements\CameraWorkspace.xaml;MainWindow.xaml;UIElements\CloudView.xaml;UIElements\WorkspaceControl.xaml;UIElements\WorkspaceView.xaml;
+UIElements\BodyView.xaml;UIElements\CameraWorkspace.xaml;MainWindow.xaml;UIElements\WorkspaceCloudView.xaml;UIElements\WorkspaceControl.xaml;UIElements\WorkspaceView.xaml;
 
 False
 
