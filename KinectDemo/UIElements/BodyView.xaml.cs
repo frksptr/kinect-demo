@@ -417,13 +417,13 @@ namespace KinectDemo.UIElements
             {
                 ObservableCollection<Point3D> vertices = workspace.FittedVertices;
 
-                Point3D nearLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z < b.Z ? a : b);// new Point(vertices.Min(p => p.X), vertices.Min(p => p.Z));
+                Point3D nearLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z < b.Z ? a : b);
 
-                Point3D nearRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z < b.Z ? a : b);// new Point(vertices.Max(p => p.X), vertices.Min(p => p.Z));
+                Point3D nearRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z < b.Z ? a : b);
 
-                Point3D farLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z > b.Z ? a : b); //new Point(vertices.Min(p => p.X), vertices.Max(p => p.Z));
+                Point3D farLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z > b.Z ? a : b);
 
-                Point3D farRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z > b.Z ? a : b); //new Point(vertices.Max(p => p.X), vertices.Max(p => p.Z));
+                Point3D farRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z > b.Z ? a : b);
 
                 Polygon poly = new Polygon();
                 poly.Points = new PointCollection() { 
@@ -434,28 +434,28 @@ namespace KinectDemo.UIElements
 
                 CameraSpacePoint handPos = body.Joints[JointType.HandRight].Position;
 
-                Vector<double> handVector = new DenseVector( new double[] {
+                Vector<double> handVector = new DenseVector(new double[] {
                     (double)handPos.X,
                     (double)handPos.Y,
                     (double)handPos.Z
                 });
 
-                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(cameraSpacePointToPoint3D(handPos),workspace.planeVector) ))
+                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(cameraSpacePointToPoint3D(handPos), workspace.planeVector)))
                 {
                     double distance = GeometryHelper.calculatePointPlaneDistance(cameraSpacePointToPoint3D(handPos), workspace.planeVector);
 
                     if (Math.Abs(distance) <= DISTANCE_TOLERANCE)
                     {
-                        this.workspacePen.Brush = Brushes.Red;
+                        workspace.Active = true;
                     }
                     else
                     {
-                        this.workspacePen.Brush = Brushes.Blue;
+                        workspace.Active = false;
                     }
                 }
                 else
                 {
-                    this.workspacePen.Brush = Brushes.Blue;
+                    workspace.Active = false;
                 }
             }
         }
@@ -556,7 +556,7 @@ namespace KinectDemo.UIElements
 
         private void drawWorksapces(DrawingContext dc)
         {
-            Pen pen = this.workspacePen;
+            
             CoordinateMapper coordinateMapper = this.kinectSensor.CoordinateMapper;
 
             foreach (Workspace workspace in workspaceList)
@@ -571,7 +571,7 @@ namespace KinectDemo.UIElements
 
                 for (int i = 0; i < colorPoints.Length; i++)
                 {
-                    dc.DrawLine(pen,
+                    dc.DrawLine(workspace.Active ? new Pen(Brushes.Blue, 5) : new Pen(Brushes.Red, 5),
                         new Point(colorPoints[i % colorPoints.Length].X, colorPoints[i % colorPoints.Length].Y),
                         new Point(colorPoints[(i + 1) % colorPoints.Length].X, colorPoints[(i + 1) % colorPoints.Length].Y));
                 }

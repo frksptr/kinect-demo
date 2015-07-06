@@ -30,6 +30,8 @@ namespace KinectDemo
 
         private ObservableCollection<Point3D> pointCloud;
 
+        public bool Active { get; set; }
+
         public string Name
         {
             get

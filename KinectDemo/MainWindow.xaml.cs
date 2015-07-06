@@ -136,6 +136,8 @@ namespace KinectDemo
 
             workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
             workspaceControl.setSource(new Workspace());
+
+            workspaceList.Remove(activeWorkspace.Workspace);
         }
 
         void selectWorkspace(object sender, MouseButtonEventArgs e)
@@ -201,9 +203,12 @@ namespace KinectDemo
             }
         }
 
-        private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bodyView.workspaceList = this.workspaceList;
+            if (e.Source is TabControl)
+            {
+                bodyView.workspaceList = this.workspaceList;
+            }
         }
     }
 }
