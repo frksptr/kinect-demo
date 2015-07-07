@@ -91,11 +91,11 @@ namespace KinectDemo.UIElements
 
             setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-            setRealVertices(ActiveWorkspace);
+            //setRealVertices(ActiveWorkspace);
 
-            drawFittedPlane();
+            //drawFittedPlane();
 
-            //refreshAllPointsView();
+            refreshAllPointsView();
         }
 
         public void setRealVertices(Workspace workspace)

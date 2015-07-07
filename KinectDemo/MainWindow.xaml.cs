@@ -134,8 +134,11 @@ namespace KinectDemo
             WorkspaceView workspaceView = ((WorkspaceView)parent);
             ((Panel)(workspaceView.Parent)).Children.Remove(workspaceView);
 
+            workspaceList.Remove(activeWorkspace.Workspace);
+
             workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
             workspaceControl.setSource(new Workspace());
+
         }
 
         void selectWorkspace(object sender, MouseButtonEventArgs e)

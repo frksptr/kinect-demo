@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" >
     <Grid>
-        <Viewport3D Name="MainViewPort"  Height="328"  ClipToBounds="True" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="384">
+        <Viewport3D IsHitTestVisible="False" Name="MainViewPort"  Height="328"  ClipToBounds="True" Margin="0,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="384">
             <Viewport3D.Camera>
 
                 <OrthographicCamera x:Name="Camera"
