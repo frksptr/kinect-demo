@@ -25,3 +25,38 @@ C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\D
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\BodyView.g.cs
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.baml
 C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\KinectDemo.exe.config
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.exe
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.pdb
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.csprojResolveAssemblyReference.cache
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\BodyView.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\CameraWorkspace.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\MainWindow.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceControl.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceView.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\BodyView.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\CameraWorkspace.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\MainWindow.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceControl.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceView.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\App.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo_MarkupCompile.cache
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo_MarkupCompile.lref
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\KinectDemo.exe
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\KinectDemo.pdb
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.dll
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.Wpf.dll
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\MathNet.Numerics.dll
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\Microsoft.Kinect.dll
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.pdb
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.xml
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.Wpf.pdb
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\HelixToolkit.Wpf.xml
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\MathNet.Numerics.xml
+C:\workspace\asd\kinect-demo\KinectDemo\bin\Debug\Microsoft.Kinect.xml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\UIElements\WorkspaceCloudView.baml
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.g.resources
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.Properties.Resources.resources
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\KinectDemo.csproj.GenerateResource.Cache

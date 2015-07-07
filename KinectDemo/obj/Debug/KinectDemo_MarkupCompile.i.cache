@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\obj\Debug\
+C:\workspace\asd\kinect-demo\KinectDemo\obj\Debug\
 KinectDemo
 none
 false
 DEBUG;TRACE
-C:\Users\SANXO\documents\visual studio 2013\Projects\KinectDemo\KinectDemo\App.xaml
+C:\workspace\asd\kinect-demo\KinectDemo\App.xaml
 6162640885
 
-161323471207
-171702928777
+17512755013
+19-661400191
 UIElements\BodyView.xaml;UIElements\CameraWorkspace.xaml;MainWindow.xaml;UIElements\WorkspaceCloudView.xaml;UIElements\WorkspaceControl.xaml;UIElements\WorkspaceView.xaml;
 
-False
+True
 

@@ -25,7 +25,7 @@ namespace KinectDemo.UIElements
     /// <summary>
     /// Interaction logic for CloudView.xaml
     /// </summary>
-    public partial class CloudView : UserControl
+    public partial class CloudView : UserControl, INotifyPropertyChanged
     {
         private KinectSensor kinectSensor;
 
@@ -36,6 +36,10 @@ namespace KinectDemo.UIElements
         private ushort[] depthArray = null;
 
         private Workspace ActiveWorkspace { get; set; }
+
+        public Point3D[] Data { get; set; }
+
+        public double[] Values { get; set; }
 
         public CloudView(KinectSensor kinectSensor)
         {
@@ -56,6 +60,60 @@ namespace KinectDemo.UIElements
             this.depthArray = new ushort[depthFrameWidth * depthFrameHeight];
 
             InitializeComponent();
+
+            this.DataContext = this;
+
+            UpdateModel();            
+        }
+
+        public Model3DGroup Lights
+        {
+            get
+            {
+                var group = new Model3DGroup();
+                group.Children.Add(new AmbientLight(Colors.White));
+                return group;
+            }
+        }
+
+        public Brush SurfaceBrush
+        {
+            get
+            {
+                // return BrushHelper.CreateGradientBrush(Colors.White, Colors.Blue);
+                return HelixToolkit.Wpf.GradientBrushes.RainbowStripes;
+                // return GradientBrushes.BlueWhiteRed;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void UpdateModel()
+        {
+            if (this.ActiveWorkspace.PointCloud != null)
+            {
+                Data = this.ActiveWorkspace.PointCloud.ToArray();
+            }
+            else
+            {
+                Data = Enumerable.Range(0, 7 * 7 * 7).Select(i => new Point3D(i % 7, (i % 49) / 7, i / 49)).ToArray();
+            }
+
+            var rnd = new Random();
+            this.Values = Data.Select(d => rnd.NextDouble()).ToArray();
+
+            RaisePropertyChanged("Values");
+            RaisePropertyChanged("Data");
+            RaisePropertyChanged("SurfaceBrush");
+        }
+
+        protected void RaisePropertyChanged(string property)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(property));
+            }
         }
 
         public void refreshAllPointsView()
@@ -74,7 +132,7 @@ namespace KinectDemo.UIElements
             };
             
             setWorkspaceCloudAndCenter(all);
-            setCameraCenterAndShowCloud(this.AllPointsViewport, all);
+            //setCameraCenterAndShowCloud(this.AllPointsViewport, all);
 
 
         }
@@ -88,12 +146,11 @@ namespace KinectDemo.UIElements
             {
                 setWorkspaceCloudAndCenter(ActiveWorkspace);
             }
+            //setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-            setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
-
-            setRealVertices(ActiveWorkspace);
-
-            drawFittedPlane();
+            //setRealVertices(ActiveWorkspace);
+            UpdateModel();
+            //drawFittedPlane();
 
             //refreshAllPointsView();
         }
@@ -138,7 +195,7 @@ namespace KinectDemo.UIElements
         public void updatePointCloudAndCenter()
         {
             setWorkspaceCloudAndCenter(ActiveWorkspace);
-            setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
+            //setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
         }
 
         private CameraSpacePoint[] generate3DPoints()
@@ -178,19 +235,19 @@ namespace KinectDemo.UIElements
 
             Point3D center = workspace.Center;
 
-            this.xRotation.CenterX = center.X;
-            this.xRotation.CenterY = center.Y;
-            this.xRotation.CenterZ = center.Z;
+            //this.xRotation.CenterX = center.X;
+            //this.xRotation.CenterY = center.Y;
+            //this.xRotation.CenterZ = center.Z;
 
-            this.yRotation.CenterX = center.X;
-            this.yRotation.CenterY = center.Y;
-            this.yRotation.CenterZ = center.Z;
+            //this.yRotation.CenterX = center.X;
+            //this.yRotation.CenterY = center.Y;
+            //this.yRotation.CenterZ = center.Z;
 
-            this.scale.CenterX = center.X;
-            this.scale.CenterY = center.Y;
-            this.scale.CenterZ = center.Z;
+            //this.scale.CenterX = center.X;
+            //this.scale.CenterY = center.Y;
+            //this.scale.CenterZ = center.Z;
 
-            this.Camera.Position = new Point3D(center.X, center.Y, -3);
+            //this.Camera.Position = new Point3D(center.X, center.Y, -3);
         }
 
         private void drawTriangle(Viewport3D viewport, Point3D point, Color color)
@@ -289,7 +346,7 @@ namespace KinectDemo.UIElements
 
             ModelVisual3D model = new ModelVisual3D();
             model.Content = tetragon;
-            this.MainViewPort.Children.Add(model);
+            //this.MainViewPort.Children.Add(model);
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
