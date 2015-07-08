@@ -175,6 +175,7 @@ namespace KinectDemo.UIElements
         private void setCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
         {
             clearScreen();
+            //
 
             foreach (Point3D point in workspace.PointCloud)
             {
