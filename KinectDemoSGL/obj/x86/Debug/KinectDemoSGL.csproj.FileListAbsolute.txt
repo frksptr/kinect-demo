@@ -52,13 +52,9 @@ c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.csprojRes
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\MainWindow.baml
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\BodyView.baml
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CameraWorkspace.baml
-c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceControl.baml
-c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceView.baml
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\MainWindow.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\BodyView.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CameraWorkspace.g.cs
-c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceControl.g.cs
-c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceView.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\App.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL_MarkupCompile.cache
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.g.resources
@@ -68,3 +64,5 @@ C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\RoomPointClou
 C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\RoomPointCloudView.g.cs
 C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CloudView.baml
 C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CloudView.g.cs
+C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL_MarkupCompile.lref

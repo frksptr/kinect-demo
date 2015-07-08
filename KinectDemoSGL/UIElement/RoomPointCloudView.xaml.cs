@@ -125,7 +125,7 @@ namespace KinectDemoSGL.UIElement
                 //  Reset the modelview matrix.
                 gl.LoadIdentity();
 
-                gl.Begin(OpenGL.GL_POINTS);
+
                 //  Move the geometry into a fairly central position.
                 foreach (Point3D point in FullPointCloud)
                 {

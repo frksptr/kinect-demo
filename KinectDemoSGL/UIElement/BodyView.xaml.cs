@@ -30,7 +30,7 @@ namespace KinectDemo.UIElements
 
         //      TODO: bind workspacelist
 
-        public List<Workspace> workspaceList = new List<Workspace>();
+        public ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
 
         private WriteableBitmap colorBitmap = null;
 
