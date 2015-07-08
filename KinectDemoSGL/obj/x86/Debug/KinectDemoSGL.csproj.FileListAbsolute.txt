@@ -1,0 +1,37 @@
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\KinectDemoSGL.exe.config
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.csprojResolveAssemblyReference.cache
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\MainWindow.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\BodyView.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\CameraWorkspace.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceCloudView.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceControl.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceView.baml
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\MainWindow.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\BodyView.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\CameraWorkspace.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceCloudView.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceControl.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\UIElement\WorkspaceView.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\App.g.cs
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL_MarkupCompile.cache
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.g.resources
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.Properties.Resources.resources
+c:\users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.csproj.GenerateResource.Cache
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\KinectDemoSGL.exe
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\KinectDemoSGL.pdb
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\MathNet.Numerics.dll
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.dll
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.SceneGraph.dll
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.WPF.dll
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\MathNet.Numerics.xml
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.pdb
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.xml
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.SceneGraph.pdb
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.SceneGraph.xml
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.WPF.pdb
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\bin\Debug\SharpGL.WPF.xml
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.exe
+C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.pdb
+c:\workspace\asd\kinect-demo\KinectDemoSGL\bin\Debug\KinectDemoSGL.exe.config
+c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.exe
+c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.pdb
