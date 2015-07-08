@@ -221,7 +221,11 @@ namespace KinectDemo
         private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             CameraSpacePoint[] csps = workspaceCloudView.AllCameraSpacePoints;
-            roomPointCloudView.setPointCloud(GeometryHelper.cameraSpacePointsToPoint3Ds(csps));
+            List<Point3D> pointCloud = GeometryHelper.cameraSpacePointsToPoint3Ds(csps);
+
+            roomPointCloudView.Center = GeometryHelper.calculateCenterPoint(pointCloud);
+
+            roomPointCloudView.FullPointCloud = pointCloud;
         }
     }
 }

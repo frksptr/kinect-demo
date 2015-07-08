@@ -155,9 +155,9 @@ namespace KinectDemo.Util
             PointCollection points = new PointCollection();
             foreach (Point3D point in polyVertices)
             {
-                points.Add(new Point(point.X, point.Z));
+                points.Add(new Point(point.X, point.Y));
             }
-            return insidePolygon(new Polygon() { Points = points }, new Point(projectedPoint.X, projectedPoint.Z));
+            return insidePolygon(new Polygon() { Points = points }, new Point(projectedPoint.X, projectedPoint.Y));
         }
 
 
@@ -203,6 +203,14 @@ namespace KinectDemo.Util
         }
         public static List<Point3D> cameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
         {
+            if (cameraSpacePoints == null)
+            {
+                return null;
+            }
+            if (cameraSpacePoints.Length == 0)
+            {
+                return null;
+            }
             List<Point3D> point3Ds = new List<Point3D>();
 
             foreach (CameraSpacePoint point in cameraSpacePoints)
@@ -216,6 +224,25 @@ namespace KinectDemo.Util
             }
 
             return point3Ds;
+        }
+
+        public static Point3D calculateCenterPoint(List<Point3D> pointCloud)
+        {
+            Point3D center = new Point3D();
+            double sumX = 0;
+            double sumY = 0;
+            double sumZ = 0;
+            int size = pointCloud.Count;
+            foreach (Point3D point in pointCloud)
+            {
+                sumX += point.X;
+                sumY += point.Y;
+                sumZ += point.Z;
+            }
+            center.X = sumX / size;
+            center.Y = sumY / size;
+            center.Z = sumZ / size;
+            return center;
         }
 
     }

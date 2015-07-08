@@ -29,7 +29,8 @@ namespace KinectDemoSGL.UIElement
     {
         public List<Point3D> FullPointCloud { get; set; }
 
-        float rotatePyramid = 0;
+        public Point3D Center { get; set; }
+
         float rquad = 0; 
 
         public RoomPointCloudView()
@@ -62,16 +63,14 @@ namespace KinectDemoSGL.UIElement
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
         }
 
-        public void setPointCloud(List<Point3D> points)
-        {
-            FullPointCloud = points;
-        }
-
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
         {
             if (this.IsVisible)
             {
-                
+                if (FullPointCloud == null)
+                {
+                    return;
+                }
                 //  Get the OpenGL instance that's been passed to us.
                 OpenGL gl = args.OpenGL;
 
@@ -84,22 +83,15 @@ namespace KinectDemoSGL.UIElement
                 //  Move the geometry into a fairly central position.
                 gl.Translate(-1.5f, 0.0f, -6.0f);
                 gl.PointSize(1.0f);
-
                 foreach (Point3D point in FullPointCloud)
                 {
                     gl.Begin(OpenGL.GL_POINTS);
                     gl.Vertex(point.X, point.Y, point.Z);
                     gl.End();
                 }
+                //gl.LookAt(0, 0, -200, Center.X, Center.Y, Center.Z, 0, 1, 0);
 
-                //  Reset the modelview.
-                gl.LoadIdentity();
-
-                //  Move into a more central position.
-                gl.Translate(1.5f, 0.0f, -7.0f);
-
-                gl.Rotate(rquad, 1.0f, 1.0f, 1.0f);
-
+                
                 //  Flush OpenGL.
                 gl.Flush();
 
