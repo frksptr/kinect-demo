@@ -440,9 +440,9 @@ namespace KinectDemo.UIElements
                     (double)handPos.Z
                 });
 
-                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(cameraSpacePointToPoint3D(handPos),workspace.planeVector) ))
+                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(GeometryHelper.cameraSpacePointToPoint3D(handPos),workspace.planeVector) ))
                 {
-                    double distance = GeometryHelper.calculatePointPlaneDistance(cameraSpacePointToPoint3D(handPos), workspace.planeVector);
+                    double distance = GeometryHelper.calculatePointPlaneDistance(GeometryHelper.cameraSpacePointToPoint3D(handPos), workspace.planeVector);
 
                     if (Math.Abs(distance) <= DISTANCE_TOLERANCE)
                     {
@@ -588,16 +588,5 @@ namespace KinectDemo.UIElements
                 Z = (float)point3D.Z
             };
         }
-
-        private Point3D cameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
-        {
-            return new Point3D()
-            {
-                X = cameraSpacePoint.X,
-                Y = cameraSpacePoint.Y,
-                Z = cameraSpacePoint.Z
-            };
-        }
-
     }
 }

@@ -192,5 +192,31 @@ namespace KinectDemo.Util
             return Vector3D.CrossProduct(v0, v1);
         }
 
+        public static Point3D cameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
+        {
+            return new Point3D()
+            {
+                X = cameraSpacePoint.X,
+                Y = cameraSpacePoint.Y,
+                Z = cameraSpacePoint.Z
+            };
+        }
+        public static List<Point3D> cameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
+        {
+            List<Point3D> point3Ds = new List<Point3D>();
+
+            foreach (CameraSpacePoint point in cameraSpacePoints)
+            {
+                point3Ds.Add(new Point3D()
+                {
+                    X = point.X,
+                    Y = point.Y,
+                    Z = point.Z
+                });
+            }
+
+            return point3Ds;
+        }
+
     }
 }

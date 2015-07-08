@@ -20,6 +20,7 @@ using MathNet.Numerics.LinearAlgebra;
 using KinectDemo.Util;
 using System.Windows.Media.Media3D;
 using MathNet.Numerics.LinearAlgebra.Double;
+using KinectDemoSGL.UIElement;
 namespace KinectDemo
 {
     /// <summary>
@@ -42,6 +43,9 @@ namespace KinectDemo
 
         // Displays skeleton model and indicates active workspace
         private BodyView bodyView;
+
+        // Displays full point floud (with fitted planes to workspaces)
+        private RoomPointCloudView roomPointCloudView;
 
         private List<Workspace> workspaceList = new List<Workspace>();
 
@@ -69,8 +73,12 @@ namespace KinectDemo
 
             handCheck_BodyViewHolder.Children.Add(bodyView);
 
+            roomPointCloudView = new RoomPointCloudView();
 
-            
+            RoomPointCloudHolder.Children.Add(roomPointCloudView);
+
+            roomPointCloudView.DataContext = workspaceCloudView.AllCameraSpacePoints;
+
         }
 
         private void addCameraWorkspace()
@@ -140,7 +148,6 @@ namespace KinectDemo
             workspaceControl.setSource(new Workspace());
 
             workspaceCloudView.clearScreen();
-
         }
 
         void selectWorkspace(object sender, MouseButtonEventArgs e)
@@ -209,6 +216,12 @@ namespace KinectDemo
         private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             bodyView.workspaceList = this.workspaceList;
+        }
+
+        private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            CameraSpacePoint[] csps = workspaceCloudView.AllCameraSpacePoints;
+            roomPointCloudView.setPointCloud(GeometryHelper.cameraSpacePointsToPoint3Ds(csps));
         }
     }
 }

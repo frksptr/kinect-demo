@@ -31,7 +31,7 @@ namespace KinectDemo.UIElements
 
         private FrameDescription depthFrameDescription = null;
 
-        private CameraSpacePoint[] allCameraSpacePoints;
+        public CameraSpacePoint[] AllCameraSpacePoints { get; set; }
 
         private ushort[] depthArray = null;
 
@@ -60,7 +60,7 @@ namespace KinectDemo.UIElements
 
         public void refreshAllPointsView()
         {
-            this.allCameraSpacePoints = generate3DPoints();
+            this.AllCameraSpacePoints = generate3DPoints();
 
             Workspace all = new Workspace()
             {
@@ -75,8 +75,6 @@ namespace KinectDemo.UIElements
             
             setWorkspaceCloudAndCenter(all);
             setCameraCenterAndShowCloud(this.AllPointsViewport, all);
-
-
         }
 
         public void setWorkspace(Workspace workspaceSource)
@@ -95,7 +93,6 @@ namespace KinectDemo.UIElements
 
             drawFittedPlane();
 
-            //refreshAllPointsView();
         }
 
         public void setRealVertices(Workspace workspace)
@@ -146,7 +143,7 @@ namespace KinectDemo.UIElements
             int width = this.depthFrameDescription.Width;
             int height = this.depthFrameDescription.Height;
             int frameSize = width * height;
-            allCameraSpacePoints = new CameraSpacePoint[frameSize];
+            AllCameraSpacePoints = new CameraSpacePoint[frameSize];
             DepthSpacePoint[] allDepthSpacePoints = new DepthSpacePoint[frameSize];
 
             ushort[] depths = new ushort[frameSize];
@@ -157,14 +154,14 @@ namespace KinectDemo.UIElements
                 {
                     int index = i * width + j;
                     allDepthSpacePoints[index] = new DepthSpacePoint() { X = j, Y = i };
-                    allCameraSpacePoints[index] = new CameraSpacePoint();
+                    AllCameraSpacePoints[index] = new CameraSpacePoint();
                     depths[index] = this.depthArray[index];
                 }
             }
 
-            this.kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, allCameraSpacePoints);
+            this.kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, AllCameraSpacePoints);
 
-            return allCameraSpacePoints;
+            return AllCameraSpacePoints;
         }
 
         public void clearScreen()
@@ -175,8 +172,7 @@ namespace KinectDemo.UIElements
         private void setCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
         {
             clearScreen();
-            //
-
+            
             foreach (Point3D point in workspace.PointCloud)
             {
                 drawTriangle(viewport, point, Colors.Black);
@@ -225,7 +221,7 @@ namespace KinectDemo.UIElements
 
         private void setWorkspaceCloudAndCenter(Workspace workspace)
         {
-            this.allCameraSpacePoints = generate3DPoints();
+            this.AllCameraSpacePoints = generate3DPoints();
 
             Polygon polygon = new Polygon();
             PointCollection pointCollection = new PointCollection();
@@ -249,7 +245,7 @@ namespace KinectDemo.UIElements
 
             List<Point3D> cameraSpacePoints = new List<Point3D>();
             List<DepthSpacePoint> dspList = new List<DepthSpacePoint>();
-            foreach (CameraSpacePoint csp in allCameraSpacePoints)
+            foreach (CameraSpacePoint csp in AllCameraSpacePoints)
             {
                 if (GeometryHelper.isValidCameraPoint(csp))
                 {

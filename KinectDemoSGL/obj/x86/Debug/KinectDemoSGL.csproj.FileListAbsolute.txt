@@ -66,3 +66,5 @@ c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL_MarkupCom
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.g.resources
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.Properties.Resources.resources
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL.csproj.GenerateResource.Cache
+C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\RoomPointCloudView.baml
+C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\RoomPointCloudView.g.cs
