@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\obj\x86\Debug\
+c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\
 KinectDemoSGL
 none
 false
 DEBUG;TRACE
-C:\Users\nemtom\documents\visual studio 2013\Projects\KinectDemoSGL\KinectDemoSGL\App.xaml
+c:\workspace\asd\kinect-demo\KinectDemoSGL\App.xaml
 61884037481
 
 12-477683798
-20-37813576
+20-1183621278
 MainWindow.xaml;UIElement\BodyView.xaml;UIElement\CameraWorkspace.xaml;UIElement\WorkspaceCloudView.xaml;UIElement\WorkspaceControl.xaml;UIElement\WorkspaceView.xaml;
 
 False

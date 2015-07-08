@@ -91,9 +91,9 @@ namespace KinectDemo.UIElements
 
             setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-            //setRealVertices(ActiveWorkspace);
+            setRealVertices(ActiveWorkspace);
 
-            //drawFittedPlane();
+            drawFittedPlane();
 
             //refreshAllPointsView();
         }
@@ -167,9 +167,14 @@ namespace KinectDemo.UIElements
             return allCameraSpacePoints;
         }
 
+        public void clearScreen()
+        {
+            this.MainViewPort.Children.Clear();
+        }
+
         private void setCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
         {
-            viewport.Children.Clear();
+            clearScreen();
 
             foreach (Point3D point in workspace.PointCloud)
             {

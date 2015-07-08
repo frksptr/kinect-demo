@@ -139,6 +139,8 @@ namespace KinectDemo
             workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
             workspaceControl.setSource(new Workspace());
 
+            workspaceCloudView.clearScreen();
+
         }
 
         void selectWorkspace(object sender, MouseButtonEventArgs e)
