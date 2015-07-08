@@ -99,9 +99,8 @@
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIElement\WorkspaceCloudView.xaml.cs" />
-    <Compile Include="UIElement\WorkspaceControl.xaml.cs" />
-    <Compile Include="UIElement\WorkspaceView.xaml.cs" />
     <Compile Include="Util\GeometryHelper.cs" />
+    <Compile Include="Util\PointListToStringConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -127,14 +126,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIElement\WorkspaceCloudView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UIElement\WorkspaceControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UIElement\WorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

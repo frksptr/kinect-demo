@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\workspace\asd\kinect-demo\KinectDemoSGL\App.xaml
-7556889548
+5569294983
 
-17-242662495
+16-78490743
 22-145226773
-MainWindow.xaml;UIElement\BodyView.xaml;UIElement\CameraWorkspace.xaml;UIElement\RoomPointCloudView.xaml;UIElement\WorkspaceCloudView.xaml;UIElement\WorkspaceControl.xaml;UIElement\WorkspaceView.xaml;
+MainWindow.xaml;UIElement\BodyView.xaml;UIElement\CameraWorkspace.xaml;UIElement\RoomPointCloudView.xaml;UIElement\WorkspaceCloudView.xaml;
 
-False
+True
 

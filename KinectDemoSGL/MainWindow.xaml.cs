@@ -31,10 +31,6 @@ namespace KinectDemo
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private WorkspaceControl workspaceControl;
-
-        private WorkspaceView activeWorkspace;
-
         // Displays color image on which to select workspaces
         private CameraWorkspace cameraWorkspace;
 
@@ -47,19 +43,31 @@ namespace KinectDemo
         // Displays full point floud (with fitted planes to workspaces)
         private RoomPointCloudView roomPointCloudView;
 
-        private List<Workspace> workspaceList = new List<Workspace>();
-
         private const int MARGIN = 5;
 
         private string statusText = null;
 
         private KinectSensor kinectSensor;
 
+        private Workspace activeWorkspace = new Workspace()
+        {
+            Name = "asd",
+            Vertices = new ObservableCollection<Point>(){
+                    new Point(0,0),
+                    new Point(0,50),
+                    new Point(50,50),
+                    new Point(50,0)
+                }
+        };
+
+
+        private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>() { 
+            new Workspace()
+        };
+
         public MainWindow()
         {
             InitializeComponent();
-
-            addWorkspaceControl();
 
             addCameraWorkspace();
 
@@ -79,6 +87,9 @@ namespace KinectDemo
 
             roomPointCloudView.DataContext = workspaceCloudView.AllCameraSpacePoints;
 
+            WorkspaceList.ItemsSource = workspaceList;
+
+            EditWorkspace.DataContext = activeWorkspace;
         }
 
         private void addCameraWorkspace()
@@ -89,82 +100,7 @@ namespace KinectDemo
             cameraHolder.Children.Add(cameraWorkspace);
         }
 
-        private void addWorkspaceControl()
-        {
-            workspaceControl = new WorkspaceControl();
-            workspaceControl.AddButton.Click += addButton_Click;
-            workspaceControl.DeleteButton.Click += deleteButton_Click;
-            workspaceControl.setSource(new Workspace());
-            workspaceControl.Margin = new Thickness(MARGIN);
-
-            listHolder.Children.Add(workspaceControl);
-        }
-
-        private void deleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            listHolder.Children.Remove(activeWorkspace);
-            workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
-            workspaceControl.setSource(new Workspace());
-        }
-
-
-        void addButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-            // New Workspace added
-            if (workspaceControl.Mode == WorkspaceControl.WorkspaceControlMode.Add)
-            {
-                workspaceList.Add(workspaceControl.Workspace);
-                WorkspaceView workspaceView = new WorkspaceView(workspaceControl.Workspace);
-                workspaceView.wsName.MouseDown += selectWorkspace;
-                workspaceView.Margin = new Thickness(MARGIN);
-                workspaceView.DeleteButton.Click += deleteWorkspace;
-                this.listHolder.Children.Add(workspaceView);
-            }
-            // Existing Workspace edited
-            else
-            {
-                workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
-                workspaceCloudView.updatePointCloudAndCenter();
-            }
-            workspaceControl.setSource(new Workspace());
-        }
-
-       
-
-        private void deleteWorkspace(object sender, RoutedEventArgs e)
-        {
-            var parent = VisualTreeHelper.GetParent((Button) sender);
-            while (!(parent is WorkspaceView))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            WorkspaceView workspaceView = ((WorkspaceView)parent);
-            ((Panel)(workspaceView.Parent)).Children.Remove(workspaceView);
-
-            workspaceList.Remove(activeWorkspace.Workspace);
-
-            workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Add;
-            workspaceControl.setSource(new Workspace());
-
-            workspaceCloudView.clearScreen();
-        }
-
-        void selectWorkspace(object sender, MouseButtonEventArgs e)
-        {
-            var parent = VisualTreeHelper.GetParent((TextBlock)sender);
-            while (!(parent is WorkspaceView))
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-
-            activeWorkspace = (WorkspaceView)parent;
-            workspaceControl.setSource(activeWorkspace.Workspace);
-
-            workspaceControl.Mode = WorkspaceControl.WorkspaceControlMode.Edit;
-
-            this.workspaceCloudView.setWorkspace(activeWorkspace.Workspace);
-        }
+// select workspace            this.workspaceCloudView.setWorkspace(activeWorkspace.Workspace);
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -226,6 +162,27 @@ namespace KinectDemo
             roomPointCloudView.Center = GeometryHelper.calculateCenterPoint(pointCloud);
 
             roomPointCloudView.FullPointCloud = pointCloud;
+        }
+
+        private void addWorkspace(object sender, RoutedEventArgs e)
+        {
+            if (!workspaceList.Contains(activeWorkspace))
+            {
+                workspaceList.Add(activeWorkspace);
+            }
+            activeWorkspace = new Workspace();
+            EditWorkspace.DataContext = activeWorkspace;
+            WorkspaceList.Items.Refresh();
+        }
+
+        private void WorkspaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
+            EditWorkspace.DataContext = activeWorkspace;
+        }
+        private void removeWorkspace(object sender, RoutedEventArgs e)
+        {
+            workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
         }
     }
 }

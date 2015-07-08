@@ -80,6 +80,8 @@ namespace KinectDemoSGL.UIElement
                 //  Reset the modelview matrix.
                 gl.LoadIdentity();
 
+
+                //gl.LookAt(0, 0, 0, Center.X, Center.Y, Center.Z, 0, 1, 0);
                 //  Move the geometry into a fairly central position.
                 gl.Translate(-1.5f, 0.0f, -6.0f);
                 gl.PointSize(1.0f);
