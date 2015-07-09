@@ -9,7 +9,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using KinectDemoSGL.Util;
 using System;
 using System.Diagnostics;
 using System.Windows;
