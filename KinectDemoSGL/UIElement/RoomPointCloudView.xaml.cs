@@ -153,15 +153,6 @@ namespace KinectDemoSGL.UIElement
 
                 }
                 gl.End();
-
-                //gl.LookAt(0, 0, -200, Center.X, Center.Y, Center.Z, 0, 1, 0);
-
-                
-                //  Flush OpenGL.
-                //gl.Flush();
-
-                //  Rotate the geometry a bit.
-                //rquad -= 3.0f;
             }
         }
 
