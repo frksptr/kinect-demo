@@ -62,7 +62,6 @@ namespace KinectDemo
 
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>() { 
-            new Workspace()
         };
 
         public MainWindow()
@@ -100,7 +99,6 @@ namespace KinectDemo
             cameraHolder.Children.Add(cameraWorkspace);
         }
 
-// select workspace            this.workspaceCloudView.setWorkspace(activeWorkspace.Workspace);
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -181,6 +179,7 @@ namespace KinectDemo
         {
             activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
             EditWorkspace.DataContext = activeWorkspace;
+            this.workspaceCloudView.setWorkspace(activeWorkspace);
         }
         private void removeWorkspace(object sender, RoutedEventArgs e)
         {

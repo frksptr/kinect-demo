@@ -14,31 +14,33 @@
 
             <DockPanel Name="holder">
                 <DockPanel Name="rightBarHolder" DockPanel.Dock="Right">
-                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="listHolder" Background="#FFF0F0F0" Margin="5" >
-                        <StackPanel Name="EditWorkspace" Orientation="Horizontal">
-                            <TextBox Width="100" Text="{Binding Path=Name, Mode=TwoWay}"></TextBox>
-                            <TextBox Width="100" Text="{Binding Path=Vertices[0], Mode=TwoWay}"></TextBox>
-                            <TextBox Width="100" Text="{Binding Path=Vertices[1], Mode=TwoWay}"></TextBox>
-                            <TextBox Width="100" Text="{Binding Path=Vertices[2], Mode=TwoWay}"></TextBox>
-                            <TextBox Width="100" Text="{Binding Path=Vertices[3], Mode=TwoWay}"></TextBox>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Name="listHolder" Margin="5" >
+                        <StackPanel Name="EditWorkspace" Orientation="Horizontal" SnapsToDevicePixels="True" Margin="0,0,0,5">
+                            <TextBox  Width="50" Text="{Binding Path=Name, Mode=TwoWay}" Background="{x:Null}" Margin="0,0,10,0" ></TextBox>
+                            <TextBox Width="50" Text="{Binding Path=Vertices[0], Mode=TwoWay}" Margin="0,0,10,0"></TextBox>
+                            <TextBox Width="50" Text="{Binding Path=Vertices[1], Mode=TwoWay}" Margin="0,0,10,0"></TextBox>
+                            <TextBox Width="50" Text="{Binding Path=Vertices[2], Mode=TwoWay}" Margin="0,0,10,0"></TextBox>
+                            <TextBox Width="50" Text="{Binding Path=Vertices[3], Mode=TwoWay}" Margin="0,0,10,0"></TextBox>
                             <Button Content="Add" Click="addWorkspace"/>
                         </StackPanel>
-                        <ListBox Name="WorkspaceList" HorizontalContentAlignment="Stretch" SelectionChanged="WorkspaceList_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" />
-                                        <TextBlock Grid.Column="1" Text="{Binding Path=Vertices, Converter={StaticResource PointListToStringConverter}}" />
-                                        <Button Grid.Column="2" Content="Delete" Click="removeWorkspace"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <StackPanel Name="WorkspaceListHolder">
+                            <ListBox Name="WorkspaceList" HorizontalContentAlignment="Stretch" SelectionChanged="WorkspaceList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Path=Vertices, Converter={StaticResource PointListToStringConverter}}" />
+                                            <Button Grid.Column="2" Content="Delete" Click="removeWorkspace"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical" Name="workspacePointCloudHolder"  Margin="5" Height="400" >
                     </StackPanel>
