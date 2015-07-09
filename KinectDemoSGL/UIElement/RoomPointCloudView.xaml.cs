@@ -51,8 +51,8 @@ namespace KinectDemoSGL.UIElement
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
             double radius = -5;
-            double theta = 0.1;
-            double phi = Math.PI/2;
+            double theta = 0;
+            double phi = 0;
             
             cameraPosSphere = new Point3D(
                 radius,
@@ -82,10 +82,10 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
-            redraw();
+            transform();
         }
 
-        private void redraw()
+        private void transform()
         {
             // Get the OpenGL instance.
             OpenGL gl = openGLControl.OpenGL;
@@ -156,7 +156,7 @@ namespace KinectDemoSGL.UIElement
                 gl.End();
             }
         }
-
+        private float angle = 0.0f;
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
             
@@ -182,16 +182,17 @@ namespace KinectDemoSGL.UIElement
             }
 
             cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
-            cameraPos.X += Center.X;
-            cameraPos.Y += Center.Y;
-            cameraPos.Z += Center.Z;
-            redraw();
+            //cameraPos.X += Center.X;
+            //cameraPos.Y += Center.Y;
+            //cameraPos.Z += Center.Z;
+            transform();
         }
 
         private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
+                openGLControl.OpenGL.Rotate(10.0f, 0.0f, 0.0f);
                 cameraPosSphere.X += zoomFactor;
             }
             else
@@ -200,10 +201,10 @@ namespace KinectDemoSGL.UIElement
             }
 
             cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
-            cameraPos.X += Center.X;
-            cameraPos.Y += Center.Y;
-            cameraPos.Z += Center.Z;
-            redraw();
+            //cameraPos.X += Center.X;
+            //cameraPos.Y += Center.Y;
+            //cameraPos.Z += Center.Z;
+            transform();
         }
 
         private void openGLControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
