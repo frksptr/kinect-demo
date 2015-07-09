@@ -226,6 +226,8 @@ namespace KinectDemo
             roomPointCloudView.Center = GeometryHelper.calculateCenterPoint(pointCloud);
 
             roomPointCloudView.FullPointCloud = pointCloud;
+
+            roomPointCloudView.WorkspaceList = this.workspaceList;
         }
     }
 }

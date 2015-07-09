@@ -130,6 +130,8 @@ namespace KinectDemo
                 depthWidth = depthFrameDescription.Width;
                 depthHeight = depthFrameDescription.Height;
 
+                
+
                 //using (colorFrame)
                 //{
                 //    if (colorFrame != null)
