@@ -215,12 +215,15 @@ namespace KinectDemo.Util
 
             foreach (CameraSpacePoint point in cameraSpacePoints)
             {
-                point3Ds.Add(new Point3D()
+                if (isValidCameraPoint(point))
                 {
-                    X = point.X,
-                    Y = point.Y,
-                    Z = point.Z
-                });
+                    point3Ds.Add(new Point3D()
+                    {
+                        X = point.X,
+                        Y = point.Y,
+                        Z = point.Z
+                    });
+                }
             }
 
             return point3Ds;
@@ -243,6 +246,18 @@ namespace KinectDemo.Util
             center.Y = sumY / size;
             center.Z = sumZ / size;
             return center;
+        }
+
+        public static Point3D sphericalToCartesian(Point3D sphericalPoint)
+        {
+            double radius = sphericalPoint.X;
+            double theta = sphericalPoint.Y;
+            double phi = sphericalPoint.Z;
+            return new Point3D(
+                radius*Math.Sin(theta)*Math.Cos(phi),
+                radius*Math.Sin(theta)*Math.Sin(phi),
+                radius*Math.Cos(theta)
+                );
         }
 
     }
