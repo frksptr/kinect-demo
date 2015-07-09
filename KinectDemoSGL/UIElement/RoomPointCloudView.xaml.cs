@@ -31,7 +31,7 @@ namespace KinectDemoSGL.UIElement
     {
         public List<Point3D> FullPointCloud { get; set; }
 
-        public List<Workspace> WorkspaceList { get; set; }
+        public ObservableCollection<Workspace> WorkspaceList { get; set; }
 
         public Point3D Center { get; set; }
 
@@ -125,7 +125,7 @@ namespace KinectDemoSGL.UIElement
                 //  Reset the modelview matrix.
                 gl.LoadIdentity();
 
-
+                gl.Begin(OpenGL.GL_POINTS);
                 //  Move the geometry into a fairly central position.
                 foreach (Point3D point in FullPointCloud)
                 {
@@ -135,7 +135,7 @@ namespace KinectDemoSGL.UIElement
                 gl.End();
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
-                    gl.Color(0-0f, 1.0f, 0.0f);
+                gl.Color(0-0f, 1.0f, 0.0f);
                 foreach (Workspace workspace in WorkspaceList)
                 {
                     ObservableCollection<Point3D> vertices = workspace.FittedVertices;

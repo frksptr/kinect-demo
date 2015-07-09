@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\
+c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\
 KinectDemoSGL
 none
 false
 DEBUG;TRACE
-C:\workspace\asd\kinect-demo\KinectDemoSGL\App.xaml
+c:\workspace\asd\kinect-demo\KinectDemoSGL\App.xaml
 51734837106
 
 15-2106653535
-22-145226773
+221230326683
 MainWindow.xaml;UIElement\BodyView.xaml;UIElement\CameraWorkspace.xaml;UIElement\RoomPointCloudView.xaml;UIElement\CloudView.xaml;
 
 False

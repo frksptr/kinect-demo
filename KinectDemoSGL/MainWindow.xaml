@@ -1,11 +1,7 @@
 ﻿<Window x:Class="KinectDemo.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:util="clr-namespace:KinectDemoSGL.Util"
         Title="MainWindow" >
-    <Window.Resources>
-        <util:PointListToStringConverter x:Key="PointListToStringConverter" />
-    </Window.Resources>
     <TabControl Margin="5">
 
 
@@ -34,7 +30,7 @@
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Path=Vertices, Converter={StaticResource PointListToStringConverter}}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Path=Vertices}" />
                                             <Button Grid.Column="2" Content="Delete" Click="removeWorkspace"/>
                                         </Grid>
                                     </DataTemplate>

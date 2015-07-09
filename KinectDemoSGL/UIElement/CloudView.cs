@@ -92,7 +92,6 @@ namespace KinectDemo.UIElements
             setRealVertices(ActiveWorkspace);
 
             drawFittedPlane();
-
         }
 
         public void setRealVertices(Workspace workspace)

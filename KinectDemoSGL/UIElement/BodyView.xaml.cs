@@ -141,7 +141,7 @@ namespace KinectDemo.UIElements
         private Pen workspacePen;
 
         // Distance tolerance in meters
-        private const double DISTANCE_TOLERANCE = 0.05;
+        private const double DISTANCE_TOLERANCE = 0.1;
 
         public BodyView(KinectSensor kinectSensor)
         {
