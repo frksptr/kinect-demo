@@ -126,6 +126,7 @@ namespace KinectDemoSGL.UIElement
                 gl.LoadIdentity();
 
                 gl.Begin(OpenGL.GL_POINTS);
+                gl.Color(1.0f, 0.0f, 0.0f);
                 //  Move the geometry into a fairly central position.
                 foreach (Point3D point in FullPointCloud)
                 {

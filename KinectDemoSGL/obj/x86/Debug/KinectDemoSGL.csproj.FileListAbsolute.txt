@@ -10,7 +10,6 @@ c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CameraWorkspa
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\RoomPointCloudView.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\UIElement\CloudView.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\App.g.cs
-c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
 c:\workspace\asd\kinect-demo\KinectDemoSGL\obj\x86\Debug\KinectDemoSGL_MarkupCompile.cache
 c:\workspace\asd\kinect-demo\KinectDemoSGL\bin\Debug\KinectDemoSGL.exe
 c:\workspace\asd\kinect-demo\KinectDemoSGL\bin\Debug\KinectDemoSGL.pdb

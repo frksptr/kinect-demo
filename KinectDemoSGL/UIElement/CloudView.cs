@@ -98,6 +98,11 @@ namespace KinectDemo.UIElements
         {
             Vector<double> fittedPlaneVector = GeometryHelper.fitPlaneToPoints(workspace.PointCloud.ToArray());
 
+            if (fittedPlaneVector == null)
+            {
+                return;
+            }
+
             Point3D projectedPoint = GeometryHelper.projectPoint3DToPlane(workspace.PointCloud.First(), fittedPlaneVector);
 
             Vector<double> planeNormal = new DenseVector(new double[] { fittedPlaneVector[0], fittedPlaneVector[1], fittedPlaneVector[2] });

@@ -177,6 +177,10 @@ namespace KinectDemo
 
         private void WorkspaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if ((Workspace)WorkspaceList.SelectedItem == null)
+            {
+                return;
+            }
             activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
             EditWorkspace.DataContext = activeWorkspace;
             this.workspaceCloudView.setWorkspace(activeWorkspace);
@@ -184,6 +188,8 @@ namespace KinectDemo
         private void removeWorkspace(object sender, RoutedEventArgs e)
         {
             workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
+            activeWorkspace = new Workspace();
+            this.workspaceCloudView.clearScreen();
         }
     }
 }

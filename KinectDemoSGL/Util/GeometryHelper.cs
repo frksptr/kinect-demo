@@ -60,6 +60,10 @@ namespace KinectDemo.Util
 
         public static Vector<double> fitPlaneToPoints(Point3D[] points)
         {
+            if (points.Length == 0)
+            {
+                return null;
+            }
             double[,] pointArrays = point3DToPointArrays(points);
 
             MathNet.Numerics.LinearAlgebra.Matrix<double> PointMatrix = MathNet.Numerics.LinearAlgebra.Matrix<double>.Build.DenseOfArray(pointArrays);
