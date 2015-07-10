@@ -65,7 +65,7 @@ namespace KinectDemoSGL
 
             WorkspacePointCloudHolder.Children.Add(cloudView);
 
-            bodyView = new BodyView(kinectSensor);
+            bodyView = new BodyView();
 
             HandCheckBodyViewHolder.Children.Add(bodyView);
 

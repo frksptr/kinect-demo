@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
+using KinectDemoSGL.Annotations;
 using KinectDemoSGL.UIElement.Model;
 using KinectDemoSGL.Util;
 using MathNet.Numerics.LinearAlgebra;
@@ -20,7 +22,7 @@ namespace KinectDemoSGL.UIElement
     /// <summary>
     /// Interaction logic for BodyView.xaml
     /// </summary>
-    public partial class BodyView : UserControl
+    public partial class BodyView : INotifyPropertyChanged
     {
 
         //      TODO: bind workspacelist
@@ -28,8 +30,6 @@ namespace KinectDemoSGL.UIElement
         public ObservableCollection<Workspace> WorkspaceList = new ObservableCollection<Workspace>();
 
         private WriteableBitmap colorBitmap;
-
-        private FrameDescription colorFrameDescription;
 
         /// <summary>
         /// Radius of drawn hand circles
@@ -40,11 +40,6 @@ namespace KinectDemoSGL.UIElement
         /// Thickness of drawn joint lines
         /// </summary>
         private const double JointThickness = 3;
-
-        /// <summary>
-        /// Thickness of clip edge rectangles
-        /// </summary>
-        private const double ClipBoundsThickness = 10;
 
         /// <summary>
         /// Constant for clamping Z values of camera space points from being negative
@@ -92,21 +87,6 @@ namespace KinectDemoSGL.UIElement
         private DrawingImage imageSource;
 
         /// <summary>
-        /// Active Kinect sensor
-        /// </summary>
-        private KinectSensor kinectSensor;
-
-        /// <summary>
-        /// Coordinate mapper to map one type of point to another
-        /// </summary>
-        private CoordinateMapper coordinateMapper;
-
-        /// <summary>
-        /// Reader for body frames
-        /// </summary>
-        private MultiSourceFrameReader multiSourceFrameReader;
-
-        /// <summary>
         /// Array for the bodies
         /// </summary>
         public Body[] Bodies;
@@ -134,70 +114,25 @@ namespace KinectDemoSGL.UIElement
         private bool workspacesDrawn = false;
 
         private Pen workspacePen;
+        private readonly KinectStreamer kinectStreamer;
 
         // Distance tolerance in meters
         private const double DistanceTolerance = 0.1;
 
-        public BodyView(KinectSensor kinectSensor)
+        public BodyView()
         {
-            // one sensor is currently supported
-            this.kinectSensor = KinectSensor.GetDefault();
+            kinectStreamer = KinectStreamer.Instance;
 
-            // get the coordinate mapper
-            coordinateMapper = this.kinectSensor.CoordinateMapper;
+            colorBitmap = new WriteableBitmap(
+                kinectStreamer.ColorFrameDescription.Width,
+                kinectStreamer.ColorFrameDescription.Height,
+                96.0, 96.0, PixelFormats.Bgr32, null);
 
-            // get the depth (display) extents
-            FrameDescription frameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
-
-            // open the reader for the body frames
-            multiSourceFrameReader = this.kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Color);
-
-            multiSourceFrameReader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
-
-            colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
-
-            colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
-
-            // a bone defined as a line between two joints
-            bones = new List<Tuple<JointType, JointType>>();
+            bones = kinectStreamer.Bones;
 
             workspacePen = new Pen();
             workspacePen.Brush = Brushes.LightBlue;
             workspacePen.Thickness = 5;
-
-            // Torso
-            bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
-            bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.SpineMid));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineMid, JointType.SpineBase));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipLeft));
-
-            // Right Arm
-            bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderRight, JointType.ElbowRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.ElbowRight, JointType.WristRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
-
-            // Left Arm
-            bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.HandLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.HandLeft, JointType.HandTipLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.ThumbLeft));
-
-            // Right Leg
-            bones.Add(new Tuple<JointType, JointType>(JointType.HipRight, JointType.KneeRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.KneeRight, JointType.AnkleRight));
-            bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
-
-            // Left Leg
-            bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
-            bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
 
             // populate body colors, one for each BodyIndex
             bodyColors = new List<Pen>();
@@ -208,9 +143,6 @@ namespace KinectDemoSGL.UIElement
             bodyColors.Add(new Pen(Brushes.Blue, 6));
             bodyColors.Add(new Pen(Brushes.Indigo, 6));
             bodyColors.Add(new Pen(Brushes.Violet, 6));
-
-            // open the sensor
-            this.kinectSensor.Open();
 
             // Create the drawing group we'll use for drawing
             drawingGroup = new DrawingGroup();
@@ -245,167 +177,6 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        /// <summary>
-        /// Execute shutdown tasks
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
-        {
-            if (multiSourceFrameReader != null)
-            {
-                multiSourceFrameReader.Dispose();
-                multiSourceFrameReader = null;
-            }
-
-            if (kinectSensor != null)
-            {
-                kinectSensor.Close();
-                kinectSensor = null;
-            }
-        }
-
-        private void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
-        {
-
-            if (IsVisible)
-            {
-                BodyFrame bodyFrame = null;
-                ColorFrame colorFrame = null;
-
-                MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
-
-                // If the Frame has expired by the time we process this event, return.
-                if (multiSourceFrame == null)
-                {
-                    return;
-                }
-
-                try
-                {
-                    bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame();
-                    colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
-
-                    // If any frame has expired by the time we process this event, return.
-                    // The "finally" statement will Dispose any that are not null.
-                    if ((bodyFrame == null) || (colorFrame == null))
-                    {
-                        return;
-                    }
-
-                    using (colorFrame)
-                    {
-                        if (colorFrame != null)
-                        {
-                            FrameDescription colorFrameDescription = colorFrame.FrameDescription;
-                            displayHeight = colorFrameDescription.Height;
-                            displayWidth = colorFrameDescription.Width;
-
-                            using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
-                            {
-                                colorBitmap.Lock();
-
-                                // verify data and write the new color frame data to the display bitmap
-                                if ((colorFrameDescription.Width == colorBitmap.PixelWidth) && (colorFrameDescription.Height == colorBitmap.PixelHeight))
-                                {
-                                    colorFrame.CopyConvertedFrameDataToIntPtr(
-                                        colorBitmap.BackBuffer,
-                                        (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
-                                        ColorImageFormat.Bgra);
-
-                                    colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
-                                }
-                                colorBitmap.Unlock();
-                            }
-                        }
-                    }
-
-
-
-                    bool dataReceived = false;
-
-                    using (bodyFrame)
-                    {
-                        if (bodyFrame != null)
-                        {
-                            if (Bodies == null)
-                            {
-                                Bodies = new Body[bodyFrame.BodyCount];
-                            }
-
-                            // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
-                            // As long as those body objects are not disposed and not set to null in the array,
-                            // those body objects will be re-used.
-                            bodyFrame.GetAndRefreshBodyData(Bodies);
-                            dataReceived = true;
-                        }
-                        if (dataReceived)
-                        {
-                            using (DrawingContext dc = drawingGroup.Open())
-                            {
-                                dc.DrawImage(ColorImageSource, new Rect(0.0, 0.0, displayWidth, displayHeight));
-                                if (!workspacesDrawn)
-                                {
-                                    DrawWorksapces(dc);
-                                }
-                                // Draw a transparent background to set the render size
-                                //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-
-
-                                int penIndex = 0;
-                                foreach (Body body in Bodies)
-                                {
-                                    Pen drawPen = bodyColors[penIndex++];
-
-                                    if (body.IsTracked)
-                                    {
-                                        IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-                                        // convert the joint points to depth (display) space
-                                        Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
-                                        foreach (JointType jointType in joints.Keys)
-                                        {
-                                            // sometimes the depth(Z) of an inferred joint may show as negative
-                                            // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-                                            CameraSpacePoint position = joints[jointType].Position;
-                                            if (position.Z < 0)
-                                            {
-                                                position.Z = InferredZPositionClamp;
-                                            }
-                                            ColorSpacePoint colorSpacePoint = coordinateMapper.MapCameraPointToColorSpace(position);
-                                            jointPoints[jointType] = new Point(colorSpacePoint.X, colorSpacePoint.Y);
-                                        }
-
-                                        CheckActiveWorkspace(body, dc);
-
-                                        DrawBody(joints, jointPoints, dc, drawPen);
-
-                                        DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
-                                        DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
-                                    }
-                                }
-                                // prevent drawing outside of our render area
-                                drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, displayWidth, displayHeight));
-                            }
-                        }
-                    }
-                }
-                finally
-                {
-                    if (bodyFrame != null)
-                    {
-                        bodyFrame.Dispose();
-                    }
-                    if (colorFrame != null)
-                    {
-                        colorFrame.Dispose();
-                    }
-                }
-            }
-        }
-
-
         private void CheckActiveWorkspace(Body body, DrawingContext dc)
         {
 
@@ -431,13 +202,13 @@ namespace KinectDemoSGL.UIElement
 
                 CameraSpacePoint handPos = body.Joints[JointType.HandRight].Position;
 
-                Vector<double> handVector = new DenseVector( new double[] {
+                Vector<double> handVector = new DenseVector(new double[] {
                     handPos.X,
                     handPos.Y,
                     handPos.Z
                 });
 
-                if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPos),workspace.PlaneVector) ))
+                if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPos), workspace.PlaneVector)))
                 {
                     double distance = GeometryHelper.CalculatePointPlaneDistance(GeometryHelper.CameraSpacePointToPoint3D(handPos), workspace.PlaneVector);
 
@@ -554,7 +325,7 @@ namespace KinectDemoSGL.UIElement
         private void DrawWorksapces(DrawingContext dc)
         {
             Pen pen = workspacePen;
-            CoordinateMapper coordinateMapper = kinectSensor.CoordinateMapper;
+            CoordinateMapper coordinateMapper = kinectStreamer.CoordinateMapper;
 
             foreach (Workspace workspace in WorkspaceList)
             {
@@ -573,7 +344,7 @@ namespace KinectDemoSGL.UIElement
                         new Point(colorPoints[(i + 1) % colorPoints.Length].X, colorPoints[(i + 1) % colorPoints.Length].Y));
                 }
             }
-            //this.workspacesDrawn = true;
+            workspacesDrawn = true;
         }
 
         private CameraSpacePoint Point3DtoCameraSpacePoint(Point3D point3D)
@@ -584,6 +355,93 @@ namespace KinectDemoSGL.UIElement
                 Y = (float)point3D.Y,
                 Z = (float)point3D.Z
             };
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void BodyView_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == true)
+            {
+                kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+
+                kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
+            }
+            else
+            {
+                kinectStreamer.DepthDataReady -= kinectStreamer_ColorDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+
+                kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+            }
+        }
+
+        void kinectStreamer_BodyDataReady(object sender, KinectStreamerEventArgs e)
+        {
+            Bodies = kinectStreamer.Bodies;
+            using (DrawingContext dc = drawingGroup.Open())
+            {
+                dc.DrawImage(ColorImageSource, new Rect(0.0, 0.0, displayWidth, displayHeight));
+                if (!workspacesDrawn)
+                {
+                    DrawWorksapces(dc);
+                }
+                // Draw a transparent background to set the render size
+                //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+
+
+                int penIndex = 0;
+                foreach (Body body in Bodies)
+                {
+                    Pen drawPen = bodyColors[penIndex++];
+
+                    if (body.IsTracked)
+                    {
+                        IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
+                        // convert the joint points to depth (display) space
+                        Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+
+                        foreach (JointType jointType in joints.Keys)
+                        {
+                            // sometimes the depth(Z) of an inferred joint may show as negative
+                            // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
+                            CameraSpacePoint position = joints[jointType].Position;
+                            if (position.Z < 0)
+                            {
+                                position.Z = InferredZPositionClamp;
+                            }
+                            ColorSpacePoint colorSpacePoint = kinectStreamer.CoordinateMapper.MapCameraPointToColorSpace(position);
+                            jointPoints[jointType] = new Point(colorSpacePoint.X, colorSpacePoint.Y);
+                        }
+
+                        CheckActiveWorkspace(body, dc);
+
+                        DrawBody(joints, jointPoints, dc, drawPen);
+
+                        DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
+                        DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
+                    }
+                }
+                // prevent drawing outside of our render area
+                drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, displayWidth, displayHeight));
+            }
+        }
+
+        void kinectStreamer_ColorDataReady(object sender, KinectStreamerEventArgs e)
+        {
+            colorBitmap = e.ColorBitmap;
+            OnPropertyChanged("ImageSource");
         }
     }
 }

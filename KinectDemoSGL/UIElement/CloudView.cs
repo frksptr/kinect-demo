@@ -24,7 +24,7 @@ namespace KinectDemoSGL.UIElement
 
         private Workspace ActiveWorkspace { get; set; }
 
-        private KinectStreamer kinectStreamer;
+        private readonly KinectStreamer kinectStreamer;
 
         public CloudView()
         {

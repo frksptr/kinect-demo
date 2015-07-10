@@ -7,7 +7,7 @@ namespace KinectDemoSGL
     {
         public WriteableBitmap DepthBitmap { get; set; }
 
-        public FrameDescription DetpthFrameDescription { get; set; }
+        public WriteableBitmap ColorBitmap { get; set; }
 
     }
 }

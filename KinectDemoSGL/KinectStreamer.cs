@@ -32,20 +32,19 @@ namespace KinectDemoSGL
         public FrameDescription DepthFrameDescription { get; set; }
 
         ColorFrame colorFrame;
-
-        FrameDescription colorFrameDescription;
+        public FrameDescription ColorFrameDescription { get; set; }
 
         BodyFrame bodyFrame;
 
-        FrameDescription bodyFrameDescription;
+        public FrameDescription BodyFrameDescription { get; set; }
 
         MultiSourceFrame multiSourceFrame;
 
         MultiSourceFrameReader multiSourceFrameReader;
 
-        Body[] bodies;
+        public Body[] Bodies { get; set; }
 
-        List<Tuple<JointType, JointType>> bones;
+        public List<Tuple<JointType, JointType>> Bones {get; set; }
 
         readonly WriteableBitmap colorBitmap;
 
@@ -79,15 +78,15 @@ namespace KinectDemoSGL
 
             multiSourceFrameReader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
 
-            colorFrameDescription = kinectSensor.ColorFrameSource.FrameDescription;
+            ColorFrameDescription = kinectSensor.ColorFrameSource.FrameDescription;
 
             DepthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
 
             depthBitmap = new WriteableBitmap(DepthFrameDescription.Width, DepthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
 
-            colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+            colorBitmap = new WriteableBitmap(ColorFrameDescription.Width, ColorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
-            colorPixels = new byte[colorFrameDescription.Width * colorFrameDescription.Height];
+            colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height];
 
             depthPixels = new byte[DepthFrameDescription.Width * DepthFrameDescription.Height];
 
@@ -100,7 +99,7 @@ namespace KinectDemoSGL
 
         private void SetupBody()
         {
-            bones = new List<Tuple<JointType, JointType>>
+            Bones = new List<Tuple<JointType, JointType>>
             {
                 // Torso
                 new Tuple<JointType, JointType>(JointType.Head, JointType.Neck),
@@ -229,19 +228,19 @@ namespace KinectDemoSGL
             {
                 if (colorFrame != null)
                 {
-                    colorFrameDescription = colorFrame.FrameDescription;
+                    ColorFrameDescription = colorFrame.FrameDescription;
 
                     using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
                     {
                         colorBitmap.Lock();
 
                         // verify data and write the new color frame data to the display bitmap
-                        if ((colorFrameDescription.Width == colorBitmap.PixelWidth) &&
-                            (colorFrameDescription.Height == colorBitmap.PixelHeight))
+                        if ((ColorFrameDescription.Width == colorBitmap.PixelWidth) &&
+                            (ColorFrameDescription.Height == colorBitmap.PixelHeight))
                         {
                             colorFrame.CopyConvertedFrameDataToIntPtr(
                                 colorBitmap.BackBuffer,
-                                (uint) (colorFrameDescription.Width*colorFrameDescription.Height*4),
+                                (uint) (ColorFrameDescription.Width*ColorFrameDescription.Height*4),
                                 ColorImageFormat.Bgra);
 
                             colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
@@ -251,7 +250,10 @@ namespace KinectDemoSGL
                     }
                 }
             }
-            if (ColorDataReady != null) ColorDataReady(this, null);
+            if (ColorDataReady != null) ColorDataReady(this, new KinectStreamerEventArgs()
+            {
+                ColorBitmap = colorBitmap
+            });
         }
 
         private void ProcessDepthData()
@@ -304,14 +306,14 @@ namespace KinectDemoSGL
             {
                 if (bodyFrame != null)
                 {
-                    if (bodies == null)
+                    if (Bodies == null)
                     {
-                        bodies = new Body[bodyFrame.BodyCount];
+                        Bodies = new Body[bodyFrame.BodyCount];
                     }
                     // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
                     // As long as those body objects are not disposed and not set to null in the array,
                     // those body objects will be re-used.
-                    bodyFrame.GetAndRefreshBodyData(bodies);
+                    bodyFrame.GetAndRefreshBodyData(Bodies);
                 }
             }
             if (BodyDataReady != null) BodyDataReady(this, null);
