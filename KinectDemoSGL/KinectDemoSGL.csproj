@@ -95,6 +95,7 @@
     <Compile Include="KinectStreamer.cs" />
     <Compile Include="KinectStreamerConfig.cs" />
     <Compile Include="KinectStreamerEventArgs.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />
     <Compile Include="UIElement\Model\Workspace.cs" />

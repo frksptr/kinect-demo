@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 
@@ -44,13 +45,13 @@ namespace KinectDemoSGL
 
         List<Tuple<JointType, JointType>> bones;
 
-        WriteableBitmap colorBitmap = null;
+        WriteableBitmap colorBitmap;
 
-        WriteableBitmap depthBitmap = null;
+        WriteableBitmap depthBitmap;
 
-        byte[] colorPixels = null;
+        byte[] colorPixels;
 
-        byte[] depthPixels = null;
+        byte[] depthPixels;
 
         const int MapDepthToByte = 8000 / 256;
 
@@ -73,6 +74,14 @@ namespace KinectDemoSGL
             colorFrameDescription = kinectSensor.ColorFrameSource.FrameDescription;
 
             DepthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
+
+            depthBitmap = new WriteableBitmap(DepthFrameDescription.Width, DepthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
+
+            colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+            colorPixels = new byte[colorFrameDescription.Width * colorFrameDescription.Height];
+
+            depthPixels = new byte[DepthFrameDescription.Width * DepthFrameDescription.Height];
 
             SetupBody();
 
@@ -227,14 +236,16 @@ namespace KinectDemoSGL
                     {
                         RenderDepthPixels();
                     }
-                    DepthDataReady(this, new KinectStreamerEventArgs
-                    {
-                        DepthBitmap = depthBitmap
-                    });
+                    if (DepthDataReady != null)
+                        DepthDataReady(this, new KinectStreamerEventArgs
+                        {
+                            DepthBitmap = depthBitmap
+                        });
                 }
 
                 // Process body data if needed
 
+                
                 if (KinectStreamerConfig.ProvideBodyData)
                 {
                     using (bodyFrame)
@@ -252,8 +263,8 @@ namespace KinectDemoSGL
                             bodyFrame.GetAndRefreshBodyData(bodies);
                         }
                     }
+                    if (BodyDataReady != null) BodyDataReady(this, null);
                 }
-                BodyDataReady(this, null);
             }
             finally
             {

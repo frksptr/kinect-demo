@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Kinect;
 
 namespace KinectDemoSGL.Util
@@ -66,11 +67,11 @@ namespace KinectDemoSGL.Util
 
             Matrix<double> pointMatrix = Matrix<double>.Build.DenseOfArray(pointArrays);
 
-            var svdDecomp = pointMatrix.Svd(true);
+            Svd<double> svdDecomp = pointMatrix.Svd(true);
 
-            var vt = svdDecomp.VT;
+            Matrix<double> vt = svdDecomp.VT;
 
-            var solution = vt.Row(vt.RowCount - 1);
+            Vector<double> solution = vt.Row(vt.RowCount - 1);
 
             return solution;
 
@@ -124,13 +125,9 @@ namespace KinectDemoSGL.Util
             double c = planeVector[2];
             double d = planeVector[3];
 
-            Vector<double> planeNormal = new DenseVector(new[] { a, b, c });
-
             double x = point.X;
             double y = point.Y;
             double z = point.Z;
-
-            Vector<double> pointVector = new DenseVector(new[] { x, y, z });
 
             double distance = (a * x + b * y + c * z + d) / Math.Sqrt(a * a + b * b + c * c);
             return distance;
