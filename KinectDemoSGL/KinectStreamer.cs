@@ -1,20 +1,19 @@
-﻿using Microsoft.Kinect;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Microsoft.Kinect;
 
 namespace KinectDemoSGL
 {
-    public delegate void KinectStreamerEventHandler(object sender, EventArgs e);
+    public delegate void KinectStreamerEventHandler(object sender, KinectStreamerEventArgs e);
+
 
     /* Provides depth, color and body data streamed by the Kinect. Each of the streams only get processed
      * if the corresponding flag in the kinectStremerConfig object is true. When the needed stream datas are
      * ready an event is fired.
      */
+    // Singleton
     class KinectStreamer
     {
         public event KinectStreamerEventHandler BodyDataReady;
@@ -27,7 +26,7 @@ namespace KinectDemoSGL
 
         DepthFrame depthFrame;
 
-        FrameDescription depthFrameDescription;
+        public FrameDescription DepthFrameDescription { get; set; }
 
         ColorFrame colorFrame;
 
@@ -41,7 +40,7 @@ namespace KinectDemoSGL
 
         MultiSourceFrameReader multiSourceFrameReader;
 
-        Body[] bodies = null;
+        Body[] bodies;
 
         List<Tuple<JointType, JointType>> bones;
 
@@ -55,62 +54,68 @@ namespace KinectDemoSGL
 
         const int MapDepthToByte = 8000 / 256;
 
-        public KinectStreamer(KinectStreamerConfig config)
+        private static KinectStreamer kinectStreamer;
+        public static KinectStreamer Instance
         {
-            this.KinectStreamerConfig = config;
-
-            this.kinectSensor = KinectSensor.GetDefault();
-
-            this.multiSourceFrameReader = this.kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Depth | FrameSourceTypes.Color | FrameSourceTypes.Body);
-
-            this.multiSourceFrameReader.MultiSourceFrameArrived += this.Reader_MultiSourceFrameArrived;
-
-            this.colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
-
-            this.depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
-
-            setupBody();
-
-            this.kinectSensor.Open();
+            get { return kinectStreamer ?? (kinectStreamer = new KinectStreamer()); }
         }
 
-        private void setupBody()
+        private KinectStreamer()
         {
-            this.bones = new List<Tuple<JointType, JointType>>();
+            KinectStreamerConfig = new KinectStreamerConfig();
+
+            kinectSensor = KinectSensor.GetDefault();
+
+            multiSourceFrameReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Depth | FrameSourceTypes.Color | FrameSourceTypes.Body);
+
+            multiSourceFrameReader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
+
+            colorFrameDescription = kinectSensor.ColorFrameSource.FrameDescription;
+
+            DepthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
+
+            SetupBody();
+
+            kinectSensor.Open();
+        }
+
+        private void SetupBody()
+        {
+            bones = new List<Tuple<JointType, JointType>>();
 
             // Torso
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.SpineMid));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineMid, JointType.SpineBase));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.Head, JointType.Neck));
+            bones.Add(new Tuple<JointType, JointType>(JointType.Neck, JointType.SpineShoulder));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.SpineMid));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineMid, JointType.SpineBase));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineShoulder, JointType.ShoulderLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.SpineBase, JointType.HipLeft));
 
             // Right Arm
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderRight, JointType.ElbowRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowRight, JointType.WristRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderRight, JointType.ElbowRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.ElbowRight, JointType.WristRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
 
             // Left Arm
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.HandLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HandLeft, JointType.HandTipLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.ThumbLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.HandLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.HandLeft, JointType.HandTipLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.WristLeft, JointType.ThumbLeft));
 
             // Right Leg
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HipRight, JointType.KneeRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeRight, JointType.AnkleRight));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.HipRight, JointType.KneeRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.KneeRight, JointType.AnkleRight));
+            bones.Add(new Tuple<JointType, JointType>(JointType.AnkleRight, JointType.FootRight));
 
             // Left Leg
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
-            this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
+            bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
         }
 
 
@@ -151,8 +156,8 @@ namespace KinectDemoSGL
                     return;
                 }
 
-                depthWidth = depthFrameDescription.Width;
-                depthHeight = depthFrameDescription.Height;
+                depthWidth = DepthFrameDescription.Width;
+                depthHeight = DepthFrameDescription.Height;
 
                 // Process color stream if needed
 
@@ -166,20 +171,20 @@ namespace KinectDemoSGL
 
                             using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
                             {
-                                this.colorBitmap.Lock();
+                                colorBitmap.Lock();
 
                                 // verify data and write the new color frame data to the display bitmap
-                                if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight))
+                                if ((colorFrameDescription.Width == colorBitmap.PixelWidth) && (colorFrameDescription.Height == colorBitmap.PixelHeight))
                                 {
                                     colorFrame.CopyConvertedFrameDataToIntPtr(
-                                        this.colorBitmap.BackBuffer,
+                                        colorBitmap.BackBuffer,
                                         (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
                                         ColorImageFormat.Bgra);
 
-                                    this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+                                    colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
                                 }
 
-                                this.colorBitmap.Unlock();
+                                colorBitmap.Unlock();
                             }
                         }
                     }
@@ -198,11 +203,11 @@ namespace KinectDemoSGL
                         {
                             // the fastest way to process the body index data is to directly access 
                             // the underlying buffer
-                            using (Microsoft.Kinect.KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
+                            using (KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
                             {
                                 // verify data and write the color data to the display bitmap
-                                if (((this.depthFrameDescription.Width * this.depthFrameDescription.Height) == (depthBuffer.Size / this.depthFrameDescription.BytesPerPixel)) &&
-                                    (this.depthFrameDescription.Width == this.depthBitmap.PixelWidth) && (this.depthFrameDescription.Height == this.depthBitmap.PixelHeight))
+                                if (((DepthFrameDescription.Width * DepthFrameDescription.Height) == (depthBuffer.Size / DepthFrameDescription.BytesPerPixel)) &&
+                                    (DepthFrameDescription.Width == depthBitmap.PixelWidth) && (DepthFrameDescription.Height == depthBitmap.PixelHeight))
                                 {
                                     // Note: In order to see the full range of depth (including the less reliable far field depth)
                                     // we are setting maxDepth to the extreme potential depth threshold
@@ -211,7 +216,7 @@ namespace KinectDemoSGL
                                     // If you wish to filter by reliable depth distance, uncomment the following line:
                                     //// maxDepth = depthFrame.DepthMaxReliableDistance
 
-                                    this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
+                                    ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
                                     depthFrameProcessed = true;
                                 }
                             }
@@ -220,9 +225,12 @@ namespace KinectDemoSGL
 
                     if (depthFrameProcessed)
                     {
-                        this.RenderDepthPixels();
+                        RenderDepthPixels();
                     }
-                    DepthDataReady(this, null);
+                    DepthDataReady(this, new KinectStreamerEventArgs
+                    {
+                        DepthBitmap = depthBitmap
+                    });
                 }
 
                 // Process body data if needed
@@ -234,14 +242,14 @@ namespace KinectDemoSGL
 
                         if (bodyFrame != null)
                         {
-                            if (this.bodies == null)
+                            if (bodies == null)
                             {
-                                this.bodies = new Body[bodyFrame.BodyCount];
+                                bodies = new Body[bodyFrame.BodyCount];
                             }
                             // The first time GetAndRefreshBodyData is called, Kinect will allocate each Body in the array.
                             // As long as those body objects are not disposed and not set to null in the array,
                             // those body objects will be re-used.
-                            bodyFrame.GetAndRefreshBodyData(this.bodies);
+                            bodyFrame.GetAndRefreshBodyData(bodies);
                         }
                     }
                 }
@@ -266,10 +274,10 @@ namespace KinectDemoSGL
 
         private void RenderDepthPixels()
         {
-            this.depthBitmap.WritePixels(
-                new Int32Rect(0, 0, this.depthBitmap.PixelWidth, this.depthBitmap.PixelHeight),
-                this.depthPixels,
-                this.depthBitmap.PixelWidth,
+            depthBitmap.WritePixels(
+                new Int32Rect(0, 0, depthBitmap.PixelWidth, depthBitmap.PixelHeight),
+                depthPixels,
+                depthBitmap.PixelWidth,
                 0);
         }
 
@@ -279,14 +287,14 @@ namespace KinectDemoSGL
             ushort* frameData = (ushort*)depthFrameData;
 
             // convert depth to a visual representation
-            for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
+            for (int i = 0; i < (int)(depthFrameDataSize / DepthFrameDescription.BytesPerPixel); ++i)
             {
                 // Get the depth for this pixel
                 ushort depth = frameData[i];
 
                 // To convert to a byte, we're mapping the depth value to the byte range.
                 // Values outside the reliable depth range are mapped to 0 (black).
-                this.depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
+                depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
             }
         }
 

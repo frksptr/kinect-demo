@@ -1,27 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using Microsoft.Kinect;
-using KinectDemo.UIElements;
-using System.ComponentModel;
-using MathNet.Numerics.LinearAlgebra;
-using KinectDemo.Util;
 using System.Windows.Media.Media3D;
-using MathNet.Numerics.LinearAlgebra.Double;
 using KinectDemoSGL.UIElement;
-namespace KinectDemo
+using KinectDemoSGL.UIElement.Model;
+using KinectDemoSGL.Util;
+using Microsoft.Kinect;
+
+namespace KinectDemoSGL
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -45,14 +34,15 @@ namespace KinectDemo
 
         private const int MARGIN = 5;
 
-        private string statusText = null;
+        private string statusText;
 
         private KinectSensor kinectSensor;
 
-        private Workspace activeWorkspace = new Workspace()
+        private Workspace activeWorkspace = new Workspace
         {
             Name = "asd",
-            Vertices = new ObservableCollection<Point>(){
+            Vertices = new ObservableCollection<Point>
+            {
                     new Point(0,0),
                     new Point(0,50),
                     new Point(50,50),
@@ -61,24 +51,23 @@ namespace KinectDemo
         };
 
 
-        private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>() { 
-        };
+        private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            addCameraWorkspace();
+            AddCameraWorkspace();
 
-            this.kinectSensor = KinectSensor.GetDefault();
+            kinectSensor = KinectSensor.GetDefault();
 
-            workspaceCloudView = new CloudView(this.kinectSensor);
+            workspaceCloudView = new CloudView(kinectSensor);
 
-            workspacePointCloudHolder.Children.Add(workspaceCloudView);
+            WorkspacePointCloudHolder.Children.Add(workspaceCloudView);
 
-            bodyView = new BodyView(this.kinectSensor);
+            bodyView = new BodyView(kinectSensor);
 
-            handCheck_BodyViewHolder.Children.Add(bodyView);
+            HandCheckBodyViewHolder.Children.Add(bodyView);
 
             roomPointCloudView = new RoomPointCloudView();
 
@@ -91,12 +80,12 @@ namespace KinectDemo
             EditWorkspace.DataContext = activeWorkspace;
         }
 
-        private void addCameraWorkspace()
+        private void AddCameraWorkspace()
         {
             cameraWorkspace = new CameraWorkspace(KinectSensor.GetDefault());
             cameraWorkspace.MouseLeftButtonDown += cameraWorkspace_MouseLeftButtonDown;
 
-            cameraHolder.Children.Add(cameraWorkspace);
+            CameraHolder.Children.Add(cameraWorkspace);
         }
 
 
@@ -108,14 +97,14 @@ namespace KinectDemo
                 if (focusedTextBox != null)
                 {
                     // Get Depth coordinates from clicked point
-                    double actualWidth = this.cameraWorkspace.ActualWidth;
-                    double actualHeight = this.cameraWorkspace.ActualHeight;
+                    double actualWidth = cameraWorkspace.ActualWidth;
+                    double actualHeight = cameraWorkspace.ActualHeight;
                     
-                    double x = e.GetPosition(this.cameraWorkspace).X;
-                    double y = e.GetPosition(this.cameraWorkspace).Y;
+                    double x = e.GetPosition(cameraWorkspace).X;
+                    double y = e.GetPosition(cameraWorkspace).Y;
 
-                    int depthWidth = cameraWorkspace.depthFrameSize[0];
-                    int depthHeight = cameraWorkspace.depthFrameSize[1];
+                    int depthWidth = cameraWorkspace.DepthFrameSize[0];
+                    int depthHeight = cameraWorkspace.DepthFrameSize[1];
 
                     focusedTextBox.Text = (int)((x / actualWidth) * depthWidth) + "," + (int)((y / actualHeight) * depthHeight);
                 }
@@ -129,19 +118,19 @@ namespace KinectDemo
         {
             get
             {
-                return this.statusText;
+                return statusText;
             }
 
             set
             {
-                if (this.statusText != value)
+                if (statusText != value)
                 {
-                    this.statusText = value;
+                    statusText = value;
 
                     // notify any bound elements that the text has changed
-                    if (this.PropertyChanged != null)
+                    if (PropertyChanged != null)
                     {
-                        this.PropertyChanged(this, new PropertyChangedEventArgs("StatusText"));
+                        PropertyChanged(this, new PropertyChangedEventArgs("StatusText"));
                     }
                 }
             }
@@ -149,22 +138,22 @@ namespace KinectDemo
 
         private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            bodyView.workspaceList = this.workspaceList;
+            bodyView.WorkspaceList = workspaceList;
         }
 
         private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             CameraSpacePoint[] csps = workspaceCloudView.AllCameraSpacePoints;
-            List<Point3D> pointCloud = GeometryHelper.cameraSpacePointsToPoint3Ds(csps);
+            List<Point3D> pointCloud = GeometryHelper.CameraSpacePointsToPoint3Ds(csps);
 
-            roomPointCloudView.Center = GeometryHelper.calculateCenterPoint(pointCloud);
+            roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
 
             roomPointCloudView.FullPointCloud = pointCloud;
 
-            roomPointCloudView.WorkspaceList = this.workspaceList;
+            roomPointCloudView.WorkspaceList = workspaceList;
         }
 
-        private void addWorkspace(object sender, RoutedEventArgs e)
+        private void AddWorkspace(object sender, RoutedEventArgs e)
         {
             if (!workspaceList.Contains(activeWorkspace))
             {
@@ -183,13 +172,13 @@ namespace KinectDemo
             }
             activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
             EditWorkspace.DataContext = activeWorkspace;
-            this.workspaceCloudView.setWorkspace(activeWorkspace);
+            workspaceCloudView.SetWorkspace(activeWorkspace);
         }
-        private void removeWorkspace(object sender, RoutedEventArgs e)
+        private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
             workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
             activeWorkspace = new Workspace();
-            this.workspaceCloudView.clearScreen();
+            workspaceCloudView.ClearScreen();
         }
     }
 }

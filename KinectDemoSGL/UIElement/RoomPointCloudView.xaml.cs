@@ -1,24 +1,13 @@
-﻿using KinectDemo;
-using KinectDemo.Util;
-using Microsoft.Kinect;
-using SharpGL;
-using SharpGL.SceneGraph;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using KinectDemoSGL.UIElement.Model;
+using KinectDemoSGL.Util;
+using SharpGL;
+using SharpGL.SceneGraph;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -60,12 +49,12 @@ namespace KinectDemoSGL.UIElement
                 phi
                 );
 
-            cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
+            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
             //  Enable the OpenGL depth testing functionality.
             //args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
         }
 
-        private List<Point3D> centerPointCloud(List<Point3D> points)
+        private List<Point3D> CenterPointCloud(List<Point3D> points)
         {
             List<Point3D> centeredPoints = new List<Point3D>();
             foreach (Point3D point in points)
@@ -82,20 +71,20 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
-            transform();
+            Transform();
         }
 
-        private void transform()
+        private void Transform()
         {
             // Get the OpenGL instance.
-            OpenGL gl = openGLControl.OpenGL;
+            OpenGL gl = OpenGlControl.OpenGL;
 
             // Load and clear the projection matrix.
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
 
             // Perform a perspective transformation
-            gl.Perspective(60.0f, (float)gl.RenderContextProvider.Width /
+            gl.Perspective(60.0f, gl.RenderContextProvider.Width /
                 (float)gl.RenderContextProvider.Height,
                 0.1f, 100.0f);
 
@@ -108,7 +97,7 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
         {
-            if (this.IsVisible)
+            if (IsVisible)
             {
                 if (FullPointCloud == null)
                 {
@@ -181,19 +170,19 @@ namespace KinectDemoSGL.UIElement
                 return;
             }
 
-            cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
+            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
             
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
-            transform();
+            Transform();
         }
 
         private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
-                openGLControl.OpenGL.Rotate(10.0f, 0.0f, 0.0f);
+                OpenGlControl.OpenGL.Rotate(10.0f, 0.0f, 0.0f);
                 cameraPosSphere.X += zoomFactor;
             }
             else
@@ -201,11 +190,11 @@ namespace KinectDemoSGL.UIElement
                 cameraPosSphere.X -= zoomFactor;
             }
 
-            cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
+            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
-            transform();
+            Transform();
         }
 
         private void openGLControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -213,9 +202,9 @@ namespace KinectDemoSGL.UIElement
             if ((bool)e.NewValue == false)
             {
             }
-            else if ((bool)e.NewValue == true)
+            else if ((bool)e.NewValue)
             {
-                this.openGLControl.Focus();
+                OpenGlControl.Focus();
             }
 
         }

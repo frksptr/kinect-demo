@@ -1,26 +1,19 @@
-﻿using KinectDemo.Util;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using System.Windows.Shapes;
+using KinectDemoSGL.UIElement.Model;
+using KinectDemoSGL.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace KinectDemo.UIElements
+namespace KinectDemoSGL.UIElement
 {
     /// <summary>
     /// Interaction logic for CloudView.xaml
@@ -29,42 +22,42 @@ namespace KinectDemo.UIElements
     {
         private KinectSensor kinectSensor;
 
-        private FrameDescription depthFrameDescription = null;
+        private FrameDescription depthFrameDescription;
 
         public CameraSpacePoint[] AllCameraSpacePoints { get; set; }
 
-        private ushort[] depthArray = null;
+        private ushort[] depthArray;
 
         private Workspace ActiveWorkspace { get; set; }
 
         public CloudView(KinectSensor kinectSensor)
         {
-            this.ActiveWorkspace = new Workspace();
+            ActiveWorkspace = new Workspace();
 
             this.kinectSensor = kinectSensor;
 
-            this.depthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
+            depthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
 
             DepthFrameReader depthFrameReader = this.kinectSensor.DepthFrameSource.OpenReader();
 
-            depthFrameReader.FrameArrived += this.Reader_FrameArrived;
+            depthFrameReader.FrameArrived += Reader_FrameArrived;
 
-            int depthFrameWidth = this.depthFrameDescription.Width;
+            int depthFrameWidth = depthFrameDescription.Width;
 
-            int depthFrameHeight = this.depthFrameDescription.Height;
+            int depthFrameHeight = depthFrameDescription.Height;
 
-            this.depthArray = new ushort[depthFrameWidth * depthFrameHeight];
+            depthArray = new ushort[depthFrameWidth * depthFrameHeight];
 
             InitializeComponent();
         }
 
-        public void refreshAllPointsView()
+        public void RefreshAllPointsView()
         {
-            this.AllCameraSpacePoints = generate3DPoints();
+            AllCameraSpacePoints = Generate3DPoints();
 
-            Workspace all = new Workspace()
+            Workspace all = new Workspace
             {
-                Vertices = new ObservableCollection<Point>()
+                Vertices = new ObservableCollection<Point>
                 {
                     new Point(0,0),
                     new Point(0,depthFrameDescription.Height),
@@ -73,57 +66,57 @@ namespace KinectDemo.UIElements
                 }
             };
             
-            setWorkspaceCloudAndCenter(all);
-            setCameraCenterAndShowCloud(this.AllPointsViewport, all);
+            SetWorkspaceCloudAndCenter(all);
+            SetCameraCenterAndShowCloud(AllPointsViewport, all);
         }
 
-        public void setWorkspace(Workspace workspaceSource)
+        public void SetWorkspace(Workspace workspaceSource)
         {
 
             ActiveWorkspace = workspaceSource;
 
             if (ActiveWorkspace.PointCloud == null)
             {
-                setWorkspaceCloudAndCenter(ActiveWorkspace);
+                SetWorkspaceCloudAndCenter(ActiveWorkspace);
             }
 
-            setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
+            SetCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-            setRealVertices(ActiveWorkspace);
+            SetRealVertices(ActiveWorkspace);
 
-            drawFittedPlane();
+            DrawFittedPlane();
         }
 
-        public void setRealVertices(Workspace workspace)
+        public void SetRealVertices(Workspace workspace)
         {
-            Vector<double> fittedPlaneVector = GeometryHelper.fitPlaneToPoints(workspace.PointCloud.ToArray());
+            Vector<double> fittedPlaneVector = GeometryHelper.FitPlaneToPoints(workspace.PointCloud.ToArray());
 
             if (fittedPlaneVector == null)
             {
                 return;
             }
 
-            Point3D projectedPoint = GeometryHelper.projectPoint3DToPlane(workspace.PointCloud.First(), fittedPlaneVector);
+            Point3D projectedPoint = GeometryHelper.ProjectPoint3DToPlane(workspace.PointCloud.First(), fittedPlaneVector);
 
-            Vector<double> planeNormal = new DenseVector(new double[] { fittedPlaneVector[0], fittedPlaneVector[1], fittedPlaneVector[2] });
+            Vector<double> planeNormal = new DenseVector(new[] { fittedPlaneVector[0], fittedPlaneVector[1], fittedPlaneVector[2] });
 
-            CameraSpacePoint[] csps = new CameraSpacePoint[] { new CameraSpacePoint() };
+            CameraSpacePoint[] csps = { new CameraSpacePoint() };
 
             Point[] vertices = workspace.Vertices.ToArray();
             for (int i = 0; i < vertices.Length; i++)
             {
                 Point vertex = vertices[i];
 
-                this.kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(
-                    new DepthSpacePoint[] {
+                kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(
+                    new[] {
                         new DepthSpacePoint {
                             X = (float)vertex.X,
                             Y = (float)vertex.Y
-                        },
+                        }
                     },
                     new ushort[] { 1 }, csps);
 
-                Vector<double> pointOnPlane = new DenseVector(new double[] { projectedPoint.X, projectedPoint.Y, projectedPoint.Z });
+                Vector<double> pointOnPlane = new DenseVector(new[] { projectedPoint.X, projectedPoint.Y, projectedPoint.Z });
                 Vector<double> pointOnLine = new DenseVector(new double[] { csps[0].X, csps[0].Y, csps[0].Z });
 
                 double d = (pointOnPlane.Subtract(pointOnLine)).DotProduct(planeNormal) / (pointOnLine.DotProduct(planeNormal));
@@ -133,19 +126,19 @@ namespace KinectDemo.UIElements
                 workspace.FittedVertices[i] = new Point3D(intersection[0], intersection[1], intersection[2]);
             }
 
-            workspace.planeVector = fittedPlaneVector;
+            workspace.PlaneVector = fittedPlaneVector;
         }
 
-        public void updatePointCloudAndCenter()
+        public void UpdatePointCloudAndCenter()
         {
-            setWorkspaceCloudAndCenter(ActiveWorkspace);
-            setCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
+            SetWorkspaceCloudAndCenter(ActiveWorkspace);
+            SetCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
         }
 
-        private CameraSpacePoint[] generate3DPoints()
+        private CameraSpacePoint[] Generate3DPoints()
         {
-            int width = this.depthFrameDescription.Width;
-            int height = this.depthFrameDescription.Height;
+            int width = depthFrameDescription.Width;
+            int height = depthFrameDescription.Height;
             int frameSize = width * height;
             AllCameraSpacePoints = new CameraSpacePoint[frameSize];
             DepthSpacePoint[] allDepthSpacePoints = new DepthSpacePoint[frameSize];
@@ -157,25 +150,25 @@ namespace KinectDemo.UIElements
                 for (int j = 0; j < width; ++j)
                 {
                     int index = i * width + j;
-                    allDepthSpacePoints[index] = new DepthSpacePoint() { X = j, Y = i };
+                    allDepthSpacePoints[index] = new DepthSpacePoint { X = j, Y = i };
                     AllCameraSpacePoints[index] = new CameraSpacePoint();
-                    depths[index] = this.depthArray[index];
+                    depths[index] = depthArray[index];
                 }
             }
 
-            this.kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, AllCameraSpacePoints);
+            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, AllCameraSpacePoints);
 
             return AllCameraSpacePoints;
         }
 
-        public void clearScreen()
+        public void ClearScreen()
         {
-            this.MainViewPort.Children.Clear();
+            MainViewPort.Children.Clear();
         }
 
-        private void setCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
+        private void SetCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
         {
-            clearScreen();
+            ClearScreen();
             
             foreach (Point3D point in workspace.PointCloud)
             {
@@ -184,19 +177,19 @@ namespace KinectDemo.UIElements
 
             Point3D center = workspace.Center;
 
-            this.xRotation.CenterX = center.X;
-            this.xRotation.CenterY = center.Y;
-            this.xRotation.CenterZ = center.Z;
+            XRotation.CenterX = center.X;
+            XRotation.CenterY = center.Y;
+            XRotation.CenterZ = center.Z;
 
-            this.yRotation.CenterX = center.X;
-            this.yRotation.CenterY = center.Y;
-            this.yRotation.CenterZ = center.Z;
+            YRotation.CenterX = center.X;
+            YRotation.CenterY = center.Y;
+            YRotation.CenterZ = center.Z;
 
-            this.scale.CenterX = center.X;
-            this.scale.CenterY = center.Y;
-            this.scale.CenterZ = center.Z;
+            Scale.CenterX = center.X;
+            Scale.CenterY = center.Y;
+            Scale.CenterZ = center.Z;
 
-            this.Camera.Position = new Point3D(center.X, center.Y, -3);
+            Camera.Position = new Point3D(center.X, center.Y, -3);
         }
 
         private void drawTriangle(Viewport3D viewport, Point3D point, Color color)
@@ -223,9 +216,9 @@ namespace KinectDemo.UIElements
             viewport.Children.Add(model);
         }
 
-        private void setWorkspaceCloudAndCenter(Workspace workspace)
+        private void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-            this.AllCameraSpacePoints = generate3DPoints();
+            AllCameraSpacePoints = Generate3DPoints();
 
             Polygon polygon = new Polygon();
             PointCollection pointCollection = new PointCollection();
@@ -235,8 +228,8 @@ namespace KinectDemo.UIElements
             }
 
             polygon.Points = pointCollection;
-            polygon.Stroke = System.Windows.Media.Brushes.Black;
-            polygon.Fill = System.Windows.Media.Brushes.LightSeaGreen;
+            polygon.Stroke = Brushes.Black;
+            polygon.Fill = Brushes.LightSeaGreen;
             polygon.StrokeThickness = 2;
 
             int height = (int)polygon.ActualHeight;
@@ -251,13 +244,13 @@ namespace KinectDemo.UIElements
             List<DepthSpacePoint> dspList = new List<DepthSpacePoint>();
             foreach (CameraSpacePoint csp in AllCameraSpacePoints)
             {
-                if (GeometryHelper.isValidCameraPoint(csp))
+                if (GeometryHelper.IsValidCameraPoint(csp))
                 {
 
-                    DepthSpacePoint dsp = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(csp);
+                    DepthSpacePoint dsp = kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(csp);
                     dspList.Add(dsp);
 
-                    if (GeometryHelper.insidePolygon(polygon, new Point(dsp.X, dsp.Y)))
+                    if (GeometryHelper.InsidePolygon(polygon, new Point(dsp.X, dsp.Y)))
                     {
                         double x = csp.X;
                         double y = csp.Y;
@@ -277,10 +270,10 @@ namespace KinectDemo.UIElements
 
             workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);
 
-            workspace.PointCloud = new System.Collections.ObjectModel.ObservableCollection<Point3D>(cameraSpacePoints);
+            workspace.PointCloud = new ObservableCollection<Point3D>(cameraSpacePoints);
         }
 
-        private void drawFittedPlane()
+        private void DrawFittedPlane()
         {
 
             Model3DGroup tetragon = new Model3DGroup();
@@ -295,7 +288,7 @@ namespace KinectDemo.UIElements
 
             ModelVisual3D model = new ModelVisual3D();
             model.Content = tetragon;
-            this.MainViewPort.Children.Add(model);
+            MainViewPort.Children.Add(model);
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
@@ -304,7 +297,7 @@ namespace KinectDemo.UIElements
             ushort* frameData = (ushort*)depthFrameData;
 
             // convert depth to a visual representation
-            for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
+            for (int i = 0; i < (int)(depthFrameDataSize / depthFrameDescription.BytesPerPixel); ++i)
             {
                 // Get the depth for this pixel
                 ushort depth = frameData[i];
@@ -324,7 +317,7 @@ namespace KinectDemo.UIElements
 
                     // the fastest way to process the body index data is to directly access 
                     // the underlying buffer
-                    using (Microsoft.Kinect.KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
+                    using (KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
                     {
                         // Note: In order to see the full range of depth (including the less reliable far field depth)
                         // we are setting maxDepth to the extreme potential depth threshold
@@ -333,7 +326,7 @@ namespace KinectDemo.UIElements
                         // If you wish to filter by reliable depth distance, uncomment the following line:
                         //// maxDepth = depthFrame.DepthMaxReliableDistance
 
-                        this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
+                        ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
                     }
                 }
             }

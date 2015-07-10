@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using MathNet.Numerics.LinearAlgebra;
-namespace KinectDemo
+
+namespace KinectDemoSGL.UIElement.Model
 {
     public class Workspace : INotifyPropertyChanged
     {
@@ -24,7 +19,7 @@ namespace KinectDemo
         // Vertices adjusted to the fitted plane
         public ObservableCollection<Point3D> FittedVertices { get; set; }
 
-        public Vector<double> planeVector { get; set; }
+        public Vector<double> PlaneVector { get; set; }
 
         public Point3D Center { get; set; }
 
@@ -34,12 +29,12 @@ namespace KinectDemo
         {
             get
             {
-                return this.name;
+                return name;
             }
             set
             {
-                this.name = value;
-                this.OnPropertyChanged("Name");
+                name = value;
+                OnPropertyChanged("Name");
             }
         }
 
@@ -47,12 +42,12 @@ namespace KinectDemo
         {
             get
             {
-                return this.vertices;
+                return vertices;
             }
             set
             {
-                this.vertices = value;
-                this.OnPropertyChanged("Vertices");
+                vertices = value;
+                OnPropertyChanged("Vertices");
             }
         }
 
@@ -60,20 +55,20 @@ namespace KinectDemo
         {
             get
             {
-                return this.pointCloud;
+                return pointCloud;
             }
             set
             {
-                this.pointCloud = value;
-                this.OnPropertyChanged("PointCloud");
+                pointCloud = value;
+                OnPropertyChanged("PointCloud");
             }
         }
 
         public Workspace()
         {
             vertices = new ObservableCollection<Point> { new Point(), new Point(), new Point(), new Point() };
-            Vertices3D = new Point3D[] { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
-            FittedVertices = new ObservableCollection<Point3D>() { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
+            Vertices3D = new[] { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
+            FittedVertices = new ObservableCollection<Point3D> { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
         }
 
         public Workspace(string name, ObservableCollection<Point> points)
@@ -86,9 +81,9 @@ namespace KinectDemo
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
