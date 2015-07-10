@@ -31,7 +31,7 @@ namespace KinectDemo
         private FrameDescription colorFrameDescription = null;
 
         private FrameDescription depthFrameDescription = null;
-        
+
         private WriteableBitmap colorBitmap = null;
 
         private WriteableBitmap depthBitmap = null;
@@ -41,7 +41,7 @@ namespace KinectDemo
         private byte[] depthPixels = null;
 
         public int[] depthFrameSize;
-        
+
         public CameraWorkspace(KinectSensor kinectSensor)
         {
             this.kinectSensor = kinectSensor;
@@ -130,7 +130,7 @@ namespace KinectDemo
                 depthWidth = depthFrameDescription.Width;
                 depthHeight = depthFrameDescription.Height;
 
-                
+
 
                 //using (colorFrame)
                 //{
@@ -159,7 +159,7 @@ namespace KinectDemo
                 //}
 
                 bool depthFrameProcessed = false;
-                
+
                 using (depthFrame)
                 {
                     if (depthFrame != null)

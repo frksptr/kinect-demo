@@ -326,6 +326,7 @@ namespace KinectDemo.UIElements
                     }
 
 
+
                     bool dataReceived = false;
 
                     using (bodyFrame)

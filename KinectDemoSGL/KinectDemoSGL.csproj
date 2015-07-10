@@ -92,6 +92,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="KinectStreamer.cs" />
+    <Compile Include="KinectStreamerConfig.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />
     <Compile Include="UIElement\Model\Workspace.cs" />

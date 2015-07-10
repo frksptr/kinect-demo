@@ -151,7 +151,7 @@ namespace KinectDemoSGL.UIElement
                     gl.Vertex(v2.X, v2.Y, v2.Z);
                     gl.Vertex(v3.X, v3.Y, v3.Z);
                     gl.Vertex(v0.X, v0.Y, v0.Z);
-
+                    
                 }
                 gl.End();
             }
@@ -182,6 +182,7 @@ namespace KinectDemoSGL.UIElement
             }
 
             cameraPos = GeometryHelper.sphericalToCartesian(cameraPosSphere);
+            
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
