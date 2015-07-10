@@ -24,7 +24,7 @@ namespace KinectDemoSGL
         private CameraWorkspace cameraWorkspace;
 
         // Displays point clouds
-        private CloudView workspaceCloudView;
+        private CloudView cloudView;
 
         // Displays skeleton model and indicates active workspace
         private BodyView bodyView;
@@ -61,9 +61,9 @@ namespace KinectDemoSGL
 
             kinectSensor = KinectSensor.GetDefault();
 
-            workspaceCloudView = new CloudView(kinectSensor);
+            cloudView = new CloudView();
 
-            WorkspacePointCloudHolder.Children.Add(workspaceCloudView);
+            WorkspacePointCloudHolder.Children.Add(cloudView);
 
             bodyView = new BodyView(kinectSensor);
 
@@ -73,7 +73,7 @@ namespace KinectDemoSGL
 
             RoomPointCloudHolder.Children.Add(roomPointCloudView);
 
-            roomPointCloudView.DataContext = workspaceCloudView.AllCameraSpacePoints;
+            roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
 
             WorkspaceList.ItemsSource = workspaceList;
 
@@ -82,7 +82,7 @@ namespace KinectDemoSGL
 
         private void AddCameraWorkspace()
         {
-            cameraWorkspace = new CameraWorkspace(KinectSensor.GetDefault());
+            cameraWorkspace = new CameraWorkspace();
             cameraWorkspace.MouseLeftButtonDown += cameraWorkspace_MouseLeftButtonDown;
 
             CameraHolder.Children.Add(cameraWorkspace);
@@ -143,7 +143,7 @@ namespace KinectDemoSGL
 
         private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            CameraSpacePoint[] csps = workspaceCloudView.AllCameraSpacePoints;
+            CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
             List<Point3D> pointCloud = GeometryHelper.CameraSpacePointsToPoint3Ds(csps);
 
             roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
@@ -172,13 +172,13 @@ namespace KinectDemoSGL
             }
             activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
             EditWorkspace.DataContext = activeWorkspace;
-            workspaceCloudView.SetWorkspace(activeWorkspace);
+            cloudView.SetWorkspace(activeWorkspace);
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
             workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
             activeWorkspace = new Workspace();
-            workspaceCloudView.ClearScreen();
+            cloudView.ClearScreen();
         }
     }
 }

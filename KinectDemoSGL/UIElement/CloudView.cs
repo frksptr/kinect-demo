@@ -20,54 +20,20 @@ namespace KinectDemoSGL.UIElement
     /// </summary>
     public partial class CloudView : UserControl
     {
-        private KinectSensor kinectSensor;
-
-        private FrameDescription depthFrameDescription;
-
         public CameraSpacePoint[] AllCameraSpacePoints { get; set; }
-
-        private ushort[] depthArray;
 
         private Workspace ActiveWorkspace { get; set; }
 
-        public CloudView(KinectSensor kinectSensor)
+        private KinectStreamer kinectStreamer;
+
+        public CloudView()
         {
             ActiveWorkspace = new Workspace();
 
-            this.kinectSensor = kinectSensor;
-
-            depthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
-
-            DepthFrameReader depthFrameReader = this.kinectSensor.DepthFrameSource.OpenReader();
-
-            depthFrameReader.FrameArrived += Reader_FrameArrived;
-
-            int depthFrameWidth = depthFrameDescription.Width;
-
-            int depthFrameHeight = depthFrameDescription.Height;
-
-            depthArray = new ushort[depthFrameWidth * depthFrameHeight];
-
             InitializeComponent();
-        }
 
-        public void RefreshAllPointsView()
-        {
-            AllCameraSpacePoints = Generate3DPoints();
+            kinectStreamer = KinectStreamer.Instance;
 
-            Workspace all = new Workspace
-            {
-                Vertices = new ObservableCollection<Point>
-                {
-                    new Point(0,0),
-                    new Point(0,depthFrameDescription.Height),
-                    new Point(depthFrameDescription.Width, depthFrameDescription.Height),
-                    new Point(depthFrameDescription.Width, 0)
-                }
-            };
-            
-            SetWorkspaceCloudAndCenter(all);
-            SetCameraCenterAndShowCloud(AllPointsViewport, all);
         }
 
         public void SetWorkspace(Workspace workspaceSource)
@@ -107,7 +73,7 @@ namespace KinectDemoSGL.UIElement
             {
                 Point vertex = vertices[i];
 
-                kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(
+                kinectStreamer.CoordinateMapper.MapDepthPointsToCameraSpace(
                     new[] {
                         new DepthSpacePoint {
                             X = (float)vertex.X,
@@ -135,32 +101,6 @@ namespace KinectDemoSGL.UIElement
             SetCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
         }
 
-        private CameraSpacePoint[] Generate3DPoints()
-        {
-            int width = depthFrameDescription.Width;
-            int height = depthFrameDescription.Height;
-            int frameSize = width * height;
-            AllCameraSpacePoints = new CameraSpacePoint[frameSize];
-            DepthSpacePoint[] allDepthSpacePoints = new DepthSpacePoint[frameSize];
-
-            ushort[] depths = new ushort[frameSize];
-
-            for (int i = 0; i < height; ++i)
-            {
-                for (int j = 0; j < width; ++j)
-                {
-                    int index = i * width + j;
-                    allDepthSpacePoints[index] = new DepthSpacePoint { X = j, Y = i };
-                    AllCameraSpacePoints[index] = new CameraSpacePoint();
-                    depths[index] = depthArray[index];
-                }
-            }
-
-            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, AllCameraSpacePoints);
-
-            return AllCameraSpacePoints;
-        }
-
         public void ClearScreen()
         {
             MainViewPort.Children.Clear();
@@ -172,7 +112,7 @@ namespace KinectDemoSGL.UIElement
             
             foreach (Point3D point in workspace.PointCloud)
             {
-                drawTriangle(viewport, point, Colors.Black);
+                DrawTriangle(viewport, point, Colors.Black);
             }
 
             Point3D center = workspace.Center;
@@ -192,12 +132,12 @@ namespace KinectDemoSGL.UIElement
             Camera.Position = new Point3D(center.X, center.Y, -3);
         }
 
-        private void drawTriangle(Viewport3D viewport, Point3D point, Color color)
+        private void DrawTriangle(Viewport3D viewport, Point3D point, Color color)
         {
-            drawTriangle(viewport, point, 0.005, color);
+            DrawTriangle(viewport, point, 0.005, color);
         }
 
-        private void drawTriangle(Viewport3D viewport, Point3D point, double size, Color color)
+        private void DrawTriangle(Viewport3D viewport, Point3D point, double size, Color color)
         {
             Model3DGroup triangle = new Model3DGroup();
 
@@ -218,7 +158,7 @@ namespace KinectDemoSGL.UIElement
 
         private void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-            AllCameraSpacePoints = Generate3DPoints();
+            AllCameraSpacePoints = kinectStreamer.GenerateFullPointCloud();
 
             Polygon polygon = new Polygon();
             PointCollection pointCollection = new PointCollection();
@@ -247,7 +187,7 @@ namespace KinectDemoSGL.UIElement
                 if (GeometryHelper.IsValidCameraPoint(csp))
                 {
 
-                    DepthSpacePoint dsp = kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(csp);
+                    DepthSpacePoint dsp = kinectStreamer.CoordinateMapper.MapCameraPointToDepthSpace(csp);
                     dspList.Add(dsp);
 
                     if (GeometryHelper.InsidePolygon(polygon, new Point(dsp.X, dsp.Y)))
@@ -290,47 +230,5 @@ namespace KinectDemoSGL.UIElement
             model.Content = tetragon;
             MainViewPort.Children.Add(model);
         }
-
-        private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
-        {
-            // depth frame data is a 16 bit value
-            ushort* frameData = (ushort*)depthFrameData;
-
-            // convert depth to a visual representation
-            for (int i = 0; i < (int)(depthFrameDataSize / depthFrameDescription.BytesPerPixel); ++i)
-            {
-                // Get the depth for this pixel
-                ushort depth = frameData[i];
-
-                // To convert to a byte, we're mapping the depth value to the byte range.
-                // Values outside the reliable depth range are mapped to 0 (black).
-                depthArray[i] = (ushort)(depth >= minDepth && depth <= maxDepth ? (depth) : 0);
-            }
-        }
-
-        private void Reader_FrameArrived(object sender, DepthFrameArrivedEventArgs e)
-        {
-            using (DepthFrame depthFrame = e.FrameReference.AcquireFrame())
-            {
-                if (depthFrame != null)
-                {
-
-                    // the fastest way to process the body index data is to directly access 
-                    // the underlying buffer
-                    using (KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
-                    {
-                        // Note: In order to see the full range of depth (including the less reliable far field depth)
-                        // we are setting maxDepth to the extreme potential depth threshold
-                        ushort maxDepth = ushort.MaxValue;
-
-                        // If you wish to filter by reliable depth distance, uncomment the following line:
-                        //// maxDepth = depthFrame.DepthMaxReliableDistance
-
-                        ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
-                    }
-                }
-            }
-        }
-
     }
 }
