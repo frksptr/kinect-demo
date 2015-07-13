@@ -26,7 +26,7 @@ namespace KinectDemoSGL.UIElement
 
         double rotationFactor = 0.1;
 
-        double zoomFactor = 0.1;
+        double zoomFactor = 0.5;
 
         private Point3D cameraPosSphere;
 
@@ -39,7 +39,7 @@ namespace KinectDemoSGL.UIElement
         
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
-            double radius = -5;
+            double radius = -4;
             double theta = 0;
             double phi = 0;
             

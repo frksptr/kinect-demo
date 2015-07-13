@@ -208,12 +208,11 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        }
+
 
         private void checkActiveWorkspace(Body body, DrawingContext dc)
         {
-
-            foreach (Workspace workspace in workspaceList)
+            foreach (Workspace workspace in WorkspaceList)
             {
                 ObservableCollection<Point3D> vertices = workspace.FittedVertices;
 
@@ -240,11 +239,11 @@ namespace KinectDemoSGL.UIElement
                     (double)handPos.Z
                 });
 
-                if (GeometryHelper.insidePolygon3D(vertices.ToArray(), GeometryHelper.projectPoint3DToPlane(GeometryHelper.cameraSpacePointToPoint3D(handPos),workspace.planeVector) ))
+                if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPos),workspace.PlaneVector) ))
                 {
-                    double distance = GeometryHelper.calculatePointPlaneDistance(GeometryHelper.cameraSpacePointToPoint3D(handPos), workspace.planeVector);
+                    double distance = GeometryHelper.CalculatePointPlaneDistance(GeometryHelper.CameraSpacePointToPoint3D(handPos), workspace.PlaneVector);
 
-                    if (Math.Abs(distance) <= DISTANCE_TOLERANCE)
+                    if (Math.Abs(distance) <= DistanceTolerance)
                     {
                         workspace.Active = true;
                     }
