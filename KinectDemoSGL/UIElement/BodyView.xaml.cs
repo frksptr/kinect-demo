@@ -82,11 +82,6 @@ namespace KinectDemoSGL.UIElement
         private DrawingGroup drawingGroup;
 
         /// <summary>
-        /// Drawing image that we will display
-        /// </summary>
-        private DrawingImage imageSource;
-
-        /// <summary>
         /// Array for the bodies
         /// </summary>
         public Body[] Bodies;
@@ -147,26 +142,12 @@ namespace KinectDemoSGL.UIElement
             // Create the drawing group we'll use for drawing
             drawingGroup = new DrawingGroup();
 
-            // Create an image source that we can use in our image control
-            imageSource = new DrawingImage(drawingGroup);
-
             // use the window object as the view model in this simple example
             DataContext = this;
 
             // initialize the components (controls) of the window
             InitializeComponent();
 
-        }
-
-        /// <summary>
-        /// Gets the bitmap to display
-        /// </summary>
-        public ImageSource ImageSource
-        {
-            get
-            {
-                return imageSource;
-            }
         }
 
         public ImageSource ColorImageSource
@@ -396,9 +377,6 @@ namespace KinectDemoSGL.UIElement
                 {
                     DrawWorksapces(dc);
                 }
-                // Draw a transparent background to set the render size
-                //dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
-
 
                 int penIndex = 0;
                 foreach (Body body in Bodies)
@@ -435,13 +413,14 @@ namespace KinectDemoSGL.UIElement
                 }
                 // prevent drawing outside of our render area
                 drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, displayWidth, displayHeight));
+                OnPropertyChanged("ColorImageSource");
             }
         }
 
         void kinectStreamer_ColorDataReady(object sender, KinectStreamerEventArgs e)
         {
             colorBitmap = e.ColorBitmap;
-            OnPropertyChanged("ImageSource");
+            OnPropertyChanged("ColorImageSource");
         }
     }
 }

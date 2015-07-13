@@ -44,7 +44,7 @@ namespace KinectDemoSGL
 
         public Body[] Bodies { get; set; }
 
-        public List<Tuple<JointType, JointType>> Bones {get; set; }
+        public List<Tuple<JointType, JointType>> Bones { get; set; }
 
         readonly WriteableBitmap colorBitmap;
 
@@ -135,16 +135,6 @@ namespace KinectDemoSGL
                 new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft),
                 new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft)
             };
-
-            // Torso
-
-            // Right Arm
-
-            // Left Arm
-
-            // Right Leg
-
-            // Left Leg
         }
 
 
@@ -199,7 +189,7 @@ namespace KinectDemoSGL
 
                 // Process body data if needed
 
-                
+
                 if (KinectStreamerConfig.ProvideBodyData)
                 {
                     ProcessBodyData();
@@ -240,7 +230,7 @@ namespace KinectDemoSGL
                         {
                             colorFrame.CopyConvertedFrameDataToIntPtr(
                                 colorBitmap.BackBuffer,
-                                (uint) (ColorFrameDescription.Width*ColorFrameDescription.Height*4),
+                                (uint)(ColorFrameDescription.Width * ColorFrameDescription.Height * 4),
                                 ColorImageFormat.Bgra);
 
                             colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
@@ -269,8 +259,8 @@ namespace KinectDemoSGL
                     using (KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
                     {
                         // verify data and write the color data to the display bitmap
-                        if (((DepthFrameDescription.Width*DepthFrameDescription.Height) ==
-                             (depthBuffer.Size/DepthFrameDescription.BytesPerPixel)) &&
+                        if (((DepthFrameDescription.Width * DepthFrameDescription.Height) ==
+                             (depthBuffer.Size / DepthFrameDescription.BytesPerPixel)) &&
                             (DepthFrameDescription.Width == depthBitmap.PixelWidth) &&
                             (DepthFrameDescription.Height == depthBitmap.PixelHeight))
                         {

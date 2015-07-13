@@ -8,7 +8,7 @@
     <Grid>
         
         <Viewbox Grid.Row="1" HorizontalAlignment="Center">
-            <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
+            <Image Source="{Binding ColorImageSource}" Stretch="UniformToFill" />
         </Viewbox>
         </Grid>
 </UserControl>
