@@ -57,10 +57,14 @@ namespace KinectDemoSGL
         ushort[] depthArray;
 
         const int MapDepthToByte = 8000 / 256;
+
+        readonly int bytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel + 7) / 8;
         
         public CameraSpacePoint[] FullPointCloud { get; set; }
 
         private static KinectStreamer kinectStreamer;
+
+        private uint bitmapBackBufferSize = 0;  
 
         public static KinectStreamer Instance
         {
@@ -86,6 +90,8 @@ namespace KinectDemoSGL
             depthBitmap = new WriteableBitmap(DepthFrameDescription.Width, DepthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
 
             colorBitmap = new WriteableBitmap(ColorFrameDescription.Width, ColorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+            bitmapBackBufferSize = (uint)((colorBitmap.BackBufferStride * (colorBitmap.PixelHeight - 1)) + (colorBitmap.PixelWidth * this.bytesPerPixel));
 
             colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height];
 
@@ -189,12 +195,11 @@ namespace KinectDemoSGL
                 }
 
                 // Process body data if needed
-
-
                 if (KinectStreamerConfig.ProvideBodyData)
                 {
                     ProcessBodyData();
                 }
+
             }
             finally
             {
@@ -235,6 +240,7 @@ namespace KinectDemoSGL
                                 ColorImageFormat.Bgra);
 
                             colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
+                            
                         }
 
                         colorBitmap.Unlock();
