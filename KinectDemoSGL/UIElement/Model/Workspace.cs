@@ -25,8 +25,6 @@ namespace KinectDemoSGL.UIElement.Model
 
         private ObservableCollection<Point3D> pointCloud;
 
-        public bool Active { get; set; }
-
         public string Name
         {
             get

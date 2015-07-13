@@ -78,7 +78,7 @@ namespace KinectDemoSGL.UIElement
         /// </summary>        
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
-        private Pen activeWorkspacePen = new Pen(Brushes.Red,3);
+        private Pen activeWorkspacePen = new Pen(Brushes.Red, 3);
 
         private Pen passiveWorkspacePen = new Pen(Brushes.Aqua, 3);
 
@@ -207,57 +207,6 @@ namespace KinectDemoSGL.UIElement
                 WorkspaceActiveMap[workspace] = isActive;
             }
         }
-
-
-
-        private void checkActiveWorkspace(Body body, DrawingContext dc)
-        {
-            foreach (Workspace workspace in WorkspaceList)
-            {
-                ObservableCollection<Point3D> vertices = workspace.FittedVertices;
-
-                Point3D nearLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z < b.Z ? a : b);
-
-                Point3D nearRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z < b.Z ? a : b);
-
-                Point3D farLeft = vertices.Aggregate((a, b) => a.X < b.X && a.Z > b.Z ? a : b);
-
-                Point3D farRight = vertices.Aggregate((a, b) => a.X > b.X && a.Z > b.Z ? a : b);
-
-                Polygon poly = new Polygon();
-                poly.Points = new PointCollection() { 
-                    new Point(nearLeft.X, nearLeft.Y),
-                    new Point(nearRight.X, nearRight.Y),
-                    new Point(farRight.X, farRight.Y),
-                    new Point(farLeft.X, farLeft.Y) };
-
-                CameraSpacePoint handPos = body.Joints[JointType.HandRight].Position;
-
-                Vector<double> handVector = new DenseVector(new double[] {
-                    (double)handPos.X,
-                    (double)handPos.Y,
-                    (double)handPos.Z
-                });
-
-                if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPos),workspace.PlaneVector) ))
-                {
-                    double distance = GeometryHelper.CalculatePointPlaneDistance(GeometryHelper.CameraSpacePointToPoint3D(handPos), workspace.PlaneVector);
-
-                    if (Math.Abs(distance) <= DistanceTolerance)
-                    {
-                        workspace.Active = true;
-                    }
-                    else
-                    {
-                        workspace.Active = false;
-                    }
-                }
-                else
-                {
-                    workspace.Active = false;
-                }
-            }
-        }
         /// <summary>
         /// Draws a body
         /// </summary>
@@ -353,7 +302,7 @@ namespace KinectDemoSGL.UIElement
 
         private void DrawWorksapces(DrawingContext dc)
         {
-                        CoordinateMapper coordinateMapper = kinectStreamer.CoordinateMapper;
+            CoordinateMapper coordinateMapper = kinectStreamer.CoordinateMapper;
 
             foreach (Workspace workspace in WorkspaceList)
             {
@@ -369,7 +318,7 @@ namespace KinectDemoSGL.UIElement
 
                 for (int i = 0; i < colorPoints.Length; i++)
                 {
-                    dc.DrawLine(workspace.Active ? new Pen(Brushes.Blue, 5) : new Pen(Brushes.Red, 5),
+                    dc.DrawLine(pen,
                         new Point(colorPoints[i % colorPoints.Length].X, colorPoints[i % colorPoints.Length].Y),
                         new Point(colorPoints[(i + 1) % colorPoints.Length].X, colorPoints[(i + 1) % colorPoints.Length].Y));
                 }
@@ -406,7 +355,8 @@ namespace KinectDemoSGL.UIElement
                 kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
 
                 WorkspaceActiveMap.Clear();
-                foreach (Workspace workspace in WorkspaceList) {
+                foreach (Workspace workspace in WorkspaceList)
+                {
                     WorkspaceActiveMap.Add(workspace, false);
                 }
             }
@@ -426,7 +376,7 @@ namespace KinectDemoSGL.UIElement
             using (DrawingContext dc = drawingGroup.Open())
             {
                 dc.DrawImage(ColorImageSource, new Rect(0.0, 0.0, displayWidth, displayHeight));
-                
+
 
                 int penIndex = 0;
                 foreach (Body body in Bodies)
@@ -461,7 +411,7 @@ namespace KinectDemoSGL.UIElement
                         CheckActiveWorkspace(new CameraSpacePoint[]{
                             body.Joints[JointType.HandRight].Position,
                             body.Joints[JointType.HandLeft].Position});
-                        }
+                    }
                 }
                 // prevent drawing outside of our render area
                 drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, displayWidth, displayHeight));
