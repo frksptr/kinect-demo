@@ -42,7 +42,7 @@ namespace KinectDemoSGL
 
         MultiSourceFrameReader multiSourceFrameReader;
 
-        public Body[] Bodies { get; set; }
+        Body[] Bodies { get; set; }
 
         public List<Tuple<JointType, JointType>> Bones { get; set; }
 
@@ -57,6 +57,7 @@ namespace KinectDemoSGL
         ushort[] depthArray;
 
         const int MapDepthToByte = 8000 / 256;
+        
         public CameraSpacePoint[] FullPointCloud { get; set; }
 
         private static KinectStreamer kinectStreamer;
@@ -306,7 +307,10 @@ namespace KinectDemoSGL
                     bodyFrame.GetAndRefreshBodyData(Bodies);
                 }
             }
-            if (BodyDataReady != null) BodyDataReady(this, null);
+            if (BodyDataReady != null) BodyDataReady(this, new KinectStreamerEventArgs
+            {
+                Bodies = this.Bodies
+            });
         }
 
         private void RenderDepthPixels()

@@ -123,6 +123,8 @@ namespace KinectDemoSGL.UIElement
         {
             kinectStreamer = KinectStreamer.Instance;
 
+            bones = kinectStreamer.Bones;
+
             displayHeight = kinectStreamer.ColorFrameDescription.Height;
             displayWidth = kinectStreamer.ColorFrameDescription.Width;
 
@@ -130,8 +132,6 @@ namespace KinectDemoSGL.UIElement
                 kinectStreamer.ColorFrameDescription.Width,
                 kinectStreamer.ColorFrameDescription.Height,
                 96.0, 96.0, PixelFormats.Bgr32, null);
-
-            bones = kinectStreamer.Bones;
 
             // populate body colors, one for each BodyIndex
             bodyColors = new List<Pen>();
@@ -372,7 +372,8 @@ namespace KinectDemoSGL.UIElement
 
         void kinectStreamer_BodyDataReady(object sender, KinectStreamerEventArgs e)
         {
-            Bodies = kinectStreamer.Bodies;
+            Bodies = e.Bodies;
+            
             using (DrawingContext dc = drawingGroup.Open())
             {
                 dc.DrawImage(ColorImageSource, new Rect(0.0, 0.0, displayWidth, displayHeight));
