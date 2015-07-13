@@ -69,6 +69,7 @@ namespace KinectDemoSGL.UIElement
             CameraSpacePoint[] csps = { new CameraSpacePoint() };
 
             Point[] vertices = workspace.Vertices.ToArray();
+
             for (int i = 0; i < vertices.Length; i++)
             {
                 Point vertex = vertices[i];
