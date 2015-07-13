@@ -1,31 +1,30 @@
-﻿using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using Microsoft.Kinect;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.LinearAlgebra.Factorization;
+using Microsoft.Kinect;
 
-namespace KinectDemo.Util
+namespace KinectDemoSGL.Util
 {
     class GeometryHelper
     {
-        public static bool isNumber(float num)
+        public static bool IsNumber(float num)
         {
             return !float.IsNaN(num) && !float.IsInfinity(num);
         }
 
-        public static bool isValidCameraPoint(CameraSpacePoint point)
+        public static bool IsValidCameraPoint(CameraSpacePoint point)
         {
-            return isNumber((float)point.X) && isNumber((float)point.Y) && isNumber((float)point.Z);
+            return IsNumber(point.X) && IsNumber(point.Y) && IsNumber(point.Z);
         }
 
-        public static double[] normalize(double[] points)
+        public static double[] Normalize(double[] points)
         {
             double squareSum = 0;
             double[] normalizedPoints = new double[points.Length];
@@ -42,7 +41,7 @@ namespace KinectDemo.Util
             return normalizedPoints;
         }
 
-        public static double[,] point3DToPointArrays(Point3D[] points)
+        public static double[,] Point3DToPointArrays(Point3D[] points)
         {
             double[,] vectors = new double[points.Count(), 4];
             for (int i = 0; i < points.Count(); i++)
@@ -58,59 +57,59 @@ namespace KinectDemo.Util
             return vectors;
         }
 
-        public static Vector<double> fitPlaneToPoints(Point3D[] points)
+        public static Vector<double> FitPlaneToPoints(Point3D[] points)
         {
             if (points.Length == 0)
             {
                 return null;
             }
-            double[,] pointArrays = point3DToPointArrays(points);
+            double[,] pointArrays = Point3DToPointArrays(points);
 
-            MathNet.Numerics.LinearAlgebra.Matrix<double> PointMatrix = MathNet.Numerics.LinearAlgebra.Matrix<double>.Build.DenseOfArray(pointArrays);
+            Matrix<double> pointMatrix = Matrix<double>.Build.DenseOfArray(pointArrays);
 
-            var SVDDecomp = PointMatrix.Svd(true);
+            Svd<double> svdDecomp = pointMatrix.Svd(true);
 
-            var VT = SVDDecomp.VT;
+            Matrix<double> vt = svdDecomp.VT;
 
-            var solution = VT.Row(VT.RowCount - 1);
+            Vector<double> solution = vt.Row(vt.RowCount - 1);
 
             return solution;
 
         }
 
 
-        public static Point3D[] projectPoints3DToPlane(Point3D[] points, Vector<double> planeVectors)
+        public static Point3D[] ProjectPoints3DToPlane(Point3D[] points, Vector<double> planeVectors)
         {
             Point3D[] projectedPoints = new Point3D[points.Length];
 
             for (int i = 0; i < points.Length; i++)
             {
-                projectedPoints[i] = projectPoint3DToPlane(points[i], planeVectors);
+                projectedPoints[i] = ProjectPoint3DToPlane(points[i], planeVectors);
             }
 
             return projectedPoints;
         }
 
-        public static Point3D projectPoint3DToPlane(Point3D point, Vector<double> planeVectors)
+        public static Point3D ProjectPoint3DToPlane(Point3D point, Vector<double> planeVectors)
         {
 
-            double distance = calculatePointPlaneDistance(point, planeVectors);
+            double distance = CalculatePointPlaneDistance(point, planeVectors);
 
             double a = planeVectors[0];
             double b = planeVectors[1];
             double c = planeVectors[2];
 
-            Vector<double> planeNormal = new DenseVector(new double[] { a, b, c });
+            Vector<double> planeNormal = new DenseVector(new[] { a, b, c });
 
             double x = point.X;
             double y = point.Y;
             double z = point.Z;
 
-            Vector<double> pointVector = new DenseVector(new double[] { x, y, z });
+            Vector<double> pointVector = new DenseVector(new[] { x, y, z });
 
             pointVector.Subtract(planeNormal.Multiply(distance));
 
-            return new Point3D()
+            return new Point3D
             {
                 X = pointVector[0],
                 Y = pointVector[1],
@@ -118,7 +117,7 @@ namespace KinectDemo.Util
             };
         }
 
-        public static double calculatePointPlaneDistance(Point3D point, Vector<double> planeVector)
+        public static double CalculatePointPlaneDistance(Point3D point, Vector<double> planeVector)
         {
             // ax + by + cz + d = 0
             double a = planeVector[0];
@@ -126,19 +125,15 @@ namespace KinectDemo.Util
             double c = planeVector[2];
             double d = planeVector[3];
 
-            Vector<double> planeNormal = new DenseVector(new double[] { a, b, c });
-
             double x = point.X;
             double y = point.Y;
             double z = point.Z;
-
-            Vector<double> pointVector = new DenseVector(new double[] { x, y, z });
 
             double distance = (a * x + b * y + c * z + d) / Math.Sqrt(a * a + b * b + c * c);
             return distance;
         }
 
-        public static bool insidePolygon(Polygon polygon, Point point)
+        public static bool InsidePolygon(Polygon polygon, Point point)
         {
             int i, j;
             bool c = false;
@@ -154,14 +149,14 @@ namespace KinectDemo.Util
             return c;
         }
 
-        public static bool insidePolygon3D(Point3D[] polyVertices, Point3D projectedPoint)
+        public static bool InsidePolygon3D(Point3D[] polyVertices, Point3D projectedPoint)
         {
             PointCollection points = new PointCollection();
             foreach (Point3D point in polyVertices)
             {
                 points.Add(new Point(point.X, point.Y));
             }
-            return insidePolygon(new Polygon() { Points = points }, new Point(projectedPoint.X, projectedPoint.Y));
+            return InsidePolygon(new Polygon { Points = points }, new Point(projectedPoint.X, projectedPoint.Y));
         }
 
 
@@ -174,17 +169,17 @@ namespace KinectDemo.Util
             mymesh.TriangleIndices.Add(0);
             mymesh.TriangleIndices.Add(1);
             mymesh.TriangleIndices.Add(2);
-            Vector3D Normal = CalculateTraingleNormal(p0, p1, p2);
-            mymesh.Normals.Add(Normal);
-            mymesh.Normals.Add(Normal);
-            mymesh.Normals.Add(Normal);
-            Material Material = new DiffuseMaterial(
+            Vector3D normal = CalculateTraingleNormal(p0, p1, p2);
+            mymesh.Normals.Add(normal);
+            mymesh.Normals.Add(normal);
+            mymesh.Normals.Add(normal);
+            Material material = new DiffuseMaterial(
                 new SolidColorBrush(color) { Opacity = 0.5 });
             GeometryModel3D model = new GeometryModel3D(
-                mymesh, Material);
-            Model3DGroup Group = new Model3DGroup();
-            Group.Children.Add(model);
-            return Group;
+                mymesh, material);
+            Model3DGroup @group = new Model3DGroup();
+            @group.Children.Add(model);
+            return @group;
         }
 
         public static Vector3D CalculateTraingleNormal(Point3D p0, Point3D p1, Point3D p2)
@@ -196,16 +191,16 @@ namespace KinectDemo.Util
             return Vector3D.CrossProduct(v0, v1);
         }
 
-        public static Point3D cameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
+        public static Point3D CameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
         {
-            return new Point3D()
+            return new Point3D
             {
                 X = cameraSpacePoint.X,
                 Y = cameraSpacePoint.Y,
                 Z = cameraSpacePoint.Z
             };
         }
-        public static List<Point3D> cameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
+        public static List<Point3D> CameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
         {
             if (cameraSpacePoints == null)
             {
@@ -219,9 +214,9 @@ namespace KinectDemo.Util
 
             foreach (CameraSpacePoint point in cameraSpacePoints)
             {
-                if (isValidCameraPoint(point))
+                if (IsValidCameraPoint(point))
                 {
-                    point3Ds.Add(new Point3D()
+                    point3Ds.Add(new Point3D
                     {
                         X = point.X,
                         Y = point.Y,
@@ -233,7 +228,7 @@ namespace KinectDemo.Util
             return point3Ds;
         }
 
-        public static Point3D calculateCenterPoint(List<Point3D> pointCloud)
+        public static Point3D CalculateCenterPoint(List<Point3D> pointCloud)
         {
             Point3D center = new Point3D();
             double sumX = 0;
@@ -252,7 +247,7 @@ namespace KinectDemo.Util
             return center;
         }
 
-        public static Point3D sphericalToCartesian(Point3D sphericalPoint)
+        public static Point3D SphericalToCartesian(Point3D sphericalPoint)
         {
             double radius = sphericalPoint.X;
             double theta = sphericalPoint.Y;
