@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -370,8 +369,8 @@ namespace KinectDemoCommon.UIElement
             }
         }
 
-        void kinectStreamer_BodyDataReady(object sender, KinectStreamerEventArgs e)
-        {
+        //void kinectStreamer_BodyDataReady(object sender, KinectStreamerEventArgs e)
+        //{
             //Bodies = e.Bodies;
             
             //using (DrawingContext dc = drawingGroup.Open())
@@ -420,13 +419,13 @@ namespace KinectDemoCommon.UIElement
             //    OnPropertyChanged("ColorImageSource");
             //    OnPropertyChanged("ImageSource");
             //}
-        }
+        //}
 
-        void kinectStreamer_ColorDataReady(object sender, KinectStreamerEventArgs e)
-        {
-            colorBitmap = e.ColorBitmap;
-            OnPropertyChanged("ColorImageSource");
-            OnPropertyChanged("ImageSource");
-        }
+        //void kinectStreamer_ColorDataReady(object sender, KinectStreamerEventArgs e)
+        //{
+        //    colorBitmap = e.ColorBitmap;
+        //    OnPropertyChanged("ColorImageSource");
+        //    OnPropertyChanged("ImageSource");
+        //}
     }
 }

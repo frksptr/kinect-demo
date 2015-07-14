@@ -4,7 +4,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using System.Windows.Media.Imaging;
+using KinectDemoCommon.KinectStreamerMessages;
+using KinectDemoCommon.UIElement;
 
 namespace KinectDemoSGL
 {
@@ -13,6 +14,7 @@ namespace KinectDemoSGL
 
         private Socket socket, clientSocket;
         private byte[] buffer;
+        public CameraWorkspace CameraWorkspace { get; set; }
 
         public KinectServer()
         {
@@ -23,6 +25,7 @@ namespace KinectDemoSGL
             try
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket.ReceiveBufferSize = 300000;
                 socket.Bind(new IPEndPoint(IPAddress.Parse("192.168.0.21"), 3333));
                 socket.Listen(0);
                 socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
@@ -55,17 +58,36 @@ namespace KinectDemoSGL
                 int received = clientSocket.EndReceive(ar);
                 Array.Resize(ref buffer, received);
                 BinaryFormatter formatter = new BinaryFormatter();
+                
+                
                 MemoryStream stream = new MemoryStream(buffer);
+                
+                object obj = null;
+                stream.Position = 0;
+                try
+                {
+                    
+                    obj = formatter.Deserialize(stream);
+                }
+                catch (Exception ex )
+                {
+                    MessageBox.Show(ex.Message);
 
-                object obj = formatter.Deserialize(stream);
-
+                }
+                
+                
                 string text = "";
 
-                if (obj is WriteableBitmap)
+                if (obj is KinectStreamerMessage)
                 {
-                    WriteableBitmap bitmap = obj as WriteableBitmap;
-                    text = "jee";
+                    if (obj is DepthStreamMessage)
+                    {
+                        byte[] depthPixels = ((DepthStreamMessage) obj).DepthPixels;
+                        CameraWorkspace.RefreshBitmap(depthPixels, ((DepthStreamMessage)obj).DepthFrameSize);
 
+                    }
+                    
+                    
                 }
                 //if (obj is Person)
                 //{

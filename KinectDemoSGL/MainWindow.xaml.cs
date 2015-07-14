@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon.UIElement;
 using KinectDemoCommon.UIElement.Model;
-using KinectDemoCommon.Util;
 using KinectDemoSGL;
 using Microsoft.Kinect;
 
@@ -60,9 +57,9 @@ namespace KinectDemoCommon
 
             KinectServer kinectServer = new KinectServer();
 
-            
+            AddCameraWorkspace();
 
-            //AddCameraWorkspace();
+            kinectServer.CameraWorkspace = cameraWorkspace;
 
             //kinectSensor = KinectSensor.GetDefault();
 

@@ -1,21 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using KinectDemoCommon;
+using KinectDemoCommon.KinectStreamerMessages;
 
 namespace KinectDemoClient
 {
@@ -28,6 +18,9 @@ namespace KinectDemoClient
         public int[] DepthFrameSize { get; set; }
         WriteableBitmap depthBitmap;
 
+        private byte[] depthPixels;
+
+        private DepthStreamMessage msg;
 
         public MainWindow()
         {
@@ -44,11 +37,9 @@ namespace KinectDemoClient
             };
         }
 
-        private void kinectStreamer_DepthDataReady(object sender, KinectStreamerEventArgs e)
+        private void kinectStreamer_DepthDataReady(KinectStreamerMessage message)
         {
-            depthBitmap = e.DepthBitmap;
-
-
+            msg = ((DepthStreamMessage) message);
         }
 
         private void ConnectCallback(IAsyncResult ar)
@@ -99,7 +90,7 @@ namespace KinectDemoClient
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 MemoryStream stream = new MemoryStream();
-                formatter.Serialize(stream, depthBitmap);
+                formatter.Serialize(stream, msg);
                 byte[] buffer = stream.ToArray();
 
                 clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
