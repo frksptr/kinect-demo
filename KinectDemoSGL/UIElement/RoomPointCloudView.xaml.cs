@@ -4,12 +4,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using KinectDemoSGL.UIElement.Model;
-using KinectDemoSGL.Util;
+using KinectDemoCommon.UIElement.Model;
+using KinectDemoCommon.Util;
 using SharpGL;
 using SharpGL.SceneGraph;
 
-namespace KinectDemoSGL.UIElement
+namespace KinectDemoCommon.UIElement
 {
 
 

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 
-namespace KinectDemoSGL
+namespace KinectDemoCommon
 {
     public class KinectStreamerEventArgs
     {
@@ -11,5 +11,6 @@ namespace KinectDemoSGL
 
         public Body[] Bodies { get; set; }
         
+
     }
 }

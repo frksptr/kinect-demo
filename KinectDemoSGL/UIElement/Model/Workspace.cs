@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace KinectDemoSGL.UIElement.Model
+namespace KinectDemoCommon.UIElement.Model
 {
     public class Workspace : INotifyPropertyChanged
     {

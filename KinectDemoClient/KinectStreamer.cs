@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using KinectDemoCommon;
 using Microsoft.Kinect;
 
-namespace KinectDemoSGL
+namespace KinectDemoClient
 {
     public delegate void KinectStreamerEventHandler(object sender, KinectStreamerEventArgs e);
 

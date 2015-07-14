@@ -5,12 +5,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using KinectDemoSGL.UIElement;
-using KinectDemoSGL.UIElement.Model;
-using KinectDemoSGL.Util;
+using KinectDemoCommon.UIElement;
+using KinectDemoCommon.UIElement.Model;
+using KinectDemoCommon.Util;
+using KinectDemoSGL;
 using Microsoft.Kinect;
 
-namespace KinectDemoSGL
+namespace KinectDemoCommon
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -57,27 +58,31 @@ namespace KinectDemoSGL
         {
             InitializeComponent();
 
-            AddCameraWorkspace();
+            KinectServer kinectServer = new KinectServer();
 
-            kinectSensor = KinectSensor.GetDefault();
+            
 
-            cloudView = new CloudView();
+            //AddCameraWorkspace();
 
-            WorkspacePointCloudHolder.Children.Add(cloudView);
+            //kinectSensor = KinectSensor.GetDefault();
 
-            bodyView = new BodyView();
+            //cloudView = new CloudView();
 
-            HandCheckBodyViewHolder.Children.Add(bodyView);
+            //WorkspacePointCloudHolder.Children.Add(cloudView);
 
-            roomPointCloudView = new RoomPointCloudView();
+            //bodyView = new BodyView();
 
-            RoomPointCloudHolder.Children.Add(roomPointCloudView);
+            //HandCheckBodyViewHolder.Children.Add(bodyView);
 
-            roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
+            //roomPointCloudView = new RoomPointCloudView();
 
-            WorkspaceList.ItemsSource = workspaceList;
+            //RoomPointCloudHolder.Children.Add(roomPointCloudView);
 
-            EditWorkspace.DataContext = activeWorkspace;
+            //roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
+
+            //WorkspaceList.ItemsSource = workspaceList;
+
+            //EditWorkspace.DataContext = activeWorkspace;
         }
 
         private void AddCameraWorkspace()
@@ -92,27 +97,27 @@ namespace KinectDemoSGL
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (FocusManager.GetFocusedElement(this) is TextBox)
-            {
-                TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
-                if (focusedTextBox != null)
-                {
-                    // Get Depth coordinates from clicked point
-                    double actualWidth = cameraWorkspace.ActualWidth;
-                    double actualHeight = cameraWorkspace.ActualHeight;
+            //if (FocusManager.GetFocusedElement(this) is TextBox)
+            //{
+            //    TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
+            //    if (focusedTextBox != null)
+            //    {
+            //        // Get Depth coordinates from clicked point
+            //        double actualWidth = cameraWorkspace.ActualWidth;
+            //        double actualHeight = cameraWorkspace.ActualHeight;
                     
-                    double x = e.GetPosition(cameraWorkspace).X;
-                    double y = e.GetPosition(cameraWorkspace).Y;
+            //        double x = e.GetPosition(cameraWorkspace).X;
+            //        double y = e.GetPosition(cameraWorkspace).Y;
 
-                    int depthWidth = cameraWorkspace.DepthFrameSize[0];
-                    int depthHeight = cameraWorkspace.DepthFrameSize[1];
+            //        int depthWidth = cameraWorkspace.DepthFrameSize[0];
+            //        int depthHeight = cameraWorkspace.DepthFrameSize[1];
 
-                    focusedTextBox.Text = (int)((x / actualWidth) * depthWidth) + "," + (int)((y / actualHeight) * depthHeight);
-                }
+            //        focusedTextBox.Text = (int)((x / actualWidth) * depthWidth) + "," + (int)((y / actualHeight) * depthHeight);
+            //    }
                 
-                TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
-                focusedTextBox.MoveFocus(tRequest);
-            }
+            //    TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
+            //    focusedTextBox.MoveFocus(tRequest);
+            //}
         }
 
         public string StatusText
@@ -139,19 +144,19 @@ namespace KinectDemoSGL
 
         private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            bodyView.WorkspaceList = workspaceList;
+            //bodyView.WorkspaceList = workspaceList;
         }
 
         private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
-            List<Point3D> pointCloud = GeometryHelper.CameraSpacePointsToPoint3Ds(csps);
+            //CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
+            //List<Point3D> pointCloud = GeometryHelper.CameraSpacePointsToPoint3Ds(csps);
 
-            roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
+            //roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
 
-            roomPointCloudView.FullPointCloud = pointCloud;
+            //roomPointCloudView.FullPointCloud = pointCloud;
 
-            roomPointCloudView.WorkspaceList = workspaceList;
+            //roomPointCloudView.WorkspaceList = workspaceList;
         }
 
         private void AddWorkspace(object sender, RoutedEventArgs e)
@@ -167,19 +172,19 @@ namespace KinectDemoSGL
 
         private void WorkspaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((Workspace)WorkspaceList.SelectedItem == null)
-            {
-                return;
-            }
-            activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
-            EditWorkspace.DataContext = activeWorkspace;
-            cloudView.SetWorkspace(activeWorkspace);
+            //if ((Workspace)WorkspaceList.SelectedItem == null)
+            //{
+            //    return;
+            //}
+            //activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
+            //EditWorkspace.DataContext = activeWorkspace;
+            //cloudView.SetWorkspace(activeWorkspace);
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
-            workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
-            activeWorkspace = new Workspace();
-            cloudView.ClearScreen();
+            //workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
+            //activeWorkspace = new Workspace();
+            //cloudView.ClearScreen();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace KinectDemoSGL
+namespace KinectDemoCommon
 {
     /// <summary>
     /// Interaction logic for App.xaml
