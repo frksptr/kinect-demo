@@ -30,8 +30,8 @@ namespace KinectDemoClient
             kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
 
-            //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-            //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+            kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
 
             //kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
 

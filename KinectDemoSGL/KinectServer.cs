@@ -41,7 +41,8 @@ namespace KinectDemoSGL
             try
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.ReceiveBufferSize = 300000;
+                //  TODO: better solution for large buffer size?
+                socket.ReceiveBufferSize = 9000000; 
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(0);
                 socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
