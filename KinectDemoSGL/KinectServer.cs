@@ -9,14 +9,30 @@ using KinectDemoCommon.UIElement;
 
 namespace KinectDemoSGL
 {
+    public delegate void KinectServerDataArrived(KinectStreamerMessage message);
+
+    // Singleton
     class KinectServer
     {
 
+
+        string ip = "192.168.32.1";
         private Socket socket, clientSocket;
         private byte[] buffer;
-        public CameraWorkspace CameraWorkspace { get; set; }
+        
 
-        public KinectServer()
+        public KinectServerDataArrived DepthDataArrived;
+        public KinectServerDataArrived ColorDataArrived;
+        public KinectServerDataArrived BodyDataArrived;
+
+        private static KinectServer kinectServer;
+
+        public static KinectServer Instance
+        {
+            get { return kinectServer ?? (kinectServer = new KinectServer()); }
+        }
+
+        private KinectServer()
         {
             StartServer();
         }
@@ -26,7 +42,7 @@ namespace KinectDemoSGL
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.ReceiveBufferSize = 300000;
-                socket.Bind(new IPEndPoint(IPAddress.Parse("192.168.0.21"), 3333));
+                socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(0);
                 socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
             }
@@ -75,20 +91,18 @@ namespace KinectDemoSGL
 
                 }
                 
-                
-                string text = "";
-
                 if (obj is KinectStreamerMessage)
                 {
                     if (obj is DepthStreamMessage)
                     {
-                        byte[] depthPixels = ((DepthStreamMessage) obj).DepthPixels;
-                        CameraWorkspace.RefreshBitmap(depthPixels, ((DepthStreamMessage)obj).DepthFrameSize);
+                        DepthDataArrived((DepthStreamMessage)obj);
+                    }
+                    if (obj is ColorStreamMessage)
+                    {
 
                     }
-                    
-                    
                 }
+                
                 //if (obj is Person)
                 //{
                 //    Person person = obj as Person;

@@ -17,6 +17,7 @@ namespace KinectDemoClient
         private Socket clientSocket;
         public int[] DepthFrameSize { get; set; }
         WriteableBitmap depthBitmap;
+        string ip = "192.168.32.1";
 
         private byte[] depthPixels;
 
@@ -40,6 +41,13 @@ namespace KinectDemoClient
         private void kinectStreamer_DepthDataReady(KinectStreamerMessage message)
         {
             msg = ((DepthStreamMessage) message);
+            if (clientSocket != null)
+            {
+                if (clientSocket.Connected)
+                {
+                    SendDepthData();
+                }
+            }
         }
 
         private void ConnectCallback(IAsyncResult ar)
@@ -68,12 +76,12 @@ namespace KinectDemoClient
         }
 
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void ConnectToServer(object sender, RoutedEventArgs e)
         {
             try
             {
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse("192.168.0.21"), 3333), new AsyncCallback(ConnectCallback),
+                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), new AsyncCallback(ConnectCallback),
                     null);
             }
             catch (Exception ex)
@@ -84,22 +92,27 @@ namespace KinectDemoClient
 
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void SendDepthDataButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream stream = new MemoryStream();
-                formatter.Serialize(stream, msg);
-                byte[] buffer = stream.ToArray();
-
-                clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                SendDepthData();
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void SendDepthData()
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            formatter.Serialize(stream, msg);
+            byte[] buffer = stream.ToArray();
+
+            clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon.Annotations;
+using KinectDemoSGL;
+using KinectDemoCommon.KinectStreamerMessages;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -22,14 +24,16 @@ namespace KinectDemoCommon.UIElement
         {
             DataContext = this;
             this.depthBitmap = depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
-            //kinectStreamer = KinectStreamer.Instance;
-
-            //DepthFrameSize = new[] { 
-            //    kinectStreamer.DepthFrameDescription.Width,
-            //    kinectStreamer.DepthFrameDescription.Height
-            //};
+            KinectServer kinectServer = KinectServer.Instance;
+            kinectServer.DepthDataArrived += kinectServer_DepthDataReady;
 
             InitializeComponent();
+        }
+
+        private void kinectServer_DepthDataReady(KinectStreamerMessages.KinectStreamerMessage message)
+        {
+            DepthStreamMessage msg = (DepthStreamMessage)message;
+            RefreshBitmap(msg.DepthPixels, msg.DepthFrameSize);
         }
 
         public void RefreshBitmap(byte[] depthPixels, int[] depthFrameSize)

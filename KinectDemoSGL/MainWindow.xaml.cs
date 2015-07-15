@@ -55,11 +55,9 @@ namespace KinectDemoCommon
         {
             InitializeComponent();
 
-            KinectServer kinectServer = new KinectServer();
+            KinectServer kinectServer = KinectServer.Instance;
 
             AddCameraWorkspace();
-
-            kinectServer.CameraWorkspace = cameraWorkspace;
 
             //kinectSensor = KinectSensor.GetDefault();
 
