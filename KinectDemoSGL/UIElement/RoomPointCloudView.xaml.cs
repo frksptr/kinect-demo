@@ -32,7 +32,6 @@ namespace KinectDemoSGL.UIElement
             set
             {
                 fullPointCloud = value;
-                refreshVertexBuffer();
             }
         }
 
@@ -57,6 +56,7 @@ namespace KinectDemoSGL.UIElement
         public RoomPointCloudView()
         {
             InitializeComponent();
+            
         }
 
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
@@ -74,8 +74,9 @@ namespace KinectDemoSGL.UIElement
             cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
             //  Enable the OpenGL depth testing functionality.
             //args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
-
+            refreshVertexBuffer();
             initializeProgram();
+
         }
 
         private List<Point3D> CenterPointCloud(List<Point3D> points)
@@ -95,7 +96,7 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
-            Transform();
+            //Transform();
         }
 
         private void Transform()
@@ -113,10 +114,10 @@ namespace KinectDemoSGL.UIElement
                 0.1f, 100.0f);
 
 
-            gl.LookAt(cameraPos.X, cameraPos.Y, cameraPos.Z, Center.X, Center.Y, Center.Z, 0, 1, 0);
+            //gl.LookAt(cameraPos.X, cameraPos.Y, cameraPos.Z, Center.X, Center.Y, Center.Z, 0, 1, 0);
 
             // Load the modelview.
-            gl.MatrixMode(OpenGL.GL_MODELVIEW);
+            //gl.MatrixMode(OpenGL.GL_MODELVIEW);
         }
 
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
@@ -133,13 +134,13 @@ namespace KinectDemoSGL.UIElement
                 gl.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
                 gl.LoadIdentity();
-                gl.UseProgram(shaderProgram);
+                //gl.UseProgram(shaderProgram);
                 gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vertexBuffer[0]);
                 gl.EnableVertexAttribArray(0);
                 gl.VertexAttribPointer(0, 4, OpenGL.GL_FLOAT, false, 0, IntPtr.Zero);
                 gl.DrawArrays(OpenGL.GL_POINTS, 0, FullPointCloud.Count);
                 gl.DisableVertexAttribArray(0);
-                gl.UseProgram(0);
+                //gl.UseProgram(0);
                 gl.Flush();
 
 
@@ -194,7 +195,7 @@ namespace KinectDemoSGL.UIElement
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
-            Transform();
+            //Transform();
         }
 
         private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -213,7 +214,7 @@ namespace KinectDemoSGL.UIElement
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
-            Transform();
+            //Transform();
         }
 
         private void openGLControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -233,11 +234,23 @@ namespace KinectDemoSGL.UIElement
             OpenGL gl = OpenGlControl.OpenGL;
             gl.GenBuffers(1, vertexBuffer);
             gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vertexBuffer[0]);
-            IntPtr ptr = GCHandle.Alloc(FullPointCloud.ToArray(), GCHandleType.Pinned).AddrOfPinnedObject();
-            gl.BufferData(OpenGL.GL_ARRAY_BUFFER, FullPointCloud.Count, ptr, OpenGL.GL_STATIC_DRAW);
+            List<float> verticesList = new List<float>();
+            foreach (Point3D point in fullPointCloud)
+            {
+                verticesList.Add((float)point.X);
+                verticesList.Add((float)point.Y);
+                verticesList.Add((float)point.Z);
+            }
+            var vertices = verticesList.ToArray();
+            unsafe
+            {
+                fixed (float* verts = vertices)
+                {
+                    var ptr = new IntPtr(verts);
+                    gl.BufferData(OpenGL.GL_ARRAY_BUFFER, vertices.Length * sizeof(float), ptr, OpenGL.GL_STATIC_DRAW);
+                }
+            }
             gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, 0);
-
-
         }
 
 

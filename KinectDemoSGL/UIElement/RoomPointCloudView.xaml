@@ -10,13 +10,17 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <sharpGl:OpenGLControl 
-            Focusable="True"
             Name="OpenGlControl"
             OpenGLDraw="OpenGLControl_OpenGLDraw" 
             OpenGLInitialized="OpenGLControl_OpenGLInitialized"
+            Resized="OpenGLControl_Resized" 
             DrawFPS="True" 
-            Resized="OpenGLControl_Resized" KeyDown="openGLControl_KeyDown" MouseWheel="openGLControl_MouseWheel" 
+            RenderContextType="FBO"
             IsVisibleChanged="openGLControl_IsVisibleChanged"
+            
+            Focusable="True"
+            KeyDown="openGLControl_KeyDown" 
+            MouseWheel="openGLControl_MouseWheel" 
             />
     </Grid>
 </UserControl>
