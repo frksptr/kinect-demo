@@ -64,12 +64,13 @@ namespace KinectDemoClient
         {
             try
             {
+                clientSocket.EndConnect(ar);
+                
                 kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
                 kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
 
-                kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-                kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
-                clientSocket.EndConnect(ar);
+                //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+                //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
             }
             catch (Exception ex)
             {
@@ -111,23 +112,12 @@ namespace KinectDemoClient
         {
             try
             {
-                SendDepthData();
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private void SendDepthData()
-        {
-            //BinaryFormatter formatter = new BinaryFormatter();
-            //MemoryStream stream = new MemoryStream();
-            //formatter.Serialize(stream, msg);
-            //byte[] buffer = stream.ToArray();
-
-            //clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
     }
 }

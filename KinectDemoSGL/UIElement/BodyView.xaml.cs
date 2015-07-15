@@ -174,7 +174,7 @@ namespace KinectDemoCommon.UIElement
                     colorBitmap.WritePixels(
                         new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
                         msg.ColorPixels,
-                        colorBitmap.PixelWidth,
+                        colorBitmap.PixelWidth*4,
                         0);
                 }));
             }
