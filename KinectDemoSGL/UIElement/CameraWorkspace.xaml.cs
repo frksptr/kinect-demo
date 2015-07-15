@@ -17,13 +17,13 @@ namespace KinectDemoCommon.UIElement
     {
         //readonly KinectStreamer kinectStreamer;
 
-        WriteableBitmap depthBitmap;
+        WriteableBitmap depthBitmap = null;
         public int[] DepthFrameSize { get; set; }
         private byte[] depthPixels;
         public CameraWorkspace()
         {
             DataContext = this;
-            this.depthBitmap = depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
+            
             KinectServer kinectServer = KinectServer.Instance;
             kinectServer.DepthDataArrived += kinectServer_DepthDataReady;
 
@@ -33,6 +33,9 @@ namespace KinectDemoCommon.UIElement
         private void kinectServer_DepthDataReady(KinectStreamerMessages.KinectStreamerMessage message)
         {
             DepthStreamMessage msg = (DepthStreamMessage)message;
+            if (depthBitmap == null) {
+                depthBitmap = new WriteableBitmap(msg.DepthFrameSize[0], msg.DepthFrameSize[1], 96.0, 96.0, PixelFormats.Gray8, null);
+            }
             RefreshBitmap(msg.DepthPixels, msg.DepthFrameSize);
         }
 
@@ -55,12 +58,9 @@ namespace KinectDemoCommon.UIElement
                         depthBitmap.PixelWidth,
                         0);
                 }));
-            
-            
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
         }

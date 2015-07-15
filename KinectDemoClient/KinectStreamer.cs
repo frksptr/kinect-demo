@@ -95,7 +95,7 @@ namespace KinectDemoClient
 
             bitmapBackBufferSize = (uint)((colorBitmap.BackBufferStride * (colorBitmap.PixelHeight - 1)) + (colorBitmap.PixelWidth * this.bytesPerPixel));
 
-            colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height];
+            colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height*4];
 
             depthPixels = new byte[DepthFrameDescription.Width * DepthFrameDescription.Height];
 
@@ -244,14 +244,21 @@ namespace KinectDemoClient
                                 ColorImageFormat.Bgra);
 
                             colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
-                            
-                        }
 
+                            //colorBitmap.CopyPixels(colorPixels, colorBitmap.PixelWidth, 0);
+
+                            colorFrame.CopyConvertedFrameDataToArray(
+                                colorPixels,
+                                ColorImageFormat.Bgra);
+                        }
                         colorBitmap.Unlock();
                     }
                 }
             }
-            if (ColorDataReady != null) ColorDataReady(new ColorStreamMessage(colorPixels));
+            if (ColorDataReady != null)
+            {
+                ColorDataReady(new ColorStreamMessage(colorPixels, new int[] {DepthFrameDescription.Width, DepthFrameDescription.Height}));
+            }
         }
 
         private void ProcessDepthData()
@@ -292,7 +299,9 @@ namespace KinectDemoClient
                 RenderDepthPixels();
             }
             if (DepthDataReady != null)
+            {
                 DepthDataReady(new DepthStreamMessage(depthPixels, new int[]{DepthFrameDescription.Width,DepthFrameDescription.Height}));
+            }
         }
 
         private void ProcessBodyData()

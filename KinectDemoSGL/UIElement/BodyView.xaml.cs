@@ -15,6 +15,8 @@ using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
+using KinectDemoSGL;
+using KinectDemoCommon.KinectStreamerMessages;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -120,6 +122,10 @@ namespace KinectDemoCommon.UIElement
 
         public BodyView()
         {
+
+            KinectServer kinectServer = KinectServer.Instance;
+
+            kinectServer.ColorDataArrived += kinectServer_ColorDataArrived;
             //kinectStreamer = KinectStreamer.Instance;
 
             //bones = kinectStreamer.Bones;
@@ -145,13 +151,39 @@ namespace KinectDemoCommon.UIElement
             //// Create the drawing group we'll use for drawing
             //drawingGroup = new DrawingGroup();
 
-            //imageSource = new DrawingImage(drawingGroup);
+            imageSource = new DrawingImage(drawingGroup);
 
             //// use the window object as the view model in this simple example
-            //DataContext = this;
+            DataContext = this;
 
             //// initialize the components (controls) of the window
-            //InitializeComponent();
+            InitializeComponent();
+        }
+
+        private void kinectServer_ColorDataArrived(KinectStreamerMessages.KinectStreamerMessage message)
+        {
+            ColorStreamMessage msg = (ColorStreamMessage)message;
+
+            if (colorBitmap == null)
+            {
+                colorBitmap = new WriteableBitmap(msg.ColorFrameSize[0], msg.ColorFrameSize[1], 96.0, 96.0, PixelFormats.Gray8, null);
+            }
+
+            try
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    colorBitmap.WritePixels(
+                        new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
+                        msg.ColorPixels,
+                        colorBitmap.PixelWidth,
+                        0);
+                }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public ImageSource ColorImageSource
@@ -166,7 +198,7 @@ namespace KinectDemoCommon.UIElement
         {
             get
             {
-                return imageSource;
+                return colorBitmap;
             }
         }
 

@@ -21,8 +21,6 @@ namespace KinectDemoClient
 
         private byte[] depthPixels;
 
-        private DepthStreamMessage msg;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -32,23 +30,49 @@ namespace KinectDemoClient
             kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
 
+            //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+            //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+
+            //kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
+
             DepthFrameSize = new[] { 
                 kinectStreamer.DepthFrameDescription.Width,
                 kinectStreamer.DepthFrameDescription.Height
             };
         }
 
+        void kinectStreamer_BodyDataReady(KinectStreamerMessage message)
+        {
+            SerializeAndSendMessage((BodyStreamMessage)message);
+        }
+
+        private void kinectStreamer_ColorDataReady(KinectStreamerMessage message)
+        {
+            SerializeAndSendMessage((ColorStreamMessage)message);
+        }
+
         private void kinectStreamer_DepthDataReady(KinectStreamerMessage message)
         {
-            msg = ((DepthStreamMessage) message);
+            SerializeAndSendMessage((DepthStreamMessage)message);
+        }
+
+        private void SerializeAndSendMessage(KinectStreamerMessage msg)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            formatter.Serialize(stream, msg);
+            byte[] buffer = stream.ToArray();
+
             if (clientSocket != null)
             {
                 if (clientSocket.Connected)
                 {
-                    SendDepthData();
+                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
                 }
             }
         }
+
+
 
         private void ConnectCallback(IAsyncResult ar)
         {
@@ -107,12 +131,12 @@ namespace KinectDemoClient
 
         private void SendDepthData()
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            MemoryStream stream = new MemoryStream();
-            formatter.Serialize(stream, msg);
-            byte[] buffer = stream.ToArray();
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //MemoryStream stream = new MemoryStream();
+            //formatter.Serialize(stream, msg);
+            //byte[] buffer = stream.ToArray();
 
-            clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            //clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
     }
 }
