@@ -1,40 +1,64 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using KinectDemoSGL.Annotations;
-using Microsoft.Kinect;
+using KinectDemoCommon.Annotations;
 
-namespace KinectDemoSGL.UIElement
+namespace KinectDemoCommon.UIElement
 {
     /// <summary>
     /// Interaction logic for CameraWorkspace.xaml
     /// </summary>
     public partial class CameraWorkspace : INotifyPropertyChanged
     {
-        readonly KinectStreamer kinectStreamer;
+        //readonly KinectStreamer kinectStreamer;
 
         WriteableBitmap depthBitmap;
-        public int[] DepthFrameSize {get; set;}
+        public int[] DepthFrameSize { get; set; }
+        private byte[] depthPixels;
         public CameraWorkspace()
         {
             DataContext = this;
-            kinectStreamer = KinectStreamer.Instance;
+            this.depthBitmap = depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
+            //kinectStreamer = KinectStreamer.Instance;
 
-            DepthFrameSize = new[] { 
-                kinectStreamer.DepthFrameDescription.Width,
-                kinectStreamer.DepthFrameDescription.Height
-            };
+            //DepthFrameSize = new[] { 
+            //    kinectStreamer.DepthFrameDescription.Width,
+            //    kinectStreamer.DepthFrameDescription.Height
+            //};
 
             InitializeComponent();
         }
 
-        void kinectStreamer_DepthDataReady(object sender, KinectStreamerEventArgs e)
+        public void RefreshBitmap(byte[] depthPixels, int[] depthFrameSize)
         {
-            depthBitmap = e.DepthBitmap;
-            OnPropertyChanged("ImageSource");
+            this.depthPixels = depthPixels;
+            RenderDepthPixels();
+            //OnPropertyChanged("ImageSource");
+        }
+
+        private void RenderDepthPixels()
+        {
+            try
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    depthBitmap.WritePixels(
+                        new Int32Rect(0, 0, depthBitmap.PixelWidth, depthBitmap.PixelHeight),
+                        depthPixels,
+                        depthBitmap.PixelWidth,
+                        0);
+                }));
+            
+            
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public ImageSource ImageSource
@@ -56,16 +80,16 @@ namespace KinectDemoSGL.UIElement
 
         private void CameraWorkspace_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool) e.NewValue == true)
-            {
-                kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-                kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
-            }
-            else
-            {
-                kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
-                kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
-            }
+            //    if ((bool) e.NewValue == true)
+            //    {
+            //        kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
+            //        kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+            //    }
+            //    else
+            //    {
+            //        kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
+            //        kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+            //    }
         }
     }
 }

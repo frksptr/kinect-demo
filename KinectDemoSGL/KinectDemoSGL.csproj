@@ -8,7 +8,7 @@
     <ProjectGuid>{0DF52E36-AF0D-4D1A-B607-1BDBB2238510}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KinectDemoSGL</RootNamespace>
+    <RootNamespace>KinectDemoCommon</RootNamespace>
     <AssemblyName>KinectDemoSGL</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -92,9 +92,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="KinectStreamer.cs" />
-    <Compile Include="KinectStreamerConfig.cs" />
-    <Compile Include="KinectStreamerEventArgs.cs" />
+    <Compile Include="KinectServer.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />
@@ -103,7 +101,6 @@
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIElement\CloudView.cs" />
-    <Compile Include="Util\GeometryHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -152,6 +149,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="basic.frag" />
+    <None Include="basic.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -175,6 +176,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KinectDemoCommon\KinectDemoCommon.csproj">
+      <Project>{400221f6-41e4-417c-9356-6fcdaee75a1f}</Project>
+      <Name>KinectDemoCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

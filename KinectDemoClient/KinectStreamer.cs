@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using KinectDemoCommon;
+using KinectDemoCommon.KinectStreamerMessages;
 using Microsoft.Kinect;
 
-namespace KinectDemoSGL
+namespace KinectDemoClient
 {
-    public delegate void KinectStreamerEventHandler(object sender, KinectStreamerEventArgs e);
+    public delegate void KinectStreamerEventHandler(KinectStreamerMessage message);
 
 
     /* Provides depth, color and body data streamed by the Kinect. Each of the streams only get processed
@@ -249,10 +251,7 @@ namespace KinectDemoSGL
                     }
                 }
             }
-            if (ColorDataReady != null) ColorDataReady(this, new KinectStreamerEventArgs()
-            {
-                ColorBitmap = colorBitmap
-            });
+            if (ColorDataReady != null) ColorDataReady(new ColorStreamMessage(colorPixels));
         }
 
         private void ProcessDepthData()
@@ -293,10 +292,7 @@ namespace KinectDemoSGL
                 RenderDepthPixels();
             }
             if (DepthDataReady != null)
-                DepthDataReady(this, new KinectStreamerEventArgs
-                {
-                    DepthBitmap = depthBitmap
-                });
+                DepthDataReady(new DepthStreamMessage(depthPixels, new int[]{DepthFrameDescription.Width,DepthFrameDescription.Height}));
         }
 
         private void ProcessBodyData()
@@ -315,10 +311,7 @@ namespace KinectDemoSGL
                     bodyFrame.GetAndRefreshBodyData(Bodies);
                 }
             }
-            if (BodyDataReady != null) BodyDataReady(this, new KinectStreamerEventArgs
-            {
-                Bodies = this.Bodies
-            });
+            if (BodyDataReady != null) BodyDataReady(new BodyStreamMessage(Bodies));
         }
 
         private void RenderDepthPixels()

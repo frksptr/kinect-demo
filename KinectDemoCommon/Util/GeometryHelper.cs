@@ -10,9 +10,9 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Kinect;
 
-namespace KinectDemoSGL.Util
+namespace KinectDemoCommon.Util
 {
-    class GeometryHelper
+    public class GeometryHelper
     {
         public static bool IsNumber(float num)
         {

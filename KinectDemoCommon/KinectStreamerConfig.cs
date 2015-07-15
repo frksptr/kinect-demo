@@ -1,6 +1,6 @@
-﻿namespace KinectDemoSGL
+﻿namespace KinectDemoCommon
 {
-    class KinectStreamerConfig
+    public class KinectStreamerConfig
     {
         public bool ProvideDepthData { get; set; }
         public bool ProvideBodyData { get; set; }
