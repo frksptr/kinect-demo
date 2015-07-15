@@ -8,6 +8,10 @@ using KinectDemoCommon.UIElement.Model;
 using KinectDemoCommon.Util;
 using SharpGL;
 using SharpGL.SceneGraph;
+using System;
+using System.Runtime.InteropServices;
+using System.IO;
+using System.Text;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -18,7 +22,23 @@ namespace KinectDemoCommon.UIElement
     /// </summary>
     public partial class RoomPointCloudView : UserControl
     {
-        public List<Point3D> FullPointCloud { get; set; }
+        public List<Point3D> FullPointCloud 
+        {
+            get
+            {
+                return FullPointCloud;
+            }
+            set
+            {
+                FullPointCloud = value;
+                refreshVertexBuffer();
+            }
+        }
+
+        uint[] vertexBuffer = new uint[1];
+
+        uint shaderProgram;
+
 
         public ObservableCollection<Workspace> WorkspaceList { get; set; }
 
@@ -52,6 +72,8 @@ namespace KinectDemoCommon.UIElement
             cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
             //  Enable the OpenGL depth testing functionality.
             //args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
+
+            initializeProgram();
         }
 
         private List<Point3D> CenterPointCloud(List<Point3D> points)
@@ -106,23 +128,17 @@ namespace KinectDemoCommon.UIElement
                 //  Get the OpenGL instance that's been passed to us.
                 OpenGL gl = args.OpenGL;
 
-                gl.PointSize(1.0f);
-
-                //  Clear the color and depth buffers.
+                gl.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+                gl.UseProgram(shaderProgram);
+                gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vertexBuffer[0]);
+                gl.EnableVertexAttribArray(0);
+                gl.VertexAttribPointer(0, 4, OpenGL.GL_FLOAT, false, 0, IntPtr.Zero);
+                gl.DrawArrays(OpenGL.GL_TRIANGLES, 0, 3);
+                gl.DisableVertexAttribArray(0);
+                gl.UseProgram(0);
+                gl.Flush();
 
-                //  Reset the modelview matrix.
-                gl.LoadIdentity();
-
-                gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1.0f, 0.0f, 0.0f);
-                //  Move the geometry into a fairly central position.
-                foreach (Point3D point in FullPointCloud)
-                {
-                    gl.Vertex(point.X, point.Y, point.Z);
-                }
-
-                gl.End();
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 gl.Color(0-0f, 1.0f, 0.0f);
@@ -207,6 +223,94 @@ namespace KinectDemoCommon.UIElement
                 OpenGlControl.Focus();
             }
 
+        }
+
+        private void refreshVertexBuffer()
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            gl.GenBuffers(1, vertexBuffer);
+            gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vertexBuffer[0]);
+            IntPtr ptr = GCHandle.Alloc(FullPointCloud.ToArray(), GCHandleType.Pinned).AddrOfPinnedObject();
+            gl.BufferData(OpenGL.GL_ARRAY_BUFFER, FullPointCloud.Count, ptr, OpenGL.GL_STATIC_DRAW);
+            gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, 0);
+
+
+        }
+
+
+        private uint createShader(uint eShaderType, string strShaderFile)
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            uint shader = gl.CreateShader(eShaderType);
+            string strFileData = File.ReadAllText(strShaderFile);
+            gl.ShaderSource(shader, strFileData);
+            gl.CompileShader(shader);
+            shaderErrorInfo(shader);
+            return shader;
+        }
+
+        private void initializeProgram()
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            List<uint> shaderList = new List<uint>();
+
+            shaderList.Add(createShader(OpenGL.GL_VERTEX_SHADER, "basic.vert"));
+            shaderList.Add(createShader(OpenGL.GL_FRAGMENT_SHADER, "basic.frag"));
+
+            shaderProgram = createProgram(shaderList);
+
+            foreach (uint shader in shaderList)
+                gl.DeleteShader(shader);
+
+        }
+
+        private uint createProgram(List<uint> shaderList)
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            uint program = gl.CreateProgram();
+
+            foreach (uint shader in shaderList)
+                gl.AttachShader(program, shader);
+
+            gl.LinkProgram(program);
+
+            programErrorInfo(program);
+
+            foreach (uint shader in shaderList)
+                gl.DetachShader(program, shader);
+
+            return program;
+        }
+
+        private bool shaderErrorInfo(uint shaderId)
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            StringBuilder builder = new StringBuilder(2048);
+            gl.GetShaderInfoLog(shaderId, 2048, IntPtr.Zero, builder);
+            string res = builder.ToString();
+            if (!res.Equals(""))
+            {
+                System.Console.WriteLine(res);
+                return false;
+            }
+
+            return true;
+        }
+
+
+        private bool programErrorInfo(uint programId)
+        {
+            OpenGL gl = OpenGlControl.OpenGL;
+            StringBuilder builder = new StringBuilder(2048);
+            gl.GetProgramInfoLog(programId, 2048, IntPtr.Zero, builder);
+            string res = builder.ToString();
+            if (!res.Equals(""))
+            {
+                System.Console.WriteLine(res);
+                return false;
+            }
+
+            return true;
         }
 
     }
