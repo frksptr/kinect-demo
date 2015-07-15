@@ -130,11 +130,12 @@ namespace KinectDemoCommon.UIElement
 
                 gl.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+                gl.LoadIdentity();
                 gl.UseProgram(shaderProgram);
                 gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, vertexBuffer[0]);
                 gl.EnableVertexAttribArray(0);
                 gl.VertexAttribPointer(0, 4, OpenGL.GL_FLOAT, false, 0, IntPtr.Zero);
-                gl.DrawArrays(OpenGL.GL_TRIANGLES, 0, 3);
+                gl.DrawArrays(OpenGL.GL_POINTS, 0, FullPointCloud.Count);
                 gl.DisableVertexAttribArray(0);
                 gl.UseProgram(0);
                 gl.Flush();
