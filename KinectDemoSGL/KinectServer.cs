@@ -26,7 +26,7 @@ namespace KinectDemoSGL
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.ReceiveBufferSize = 300000;
-                socket.Bind(new IPEndPoint(IPAddress.Parse("192.168.0.21"), 3333));
+                socket.Bind(new IPEndPoint(IPAddress.Parse("192.168.11.10"), 3333));
                 socket.Listen(0);
                 socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
             }

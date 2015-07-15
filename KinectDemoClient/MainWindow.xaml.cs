@@ -73,7 +73,7 @@ namespace KinectDemoClient
             try
             {
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse("192.168.0.21"), 3333), new AsyncCallback(ConnectCallback),
+                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse("192.168.11.10"), 3333), new AsyncCallback(ConnectCallback),
                     null);
             }
             catch (Exception ex)
