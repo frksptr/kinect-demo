@@ -15,7 +15,6 @@ namespace KinectDemoSGL
     class KinectServer
     {
 
-
         string ip = "192.168.32.1";
         private Socket socket, clientSocket;
         private byte[] buffer;
@@ -96,21 +95,20 @@ namespace KinectDemoSGL
                 {
                     if (obj is DepthStreamMessage)
                     {
-                        DepthDataArrived((DepthStreamMessage)obj);
+                        if (DepthDataArrived != null)
+                        {
+                            DepthDataArrived((DepthStreamMessage)obj);
+                        }
                     }
                     if (obj is ColorStreamMessage)
                     {
-
+                        if (ColorDataArrived != null)
+                        {
+                            ColorDataArrived((ColorStreamMessage)obj);
+                        }
                     }
                 }
                 
-                //if (obj is Person)
-                //{
-                //    Person person = obj as Person;
-                //    text = "Person: \n Name " + person.Name + ": \n Age: " + person.Age;
-                //}
-
-
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
 
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);

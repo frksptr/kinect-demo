@@ -1,7 +1,7 @@
 ﻿<Window x:Class="KinectDemoCommon.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" >
+        Title="Kinect Server" >
     <TabControl Margin="5">
 
 

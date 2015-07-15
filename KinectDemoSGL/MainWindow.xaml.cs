@@ -63,9 +63,9 @@ namespace KinectDemoCommon
 
             //WorkspacePointCloudHolder.Children.Add(cloudView);
 
-            //bodyView = new BodyView();
+            bodyView = new BodyView();
 
-            //HandCheckBodyViewHolder.Children.Add(bodyView);
+            HandCheckBodyViewHolder.Children.Add(bodyView);
 
             //roomPointCloudView = new RoomPointCloudView();
 

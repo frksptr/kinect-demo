@@ -238,12 +238,12 @@ namespace KinectDemoClient
                         if ((ColorFrameDescription.Width == colorBitmap.PixelWidth) &&
                             (ColorFrameDescription.Height == colorBitmap.PixelHeight))
                         {
-                            colorFrame.CopyConvertedFrameDataToIntPtr(
-                                colorBitmap.BackBuffer,
-                                (uint)(ColorFrameDescription.Width * ColorFrameDescription.Height * 4),
-                                ColorImageFormat.Bgra);
+                            //colorFrame.CopyConvertedFrameDataToIntPtr(
+                            //    colorBitmap.BackBuffer,
+                            //    (uint)(ColorFrameDescription.Width * ColorFrameDescription.Height * 4),
+                            //    ColorImageFormat.Bgra);
 
-                            colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
+                            //colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
 
                             //colorBitmap.CopyPixels(colorPixels, colorBitmap.PixelWidth, 0);
 
@@ -257,7 +257,7 @@ namespace KinectDemoClient
             }
             if (ColorDataReady != null)
             {
-                ColorDataReady(new ColorStreamMessage(colorPixels, new int[] {DepthFrameDescription.Width, DepthFrameDescription.Height}));
+                ColorDataReady(new ColorStreamMessage(colorPixels, new int[] { ColorFrameDescription.Width, ColorFrameDescription.Height }));
             }
         }
 

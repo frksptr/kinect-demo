@@ -128,6 +128,9 @@ namespace KinectDemoCommon.UIElement
             kinectServer.ColorDataArrived += kinectServer_ColorDataArrived;
             //kinectStreamer = KinectStreamer.Instance;
 
+            //  TODO: get size from framedescription provided by client
+            colorBitmap = new WriteableBitmap(1920, 1080, 96.0, 96.0, PixelFormats.Bgr32, null);
+
             //bones = kinectStreamer.Bones;
 
             //displayHeight = kinectStreamer.ColorFrameDescription.Height;
@@ -163,11 +166,6 @@ namespace KinectDemoCommon.UIElement
         private void kinectServer_ColorDataArrived(KinectStreamerMessages.KinectStreamerMessage message)
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
-
-            if (colorBitmap == null)
-            {
-                colorBitmap = new WriteableBitmap(msg.ColorFrameSize[0], msg.ColorFrameSize[1], 96.0, 96.0, PixelFormats.Gray8, null);
-            }
 
             try
             {

@@ -16,29 +16,14 @@ namespace KinectDemoClient
     {
         private Socket clientSocket;
         public int[] DepthFrameSize { get; set; }
-        WriteableBitmap depthBitmap;
         string ip = "192.168.32.1";
-
-        private byte[] depthPixels;
+        KinectStreamer kinectStreamer;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            KinectStreamer kinectStreamer = KinectStreamer.Instance;
-
-            kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
-
-            kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
-
-            //kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
-
-            DepthFrameSize = new[] { 
-                kinectStreamer.DepthFrameDescription.Width,
-                kinectStreamer.DepthFrameDescription.Height
-            };
+            kinectStreamer = KinectStreamer.Instance;
         }
 
         void kinectStreamer_BodyDataReady(KinectStreamerMessage message)
@@ -58,6 +43,7 @@ namespace KinectDemoClient
 
         private void SerializeAndSendMessage(KinectStreamerMessage msg)
         {
+
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
@@ -78,6 +64,11 @@ namespace KinectDemoClient
         {
             try
             {
+                kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+
+                kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
                 clientSocket.EndConnect(ar);
             }
             catch (Exception ex)
