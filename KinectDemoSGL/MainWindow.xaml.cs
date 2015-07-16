@@ -3,9 +3,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
-using KinectDemoCommon.UIElement.Model;
-using KinectDemoSGL;
 using Microsoft.Kinect;
 
 namespace KinectDemoCommon
@@ -50,10 +49,13 @@ namespace KinectDemoCommon
 
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
+        private KinectServer kinectServer;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            kinectServer = KinectServer.Instance;
 
             AddCameraWorkspace();
 
@@ -90,27 +92,25 @@ namespace KinectDemoCommon
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //if (FocusManager.GetFocusedElement(this) is TextBox)
-            //{
-            //    TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
-            //    if (focusedTextBox != null)
-            //    {
-            //        // Get Depth coordinates from clicked point
-            //        double actualWidth = cameraWorkspace.ActualWidth;
-            //        double actualHeight = cameraWorkspace.ActualHeight;
-                    
-            //        double x = e.GetPosition(cameraWorkspace).X;
-            //        double y = e.GetPosition(cameraWorkspace).Y;
+            if (FocusManager.GetFocusedElement(this) is TextBox)
+            {
+                TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
+                if (focusedTextBox != null)
+                {
+                    // Get Depth coordinates from clicked point
+                    double actualWidth = cameraWorkspace.ActualWidth;
+                    double actualHeight = cameraWorkspace.ActualHeight;
 
-            //        int depthWidth = cameraWorkspace.DepthFrameSize[0];
-            //        int depthHeight = cameraWorkspace.DepthFrameSize[1];
+                    double x = e.GetPosition(cameraWorkspace).X;
+                    double y = e.GetPosition(cameraWorkspace).Y;
 
-            //        focusedTextBox.Text = (int)((x / actualWidth) * depthWidth) + "," + (int)((y / actualHeight) * depthHeight);
-            //    }
-                
-            //    TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
-            //    focusedTextBox.MoveFocus(tRequest);
-            //}
+                    //  TODO: implement converter to display actual position instead of normed value
+                    focusedTextBox.Text = (x / actualWidth) + "," + (y / actualHeight);
+                }
+
+                TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
+                focusedTextBox.MoveFocus(tRequest);
+            }
         }
 
         public string StatusText
@@ -158,6 +158,7 @@ namespace KinectDemoCommon
             {
                 workspaceList.Add(activeWorkspace);
             }
+            kinectServer.AddWorkspace(activeWorkspace);
             activeWorkspace = new Workspace();
             EditWorkspace.DataContext = activeWorkspace;
             WorkspaceList.Items.Refresh();

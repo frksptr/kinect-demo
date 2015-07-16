@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using KinectDemoCommon.UIElement.Model;
+using KinectDemoCommon.Model;
 using Microsoft.Kinect;
 
 namespace KinectDemoCommon.UIElement

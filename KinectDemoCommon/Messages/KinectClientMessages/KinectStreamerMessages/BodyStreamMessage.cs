@@ -1,8 +1,8 @@
 ﻿using Microsoft.Kinect;
 
-namespace KinectDemoCommon.KinectStreamerMessages
+namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
 {
-    public class BodyStreamMessage : KinectStreamerMessage
+    public class BodyStreamMessage : KinectClientMessage
     {
         public Body[] Bodies { get; set; }
         public BodyStreamMessage(Body[] bodies)

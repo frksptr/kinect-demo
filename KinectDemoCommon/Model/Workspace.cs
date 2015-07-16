@@ -1,11 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace KinectDemoCommon.UIElement.Model
+namespace KinectDemoCommon.Model
 {
+    [Serializable]
     public class Workspace : INotifyPropertyChanged
     {
         private string name;
@@ -24,6 +26,8 @@ namespace KinectDemoCommon.UIElement.Model
         public Point3D Center { get; set; }
 
         private ObservableCollection<Point3D> pointCloud;
+
+        public bool Active { get; set; }
 
         public string Name
         {

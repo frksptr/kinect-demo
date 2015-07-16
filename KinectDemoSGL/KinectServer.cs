@@ -1,21 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using KinectDemoCommon.KinectStreamerMessages;
-using KinectDemoCommon.UIElement;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectClientMessages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 
-namespace KinectDemoSGL
+namespace KinectDemoCommon
 {
-    public delegate void KinectServerDataArrived(KinectStreamerMessage message);
+    public delegate void KinectServerDataArrived(KinectClientMessage message);
 
     // Singleton
     class KinectServer
     {
 
-        string ip = "192.168.32.1";
+        private string ip = NetworkHelper.LocalIPAddress();
         private Socket socket, clientSocket;
         private byte[] buffer;
         
@@ -91,7 +95,7 @@ namespace KinectDemoSGL
 
                 }
                 
-                if (obj is KinectStreamerMessage)
+                if (obj is KinectClientMessage)
                 {
                     if (obj is DepthStreamMessage)
                     {
@@ -117,6 +121,37 @@ namespace KinectDemoSGL
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        public void AddWorkspace(Workspace workspace)
+        {
+            WorkspaceMessage message = new WorkspaceMessage()
+            {
+                Vertices = workspace.Vertices.ToArray()
+            };
+            SerializeAndSendMessage(message);
+        }
+
+        private void SerializeAndSendMessage(KinectDemoMessage msg)
+        {
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            formatter.Serialize(stream, msg);
+            byte[] buffer = stream.ToArray();
+
+            if (clientSocket != null)
+            {
+                if (clientSocket.Connected)
+                {
+                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
+                }
+            }
+        }
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            
         }
     }
 }

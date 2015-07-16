@@ -5,8 +5,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon.Annotations;
-using KinectDemoSGL;
-using KinectDemoCommon.KinectStreamerMessages;
+using KinectDemoCommon.Messages.KinectClientMessages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -24,14 +24,14 @@ namespace KinectDemoCommon.UIElement
         {
             DataContext = this;
             //  TODO: set width, height from framedescription data provided by client
-            this.depthBitmap = depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
+            depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
             KinectServer kinectServer = KinectServer.Instance;
             kinectServer.DepthDataArrived += kinectServer_DepthDataReady;
 
             InitializeComponent();
         }
 
-        private void kinectServer_DepthDataReady(KinectStreamerMessages.KinectStreamerMessage message)
+        private void kinectServer_DepthDataReady(KinectClientMessage message)
         {
             DepthStreamMessage msg = (DepthStreamMessage)message;
             RefreshBitmap(msg.DepthPixels, msg.DepthFrameSize);
@@ -48,14 +48,14 @@ namespace KinectDemoCommon.UIElement
         {
             try
             {
-                this.Dispatcher.Invoke((Action)(() =>
+                Dispatcher.Invoke(() =>
                 {
                     depthBitmap.WritePixels(
                         new Int32Rect(0, 0, depthBitmap.PixelWidth, depthBitmap.PixelHeight),
                         depthPixels,
                         depthBitmap.PixelWidth,
                         0);
-                }));
+                });
             }
             catch (Exception ex)
             {

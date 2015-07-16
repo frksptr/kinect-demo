@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using KinectDemoCommon.UIElement.Model;
+using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using SharpGL;
 using SharpGL.SceneGraph;
