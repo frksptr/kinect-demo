@@ -13,13 +13,13 @@ using KinectDemoCommon.Util;
 
 namespace KinectDemoCommon
 {
-    public delegate void KinectServerDataArrived(KinectClientMessage message);
+    public delegate void KinectServerDataArrived(KinectDemoMessage message);
 
     // Singleton
     class KinectServer
     {
 
-        private string ip = NetworkHelper.LocalIPAddress();
+        private readonly string ip = NetworkHelper.LocalIPAddress();
         private Socket socket, clientSocket;
         private byte[] buffer;
         
@@ -27,6 +27,8 @@ namespace KinectDemoCommon
         public KinectServerDataArrived DepthDataArrived;
         public KinectServerDataArrived ColorDataArrived;
         public KinectServerDataArrived BodyDataArrived;
+
+        public KinectServerDataArrived WorkspaceUpdated;
 
         private static KinectServer kinectServer;
 
@@ -48,7 +50,7 @@ namespace KinectDemoCommon
                 socket.ReceiveBufferSize = 9000000; 
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(0);
-                socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
+                socket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
@@ -63,7 +65,7 @@ namespace KinectDemoCommon
             {
                 clientSocket = socket.EndAccept(ar);
                 buffer = new byte[clientSocket.ReceiveBufferSize];
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
             {
@@ -114,13 +116,13 @@ namespace KinectDemoCommon
                 }
                 if (obj is WorkspaceMessage)
                 {
-                    WorkspaceMessage msg = (WorkspaceMessage) obj;
+                    WorkspaceUpdated((WorkspaceMessage) obj);
 
                 }
                 
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
 
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
             {
@@ -143,7 +145,7 @@ namespace KinectDemoCommon
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
-            byte[] buffer = stream.ToArray();
+            buffer = stream.ToArray();
 
             if (clientSocket != null)
             {

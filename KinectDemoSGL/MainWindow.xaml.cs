@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
+using KinectDemoCommon.Messages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
 using Microsoft.Kinect;
@@ -57,13 +59,13 @@ namespace KinectDemoCommon
 
             kinectServer = KinectServer.Instance;
 
+            kinectServer.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
+
             AddCameraWorkspace();
 
-            //kinectSensor = KinectSensor.GetDefault();
+            cloudView = new CloudView();
 
-            //cloudView = new CloudView();
-
-            //WorkspacePointCloudHolder.Children.Add(cloudView);
+            WorkspacePointCloudHolder.Children.Add(cloudView);
 
             bodyView = new BodyView();
 
@@ -78,6 +80,17 @@ namespace KinectDemoCommon
             //WorkspaceList.ItemsSource = workspaceList;
 
             //EditWorkspace.DataContext = activeWorkspace;
+        }
+
+        private void kinectServer_WorkspaceUpdated(Messages.KinectDemoMessage message)
+        {
+            WorkspaceMessage msg = (WorkspaceMessage) message;
+            cloudView.SetWorkspace(new Workspace()
+            {
+                Vertices = new ObservableCollection<Point>(msg.Vertices),
+                PointCloud = new ObservableCollection<Point3D>(msg.PointCloud),
+                FittedVertices = new ObservableCollection<Point3D>(msg.FittedVertices)
+            });
         }
 
         private void AddCameraWorkspace()

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon.Annotations;
+using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
@@ -31,7 +32,7 @@ namespace KinectDemoCommon.UIElement
             InitializeComponent();
         }
 
-        private void kinectServer_DepthDataReady(KinectClientMessage message)
+        private void kinectServer_DepthDataReady(KinectDemoMessage message)
         {
             DepthStreamMessage msg = (DepthStreamMessage)message;
             RefreshBitmap(msg.DepthPixels, msg.DepthFrameSize);

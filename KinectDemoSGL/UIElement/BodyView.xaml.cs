@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using KinectDemoCommon.Annotations;
+using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
@@ -163,20 +164,20 @@ namespace KinectDemoCommon.UIElement
             InitializeComponent();
         }
 
-        private void kinectServer_ColorDataArrived(KinectClientMessage message)
+        private void kinectServer_ColorDataArrived(KinectDemoMessage message)
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
 
             try
             {
-                this.Dispatcher.Invoke((Action)(() =>
+                Dispatcher.Invoke(() =>
                 {
                     colorBitmap.WritePixels(
                         new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
                         msg.ColorPixels,
                         colorBitmap.PixelWidth*4,
                         0);
-                }));
+                });
             }
             catch (Exception ex)
             {
