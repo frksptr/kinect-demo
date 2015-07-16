@@ -112,6 +112,11 @@ namespace KinectDemoCommon
                         }
                     }
                 }
+                if (obj is WorkspaceMessage)
+                {
+                    WorkspaceMessage msg = (WorkspaceMessage) obj;
+
+                }
                 
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
 

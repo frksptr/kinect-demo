@@ -12,7 +12,7 @@ namespace KinectDemoCommon.Model
     {
         private string name;
 
-        // 2D Vertices defined by user in DepthSpace
+        // 2D Vertices defined by user in DepthSpace with coordinates normed to (0,1)
         private ObservableCollection<Point> vertices;
 
         // Vertices in 3D

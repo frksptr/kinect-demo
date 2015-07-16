@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -100,8 +102,7 @@ namespace KinectDemoClient
                 int received = clientSocket.EndReceive(ar);
                 Array.Resize(ref buffer, received);
                 BinaryFormatter formatter = new BinaryFormatter();
-
-
+                
                 MemoryStream stream = new MemoryStream(buffer);
 
                 object obj = null;
@@ -122,7 +123,17 @@ namespace KinectDemoClient
                     {
                         Dispatcher.Invoke(() =>
                         {
+                            WorkspaceMessage msg = (WorkspaceMessage) obj;
                             TextBox.Text = ((WorkspaceMessage) obj).Vertices.ToString();
+                            Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
+                                new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
+                            WorkspaceMessage updatedMessage = new WorkspaceMessage()
+                            {
+                                FittedVertices = workspace.FittedVertices.ToArray(),
+                                Vertices = workspace.Vertices.ToArray(),
+                                PointCloud = workspace.PointCloud.ToArray()
+                            };
+                            SerializeAndSendMessage(updatedMessage);
                         });
                     }
                 }

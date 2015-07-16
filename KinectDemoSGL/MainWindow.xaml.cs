@@ -166,13 +166,12 @@ namespace KinectDemoCommon
 
         private void WorkspaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if ((Workspace)WorkspaceList.SelectedItem == null)
-            //{
-            //    return;
-            //}
-            //activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
-            //EditWorkspace.DataContext = activeWorkspace;
-            //cloudView.SetWorkspace(activeWorkspace);
+            if ((Workspace)WorkspaceList.SelectedItem == null)
+            {
+                return;
+            }
+            activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
+            EditWorkspace.DataContext = activeWorkspace;
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
