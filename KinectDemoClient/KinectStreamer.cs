@@ -7,6 +7,8 @@ using KinectDemoCommon;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using Microsoft.Kinect;
+using System.Windows.Media.Media3D;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoClient
 {
@@ -27,7 +29,7 @@ namespace KinectDemoClient
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
         
-        public CameraSpacePoint[] FullPointCloud { get; set; }
+        public Point3D[] FullPointCloud { get; set; }
 
         KinectSensor kinectSensor;
 
@@ -332,12 +334,13 @@ namespace KinectDemoClient
             }
         }
 
-        public CameraSpacePoint[] GenerateFullPointCloud()
+        public Point3D[] GenerateFullPointCloud()
         {
             int width = DepthFrameDescription.Width;
             int height = DepthFrameDescription.Height;
             int frameSize = width * height;
-            FullPointCloud = new CameraSpacePoint[frameSize];
+            CameraSpacePoint[] pointCloudCandidates = new CameraSpacePoint[frameSize];
+            List<Point3D> validPointList = new List<Point3D>();
             DepthSpacePoint[] allDepthSpacePoints = new DepthSpacePoint[frameSize];
 
             ushort[] depths = new ushort[frameSize];
@@ -348,12 +351,21 @@ namespace KinectDemoClient
                 {
                     int index = i * width + j;
                     allDepthSpacePoints[index] = new DepthSpacePoint { X = j, Y = i };
-                    FullPointCloud[index] = new CameraSpacePoint();
+                    pointCloudCandidates[index] = new CameraSpacePoint();
                     depths[index] = depthArray[index];
                 }
             }
 
-            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, FullPointCloud);
+            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, pointCloudCandidates);
+            foreach (CameraSpacePoint point in pointCloudCandidates)
+            {
+                if (GeometryHelper.IsValidCameraPoint(point))
+                {
+                    validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
+                }
+            }
+
+            FullPointCloud = validPointList.ToArray();
 
             return FullPointCloud;
         }

@@ -60,7 +60,7 @@ namespace KinectDemoCommon
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -75,7 +75,7 @@ namespace KinectDemoCommon
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
         [STAThread]
@@ -98,7 +98,7 @@ namespace KinectDemoCommon
                 }
                 catch (Exception ex )
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                 }
                 
                 if (obj is KinectClientMessage)
@@ -119,9 +119,11 @@ namespace KinectDemoCommon
                     }
                     if (obj is PointCloudStreamMessage)
                     {
+                        DataStore.Instance.FullPointCloud = ((PointCloudStreamMessage)obj).FullPointCloud;
+
                         if (PointCloudDataArrived != null)
                         {
-                            PointCloudDataArrived((PointCloudStreamMessage)obj);
+                            //PointCloudDataArrived((PointCloudStreamMessage)obj);
                         }
                     }
                 }
@@ -134,7 +136,6 @@ namespace KinectDemoCommon
                         Vertices = new System.Collections.ObjectModel.ObservableCollection<Point>(msg.Vertices),
                         Vertices3D = msg.Vertices3D
                     };
-                    Polygon polygon = new Polygon();
                     WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
                     WorkspaceUpdated((WorkspaceMessage)obj);
                 }

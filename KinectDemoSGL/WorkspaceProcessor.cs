@@ -18,16 +18,6 @@ namespace KinectDemoCommon
         
         public static void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-            Polygon polygon = new Polygon();
-            PointCollection pointCollection = new PointCollection();
-            foreach (Point3D p in workspace.Vertices3D)
-            {
-                pointCollection.Add(new Point(p.X, p.Y));
-            }
-
-            int height = (int)polygon.ActualHeight;
-            int width = (int)polygon.ActualWidth;
-
             double sumX = 0;
             double sumY = 0;
             double sumZ = 0;
@@ -38,7 +28,7 @@ namespace KinectDemoCommon
             {
                 Point point2D = new Point(point.X, point.Y);
 
-                if (GeometryHelper.InsidePolygon(polygon, new Point(point2D.X, point2D.Y)))
+                if (GeometryHelper.InsidePolygon(workspace.Vertices.ToArray(), new Point(point2D.X, point2D.Y)))
                 {
                     double x = point.X;
                     double y = point.Y;

@@ -133,15 +133,15 @@ namespace KinectDemoCommon.Util
             return distance;
         }
 
-        public static bool InsidePolygon(Point[] vertices, Point point)
+        public static bool InsidePolygon(Point[] polyVertices, Point point)
         {
             int i, j;
             bool c = false;
-            int nvert = vertices.Length;
+            int nvert = polyVertices.Length;
             for (i = 0, j = nvert - 1; i < nvert; j = i++)
             {
-                if (((vertices[i].Y > point.Y) != (vertices[j].Y > point.Y)) &&
-                 (point.X < (vertices[j].X - vertices[i].X) * (point.Y - vertices[i].Y) / (vertices[j].Y - vertices[i].Y) + vertices[i].X))
+                if (((polyVertices[i].Y > point.Y) != (polyVertices[j].Y > point.Y)) &&
+                 (point.X < (polyVertices[j].X - polyVertices[i].X) * (point.Y - polyVertices[i].Y) / (polyVertices[j].Y - polyVertices[i].Y) + polyVertices[i].X))
                     c = !c;
             }
             return c;
@@ -155,9 +155,8 @@ namespace KinectDemoCommon.Util
             {
                 points.Add(new Point(point.X, point.Y));
             }
-            return InsidePolygon( Points = points }, new Point(projectedPoint.X, projectedPoint.Y));
+            return InsidePolygon(points.ToArray(), new Point(projectedPoint.X, projectedPoint.Y));
         }
-
 
         public static Model3DGroup CreateTriangleModel(Point3D p0, Point3D p1, Point3D p2, Color color)
         {

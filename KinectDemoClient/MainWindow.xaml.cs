@@ -52,7 +52,7 @@ namespace KinectDemoClient
             {
                 pointCloudSent = true;
                 kinectStreamer.GenerateFullPointCloud();
-                SerializeAndSendMessage(new PointCloudStreamMessage(GeometryHelper.CameraSpacePointsToPoint3Ds(kinectStreamer.FullPointCloud).ToArray()));
+                SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
             }
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
@@ -98,7 +98,7 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
 
@@ -121,7 +121,7 @@ namespace KinectDemoClient
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
 
                 }
 
@@ -152,7 +152,7 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
 
@@ -164,7 +164,7 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                 throw;
             }
         }
@@ -173,14 +173,20 @@ namespace KinectDemoClient
         {
             try
             {
-                clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), ConnectCallback,
-                    null);
+                if (clientSocket == null)
+                {
+                    clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                }
+                if (!clientSocket.Connected)
+                {
+                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), ConnectCallback,
+                        null);
+                }
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
 
         }
@@ -193,7 +199,7 @@ namespace KinectDemoClient
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
     }

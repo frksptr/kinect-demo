@@ -105,59 +105,44 @@ namespace KinectDemoClient
 
         private static void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-            AllCameraSpacePoints = KinectStreamer.Instance.GenerateFullPointCloud();
+            //AllCameraSpacePoints = KinectStreamer.Instance.GenerateFullPointCloud();
 
-            Polygon polygon = new Polygon();
-            PointCollection pointCollection = new PointCollection();
-            foreach (Point p in workspace.Vertices)
-            {
-                pointCollection.Add(p);
-            }
+            //double sumX = 0;
+            //double sumY = 0;
+            //double sumZ = 0;
+            //double numberOfPoints = 0;
 
-            polygon.Points = pointCollection;
-            polygon.Stroke = Brushes.Black;
-            polygon.Fill = Brushes.LightSeaGreen;
-            polygon.StrokeThickness = 2;
+            //List<Point3D> cameraSpacePoints = new List<Point3D>();
+            //List<DepthSpacePoint> dspList = new List<DepthSpacePoint>();
+            //foreach (CameraSpacePoint csp in AllCameraSpacePoints)
+            //{
+            //    if (GeometryHelper.IsValidCameraPoint(csp))
+            //    {
 
-            int height = (int)polygon.ActualHeight;
-            int width = (int)polygon.ActualWidth;
+            //        DepthSpacePoint dsp = KinectStreamer.Instance.CoordinateMapper.MapCameraPointToDepthSpace(csp);
+            //        dspList.Add(dsp);
 
-            double sumX = 0;
-            double sumY = 0;
-            double sumZ = 0;
-            double numberOfPoints = 0;
+            //        if (GeometryHelper.InsidePolygon(workspace.Vertices.ToArray(), new Point(dsp.X, dsp.Y)))
+            //        {
+            //            double x = csp.X;
+            //            double y = csp.Y;
+            //            double z = csp.Z;
 
-            List<Point3D> cameraSpacePoints = new List<Point3D>();
-            List<DepthSpacePoint> dspList = new List<DepthSpacePoint>();
-            foreach (CameraSpacePoint csp in AllCameraSpacePoints)
-            {
-                if (GeometryHelper.IsValidCameraPoint(csp))
-                {
+            //            sumX += x;
+            //            sumY += y;
+            //            sumZ += z;
 
-                    DepthSpacePoint dsp = KinectStreamer.Instance.CoordinateMapper.MapCameraPointToDepthSpace(csp);
-                    dspList.Add(dsp);
+            //            numberOfPoints += 1;
 
-                    if (GeometryHelper.InsidePolygon(polygon, new Point(dsp.X, dsp.Y)))
-                    {
-                        double x = csp.X;
-                        double y = csp.Y;
-                        double z = csp.Z;
+            //            cameraSpacePoints.Add(new Point3D(csp.X, csp.Y, csp.Z));
 
-                        sumX += x;
-                        sumY += y;
-                        sumZ += z;
+            //        }
+            //    }
+            //}
 
-                        numberOfPoints += 1;
+            //workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);
 
-                        cameraSpacePoints.Add(new Point3D(csp.X, csp.Y, csp.Z));
-
-                    }
-                }
-            }
-
-            workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);
-
-            workspace.PointCloud = cameraSpacePoints.ToArray();
+            //workspace.PointCloud = cameraSpacePoints.ToArray();
         }
     }
 }
