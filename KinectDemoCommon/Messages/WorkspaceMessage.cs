@@ -9,11 +9,13 @@ namespace KinectDemoCommon.Messages
     [Serializable]
     public class WorkspaceMessage : KinectDemoMessage
     {
+        public string Name { get; set; }
+
         public Point[] Vertices { get; set; }
 
         public Point3D[] PointCloud { get; set; }
 
-        public Point3D[] FittedVertices { get;set; }
+        public Point3D[] Vertices3D { get;set; }
 
     }
 }

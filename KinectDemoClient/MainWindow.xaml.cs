@@ -26,12 +26,14 @@ namespace KinectDemoClient
         string ip = NetworkHelper.LocalIPAddress();
         readonly KinectStreamer kinectStreamer;
         private byte[] buffer;
+        private bool pointCloudSent = false;
 
         public MainWindow()
         {
             InitializeComponent();
 
             kinectStreamer = KinectStreamer.Instance;
+
         }
 
         void kinectStreamer_BodyDataReady(KinectClientMessage message)
@@ -46,6 +48,12 @@ namespace KinectDemoClient
 
         private void kinectStreamer_DepthDataReady(KinectClientMessage message)
         {
+            if (!pointCloudSent)
+            {
+                pointCloudSent = true;
+                kinectStreamer.GenerateFullPointCloud();
+                SerializeAndSendMessage(new PointCloudStreamMessage(GeometryHelper.CameraSpacePointsToPoint3Ds(kinectStreamer.FullPointCloud).ToArray()));
+            }
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
         private void kinectStreamer_WorkspaceActivated(WorkspaceMessage message)
@@ -83,7 +91,7 @@ namespace KinectDemoClient
                 kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
                 kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
 
-                kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
+                //kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
 
                 //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
                 //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
@@ -121,20 +129,20 @@ namespace KinectDemoClient
                 {
                     if (obj is WorkspaceMessage)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            WorkspaceMessage msg = (WorkspaceMessage) obj;
-                            TextBox.Text = ((WorkspaceMessage) obj).Vertices.ToString();
-                            Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
-                                new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
-                            WorkspaceMessage updatedMessage = new WorkspaceMessage()
-                            {
-                                FittedVertices = workspace.FittedVertices.ToArray(),
-                                Vertices = workspace.Vertices.ToArray(),
-                                PointCloud = workspace.PointCloud.ToArray()
-                            };
-                            SerializeAndSendMessage(updatedMessage);
-                        });
+                        //Dispatcher.Invoke(() =>
+                        //{
+                        //    //WorkspaceMessage msg = (WorkspaceMessage) obj;
+                        //    //TextBox.Text = ((WorkspaceMessage) obj).Vertices.ToString();
+                        //    //Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
+                        //    //    new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
+                        //    //WorkspaceMessage updatedMessage = new WorkspaceMessage()
+                        //    //{
+                        //    //    Name = msg.Name,
+                        //    //    Vertices3D = workspace.FittedVertices.ToArray(),
+                        //    //    Vertices = workspace.Vertices.ToArray(),
+                        //    //};
+                        //    //SerializeAndSendMessage(updatedMessage);
+                        //});
                     }
                 }
 

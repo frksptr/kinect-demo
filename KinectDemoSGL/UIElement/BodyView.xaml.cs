@@ -205,7 +205,7 @@ namespace KinectDemoCommon.UIElement
         {
             foreach (Workspace workspace in WorkspaceList)
             {
-                ObservableCollection<Point3D> vertices = workspace.FittedVertices;
+                Point3D[] vertices = workspace.FittedVertices;
 
                 Polygon poly = new Polygon();
                 poly.Points = new PointCollection

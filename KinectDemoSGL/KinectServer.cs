@@ -10,6 +10,8 @@ using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using Microsoft.Kinect;
+using System.Collections.Generic;
 
 namespace KinectDemoCommon
 {
@@ -22,11 +24,13 @@ namespace KinectDemoCommon
         private readonly string ip = NetworkHelper.LocalIPAddress();
         private Socket socket, clientSocket;
         private byte[] buffer;
-        
+
+        private CoordinateMapper coordinateMapper;
 
         public KinectServerDataArrived DepthDataArrived;
         public KinectServerDataArrived ColorDataArrived;
         public KinectServerDataArrived BodyDataArrived;
+        public KinectServerDataArrived PointCloudDataArrived;
 
         public KinectServerDataArrived WorkspaceUpdated;
 
@@ -88,13 +92,11 @@ namespace KinectDemoCommon
                 stream.Position = 0;
                 try
                 {
-                    
                     obj = formatter.Deserialize(stream);
                 }
                 catch (Exception ex )
                 {
                     MessageBox.Show(ex.Message);
-
                 }
                 
                 if (obj is KinectClientMessage)
@@ -113,11 +115,25 @@ namespace KinectDemoCommon
                             ColorDataArrived((ColorStreamMessage)obj);
                         }
                     }
+                    if (obj is PointCloudStreamMessage)
+                    {
+                        if (PointCloudDataArrived != null)
+                        {
+                            PointCloudDataArrived((PointCloudStreamMessage)obj);
+                        }
+                    }
                 }
                 if (obj is WorkspaceMessage)
                 {
-                    WorkspaceUpdated((WorkspaceMessage) obj);
-
+                    WorkspaceMessage msg = (WorkspaceMessage)obj;
+                    Workspace workspace = new Workspace()
+                    {
+                        Name = msg.Name,
+                        Vertices = new System.Collections.ObjectModel.ObservableCollection<Point>(msg.Vertices),
+                        Vertices3D = msg.Vertices3D
+                    };
+                    WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
+                    WorkspaceUpdated((WorkspaceMessage)obj);
                 }
                 
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
@@ -134,6 +150,7 @@ namespace KinectDemoCommon
         {
             WorkspaceMessage message = new WorkspaceMessage()
             {
+                Name = workspace.Name,
                 Vertices = workspace.Vertices.ToArray()
             };
             SerializeAndSendMessage(message);

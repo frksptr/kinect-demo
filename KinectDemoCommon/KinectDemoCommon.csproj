@@ -47,6 +47,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrameSize.cs" />
+    <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\PointCloudStreamMessage.cs" />
     <Compile Include="Messages\KinectDemoMessage.cs" />
     <Compile Include="Messages\KinectServerMessages\KinectServerMessage.cs" />
     <Compile Include="Messages\WorkspaceMessage.cs" />

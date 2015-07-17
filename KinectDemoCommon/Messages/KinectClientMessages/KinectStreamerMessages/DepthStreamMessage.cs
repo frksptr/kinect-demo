@@ -7,9 +7,9 @@ namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
     {
         public byte[] DepthPixels { get;set; }
 
-        public int[] DepthFrameSize { get; set; }
+        public FrameSize DepthFrameSize { get; set; }
 
-        public DepthStreamMessage(byte[] depthPixels, int[] depthFrameSize)
+        public DepthStreamMessage(byte[] depthPixels, FrameSize depthFrameSize)
         {
             DepthPixels = depthPixels;
             DepthFrameSize = depthFrameSize;

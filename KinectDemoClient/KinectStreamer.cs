@@ -23,8 +23,11 @@ namespace KinectDemoClient
         public event KinectStreamerEventHandler BodyDataReady;
         public event KinectStreamerEventHandler ColorDataReady;
         public event KinectStreamerEventHandler DepthDataReady;
+        public event KinectStreamerEventHandler PointCloudDataReady;
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
+        
+        public CameraSpacePoint[] FullPointCloud { get; set; }
 
         KinectSensor kinectSensor;
 
@@ -60,8 +63,6 @@ namespace KinectDemoClient
         const int MapDepthToByte = 8000 / 256;
 
         readonly int bytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel + 7) / 8;
-        
-        public CameraSpacePoint[] FullPointCloud { get; set; }
 
         private static KinectStreamer kinectStreamer;
 
@@ -79,12 +80,8 @@ namespace KinectDemoClient
             
             SetupBody();
 
-            WorkspaceChecker = new WorkspaceChecker();
-            
-            
             kinectSensor.Open();
         }
-
 
         private void SetupKinectSensor()
         {
@@ -292,14 +289,9 @@ namespace KinectDemoClient
                     }
                 }
             }
-
-            if (depthFrameProcessed)
-            {
-                RenderDepthPixels();
-            }
             if (DepthDataReady != null)
             {
-                DepthDataReady(new DepthStreamMessage(depthPixels, new[]{DepthFrameDescription.Width,DepthFrameDescription.Height}));
+                DepthDataReady(new DepthStreamMessage(depthPixels, new FrameSize(DepthFrameDescription.Width,DepthFrameDescription.Height)));
             }
         }
 
@@ -320,15 +312,6 @@ namespace KinectDemoClient
                 }
             }
             if (BodyDataReady != null) BodyDataReady(new BodyStreamMessage(Bodies));
-        }
-
-        private void RenderDepthPixels()
-        {
-            depthBitmap.WritePixels(
-                new Int32Rect(0, 0, depthBitmap.PixelWidth, depthBitmap.PixelHeight),
-                depthPixels,
-                depthBitmap.PixelWidth,
-                0);
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)

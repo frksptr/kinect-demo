@@ -25,12 +25,32 @@ namespace KinectDemoClient
         {
             Workspace newWorkspace = workspace;
 
-            if (newWorkspace.PointCloud == null)
+            //if (newWorkspace.PointCloud == null)
+            //{
+            //    SetWorkspaceCloudAndCenter(newWorkspace);
+            //}
+
+            //SetRealVertices(newWorkspace);
+
+            Point[] vertices = workspace.Vertices.ToArray();
+
+            CameraSpacePoint[] csps = { new CameraSpacePoint() };
+
+            for (int i = 0; i < vertices.Length; i++)
             {
-                SetWorkspaceCloudAndCenter(newWorkspace);
+                Point vertex = vertices[i];
+
+                KinectStreamer.Instance.CoordinateMapper.MapDepthPointsToCameraSpace(
+                    new[] {
+                        new DepthSpacePoint {
+                            X = (float)vertex.X,
+                            Y = (float)vertex.Y
+                        }
+                    },
+                    new ushort[] { 1 }, csps);
+                newWorkspace.Vertices3D[i] = new Point3D(csps[0].X, csps[0].Y, csps[0].Z);
             }
 
-            SetRealVertices(newWorkspace);
             return newWorkspace;
         }
 
@@ -137,7 +157,7 @@ namespace KinectDemoClient
 
             workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);
 
-            workspace.PointCloud = new ObservableCollection<Point3D>(cameraSpacePoints);
+            workspace.PointCloud = cameraSpacePoints.ToArray();
         }
     }
 }

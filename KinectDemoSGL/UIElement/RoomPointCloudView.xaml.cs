@@ -147,7 +147,7 @@ namespace KinectDemoCommon.UIElement
                 gl.Color(0 - 0f, 1.0f, 0.0f);
                 foreach (Workspace workspace in WorkspaceList)
                 {
-                    ObservableCollection<Point3D> vertices = workspace.FittedVertices;
+                    Point3D[] vertices = workspace.FittedVertices;
                     Point3D v0 = vertices[0];
                     Point3D v1 = vertices[1];
                     Point3D v2 = vertices[2];

@@ -35,10 +35,10 @@ namespace KinectDemoCommon.UIElement
         private void kinectServer_DepthDataReady(KinectDemoMessage message)
         {
             DepthStreamMessage msg = (DepthStreamMessage)message;
-            RefreshBitmap(msg.DepthPixels, msg.DepthFrameSize);
+            RefreshBitmap(msg.DepthPixels);
         }
 
-        public void RefreshBitmap(byte[] depthPixels, int[] depthFrameSize)
+        public void RefreshBitmap(byte[] depthPixels)
         {
             this.depthPixels = depthPixels;
             RenderDepthPixels();

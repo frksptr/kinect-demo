@@ -149,6 +149,7 @@ namespace KinectDemoCommon.Util
             return c;
         }
 
+        // Checks if 3D points projected to the plane of the polygon are inside the polygon
         public static bool InsidePolygon3D(Point3D[] polyVertices, Point3D projectedPoint)
         {
             PointCollection points = new PointCollection();

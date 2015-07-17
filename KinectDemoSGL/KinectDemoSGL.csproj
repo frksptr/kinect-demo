@@ -92,6 +92,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStore.cs" />
     <Compile Include="KinectServer.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
@@ -100,6 +101,7 @@
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIElement\CloudView.cs" />
+    <Compile Include="WorkspaceProcessor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

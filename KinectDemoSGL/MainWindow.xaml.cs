@@ -8,6 +8,7 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
 using Microsoft.Kinect;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
 namespace KinectDemoCommon
 {
@@ -35,31 +36,34 @@ namespace KinectDemoCommon
 
         private string statusText;
 
-        private KinectSensor kinectSensor;
+        private FrameSize depthFrameSize;
 
-        private Workspace activeWorkspace = new Workspace
-        {
-            Name = "asd",
-            Vertices = new ObservableCollection<Point>
-            {
-                    new Point(0,0),
-                    new Point(0,50),
-                    new Point(50,50),
-                    new Point(50,0)
-                }
-        };
-
+        private Workspace activeWorkspace;
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
         private KinectServer kinectServer;
 
         public MainWindow()
         {
+
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
 
             kinectServer.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
+            kinectServer.DepthDataArrived += kinectServer_DepthDataArrived;
+
+            activeWorkspace = new Workspace()
+            {
+                Name = "asd",
+                Vertices = new ObservableCollection<Point>
+                {
+                    new Point(0,0),
+                    new Point(0,50),
+                    new Point(50,50),
+                    new Point(50,0)
+                }
+            };
 
             AddCameraWorkspace();
 
@@ -80,16 +84,24 @@ namespace KinectDemoCommon
             //WorkspaceList.ItemsSource = workspaceList;
 
             //EditWorkspace.DataContext = activeWorkspace;
+
+
+        }
+
+        private void kinectServer_DepthDataArrived(KinectDemoMessage message)
+        {
+            depthFrameSize = ((DepthStreamMessage)message).DepthFrameSize;
+            kinectServer.DepthDataArrived -= kinectServer_DepthDataArrived;
         }
 
         private void kinectServer_WorkspaceUpdated(Messages.KinectDemoMessage message)
         {
-            WorkspaceMessage msg = (WorkspaceMessage) message;
+            WorkspaceMessage msg = (WorkspaceMessage)message;
             cloudView.SetWorkspace(new Workspace()
             {
                 Vertices = new ObservableCollection<Point>(msg.Vertices),
-                PointCloud = new ObservableCollection<Point3D>(msg.PointCloud),
-                FittedVertices = new ObservableCollection<Point3D>(msg.FittedVertices)
+                PointCloud = msg.PointCloud,
+                FittedVertices = msg.Vertices3D
             });
         }
 
@@ -117,8 +129,10 @@ namespace KinectDemoCommon
                     double x = e.GetPosition(cameraWorkspace).X;
                     double y = e.GetPosition(cameraWorkspace).Y;
 
-                    //  TODO: implement converter to display actual position instead of normed value
-                    focusedTextBox.Text = (x / actualWidth) + "," + (y / actualHeight);
+                    if (depthFrameSize != null)
+                    {
+                        focusedTextBox.Text = (int)(x * depthFrameSize.Width / actualWidth) + "," + (int)(y * depthFrameSize.Height / actualHeight);
+                    }
                 }
 
                 TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
