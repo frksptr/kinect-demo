@@ -4,12 +4,13 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon;
-using KinectDemoCommon.KinectStreamerMessages;
+using KinectDemoCommon.Messages.KinectClientMessages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using Microsoft.Kinect;
 
 namespace KinectDemoClient
 {
-    public delegate void KinectStreamerEventHandler(KinectStreamerMessage message);
+    public delegate void KinectStreamerEventHandler(KinectClientMessage message);
 
 
     /* Provides depth, color and body data streamed by the Kinect. Each of the streams only get processed
@@ -25,7 +26,7 @@ namespace KinectDemoClient
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
 
-        readonly KinectSensor kinectSensor;
+        KinectSensor kinectSensor;
 
         public CoordinateMapper CoordinateMapper { get; set; }
 
@@ -42,19 +43,17 @@ namespace KinectDemoClient
 
         MultiSourceFrame multiSourceFrame;
 
-        MultiSourceFrameReader multiSourceFrameReader;
-
         Body[] Bodies { get; set; }
 
         public List<Tuple<JointType, JointType>> Bones { get; set; }
 
-        readonly WriteableBitmap colorBitmap;
+        WriteableBitmap colorBitmap;
 
-        readonly WriteableBitmap depthBitmap;
+        WriteableBitmap depthBitmap;
 
         byte[] colorPixels;
 
-        readonly byte[] depthPixels;
+        byte[] depthPixels;
 
         ushort[] depthArray;
 
@@ -66,7 +65,7 @@ namespace KinectDemoClient
 
         private static KinectStreamer kinectStreamer;
 
-        private uint bitmapBackBufferSize = 0;  
+        public WorkspaceChecker WorkspaceChecker { get; set; }
 
         public static KinectStreamer Instance
         {
@@ -76,12 +75,25 @@ namespace KinectDemoClient
         private KinectStreamer()
         {
             KinectStreamerConfig = new KinectStreamerConfig();
+            SetupKinectSensor();
+            
+            SetupBody();
 
+            WorkspaceChecker = new WorkspaceChecker();
+            
+            
+            kinectSensor.Open();
+        }
+
+
+        private void SetupKinectSensor()
+        {
             kinectSensor = KinectSensor.GetDefault();
 
             CoordinateMapper = kinectSensor.CoordinateMapper;
 
-            multiSourceFrameReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Depth | FrameSourceTypes.Color | FrameSourceTypes.Body);
+            MultiSourceFrameReader multiSourceFrameReader =
+                kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Depth | FrameSourceTypes.Color | FrameSourceTypes.Body);
 
             multiSourceFrameReader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
 
@@ -89,21 +101,17 @@ namespace KinectDemoClient
 
             DepthFrameDescription = kinectSensor.DepthFrameSource.FrameDescription;
 
-            depthBitmap = new WriteableBitmap(DepthFrameDescription.Width, DepthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
+            depthBitmap = new WriteableBitmap(DepthFrameDescription.Width, DepthFrameDescription.Height, 96.0, 96.0,
+                PixelFormats.Gray8, null);
 
-            colorBitmap = new WriteableBitmap(ColorFrameDescription.Width, ColorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+            colorBitmap = new WriteableBitmap(ColorFrameDescription.Width, ColorFrameDescription.Height, 96.0, 96.0,
+                PixelFormats.Bgr32, null);
 
-            bitmapBackBufferSize = (uint)((colorBitmap.BackBufferStride * (colorBitmap.PixelHeight - 1)) + (colorBitmap.PixelWidth * this.bytesPerPixel));
+            colorPixels = new byte[ColorFrameDescription.Width*ColorFrameDescription.Height*4];
 
-            colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height*4];
+            depthPixels = new byte[DepthFrameDescription.Width*DepthFrameDescription.Height];
 
-            depthPixels = new byte[DepthFrameDescription.Width * DepthFrameDescription.Height];
-
-            depthArray = new ushort[DepthFrameDescription.Width * DepthFrameDescription.Height];
-
-            SetupBody();
-
-            kinectSensor.Open();
+            depthArray = new ushort[DepthFrameDescription.Width*DepthFrameDescription.Height];
         }
 
         private void SetupBody()
@@ -230,7 +238,7 @@ namespace KinectDemoClient
                 {
                     ColorFrameDescription = colorFrame.FrameDescription;
 
-                    using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer())
+                    using (colorFrame.LockRawImageBuffer())
                     {
                         colorBitmap.Lock();
 
@@ -238,15 +246,6 @@ namespace KinectDemoClient
                         if ((ColorFrameDescription.Width == colorBitmap.PixelWidth) &&
                             (ColorFrameDescription.Height == colorBitmap.PixelHeight))
                         {
-                            //colorFrame.CopyConvertedFrameDataToIntPtr(
-                            //    colorBitmap.BackBuffer,
-                            //    (uint)(ColorFrameDescription.Width * ColorFrameDescription.Height * 4),
-                            //    ColorImageFormat.Bgra);
-
-                            //colorBitmap.AddDirtyRect(new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight));
-
-                            //colorBitmap.CopyPixels(colorPixels, colorBitmap.PixelWidth, 0);
-
                             colorFrame.CopyConvertedFrameDataToArray(
                                 colorPixels,
                                 ColorImageFormat.Bgra);
@@ -257,7 +256,7 @@ namespace KinectDemoClient
             }
             if (ColorDataReady != null)
             {
-                ColorDataReady(new ColorStreamMessage(colorPixels, new int[] { ColorFrameDescription.Width, ColorFrameDescription.Height }));
+                ColorDataReady(new ColorStreamMessage(colorPixels, new[] { ColorFrameDescription.Width, ColorFrameDescription.Height }));
             }
         }
 
@@ -300,7 +299,7 @@ namespace KinectDemoClient
             }
             if (DepthDataReady != null)
             {
-                DepthDataReady(new DepthStreamMessage(depthPixels, new int[]{DepthFrameDescription.Width,DepthFrameDescription.Height}));
+                DepthDataReady(new DepthStreamMessage(depthPixels, new[]{DepthFrameDescription.Width,DepthFrameDescription.Height}));
             }
         }
 

@@ -1,8 +1,9 @@
 ﻿using System;
-namespace KinectDemoCommon.KinectStreamerMessages
+
+namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
 {
     [Serializable]
-    public class ColorStreamMessage : KinectStreamerMessage
+    public class ColorStreamMessage : KinectClientMessage
     {
         public byte[] ColorPixels { get; set; }
 

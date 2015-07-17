@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using KinectDemoCommon.KinectStreamerMessages;
+using System.Windows.Media.Media3D;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectClientMessages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Messages.KinectServerMessages;
+using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoClient
 {
@@ -16,8 +23,9 @@ namespace KinectDemoClient
     {
         private Socket clientSocket;
         public int[] DepthFrameSize { get; set; }
-        string ip = "192.168.32.1";
-        KinectStreamer kinectStreamer;
+        string ip = NetworkHelper.LocalIPAddress();
+        readonly KinectStreamer kinectStreamer;
+        private byte[] buffer;
 
         public MainWindow()
         {
@@ -26,22 +34,27 @@ namespace KinectDemoClient
             kinectStreamer = KinectStreamer.Instance;
         }
 
-        void kinectStreamer_BodyDataReady(KinectStreamerMessage message)
+        void kinectStreamer_BodyDataReady(KinectClientMessage message)
         {
             SerializeAndSendMessage((BodyStreamMessage)message);
         }
 
-        private void kinectStreamer_ColorDataReady(KinectStreamerMessage message)
+        private void kinectStreamer_ColorDataReady(KinectClientMessage message)
         {
             SerializeAndSendMessage((ColorStreamMessage)message);
         }
 
-        private void kinectStreamer_DepthDataReady(KinectStreamerMessage message)
+        private void kinectStreamer_DepthDataReady(KinectClientMessage message)
         {
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
+        private void kinectStreamer_WorkspaceActivated(WorkspaceMessage message)
+        {
+            SerializeAndSendMessage(message);
+        }
 
-        private void SerializeAndSendMessage(KinectStreamerMessage msg)
+
+        private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
 
             BinaryFormatter formatter = new BinaryFormatter();
@@ -53,24 +66,81 @@ namespace KinectDemoClient
             {
                 if (clientSocket.Connected)
                 {
-                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
                 }
             }
         }
-
-
 
         private void ConnectCallback(IAsyncResult ar)
         {
             try
             {
                 clientSocket.EndConnect(ar);
+
+                buffer = new byte[clientSocket.ReceiveBufferSize];
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
                 
                 kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
                 kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
 
+                kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
+
                 //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
                 //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            try
+            {
+                int received = clientSocket.EndReceive(ar);
+                Array.Resize(ref buffer, received);
+                BinaryFormatter formatter = new BinaryFormatter();
+                
+                MemoryStream stream = new MemoryStream(buffer);
+
+                object obj = null;
+                stream.Position = 0;
+                try
+                {
+                    obj = formatter.Deserialize(stream);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+
+                }
+
+                if (obj is KinectDemoMessage)
+                {
+                    if (obj is WorkspaceMessage)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            WorkspaceMessage msg = (WorkspaceMessage) obj;
+                            TextBox.Text = ((WorkspaceMessage) obj).Vertices.ToString();
+                            Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
+                                new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
+                            WorkspaceMessage updatedMessage = new WorkspaceMessage()
+                            {
+                                FittedVertices = workspace.FittedVertices.ToArray(),
+                                Vertices = workspace.Vertices.ToArray(),
+                                PointCloud = workspace.PointCloud.ToArray()
+                            };
+                            SerializeAndSendMessage(updatedMessage);
+                        });
+                    }
+                }
+
+                Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
+
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
             {
@@ -91,13 +161,12 @@ namespace KinectDemoClient
             }
         }
 
-
         private void ConnectToServer(object sender, RoutedEventArgs e)
         {
             try
             {
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), new AsyncCallback(ConnectCallback),
+                clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), ConnectCallback,
                     null);
             }
             catch (Exception ex)

@@ -3,9 +3,10 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
-using KinectDemoCommon.UIElement.Model;
-using KinectDemoSGL;
 using Microsoft.Kinect;
 
 namespace KinectDemoCommon
@@ -50,18 +51,21 @@ namespace KinectDemoCommon
 
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
+        private KinectServer kinectServer;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            kinectServer = KinectServer.Instance;
+
+            kinectServer.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
+
             AddCameraWorkspace();
 
-            //kinectSensor = KinectSensor.GetDefault();
+            cloudView = new CloudView();
 
-            //cloudView = new CloudView();
-
-            //WorkspacePointCloudHolder.Children.Add(cloudView);
+            WorkspacePointCloudHolder.Children.Add(cloudView);
 
             bodyView = new BodyView();
 
@@ -78,6 +82,17 @@ namespace KinectDemoCommon
             //EditWorkspace.DataContext = activeWorkspace;
         }
 
+        private void kinectServer_WorkspaceUpdated(Messages.KinectDemoMessage message)
+        {
+            WorkspaceMessage msg = (WorkspaceMessage) message;
+            cloudView.SetWorkspace(new Workspace()
+            {
+                Vertices = new ObservableCollection<Point>(msg.Vertices),
+                PointCloud = new ObservableCollection<Point3D>(msg.PointCloud),
+                FittedVertices = new ObservableCollection<Point3D>(msg.FittedVertices)
+            });
+        }
+
         private void AddCameraWorkspace()
         {
             cameraWorkspace = new CameraWorkspace();
@@ -90,27 +105,25 @@ namespace KinectDemoCommon
 
         private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //if (FocusManager.GetFocusedElement(this) is TextBox)
-            //{
-            //    TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
-            //    if (focusedTextBox != null)
-            //    {
-            //        // Get Depth coordinates from clicked point
-            //        double actualWidth = cameraWorkspace.ActualWidth;
-            //        double actualHeight = cameraWorkspace.ActualHeight;
-                    
-            //        double x = e.GetPosition(cameraWorkspace).X;
-            //        double y = e.GetPosition(cameraWorkspace).Y;
+            if (FocusManager.GetFocusedElement(this) is TextBox)
+            {
+                TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
+                if (focusedTextBox != null)
+                {
+                    // Get Depth coordinates from clicked point
+                    double actualWidth = cameraWorkspace.ActualWidth;
+                    double actualHeight = cameraWorkspace.ActualHeight;
 
-            //        int depthWidth = cameraWorkspace.DepthFrameSize[0];
-            //        int depthHeight = cameraWorkspace.DepthFrameSize[1];
+                    double x = e.GetPosition(cameraWorkspace).X;
+                    double y = e.GetPosition(cameraWorkspace).Y;
 
-            //        focusedTextBox.Text = (int)((x / actualWidth) * depthWidth) + "," + (int)((y / actualHeight) * depthHeight);
-            //    }
-                
-            //    TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
-            //    focusedTextBox.MoveFocus(tRequest);
-            //}
+                    //  TODO: implement converter to display actual position instead of normed value
+                    focusedTextBox.Text = (x / actualWidth) + "," + (y / actualHeight);
+                }
+
+                TraversalRequest tRequest = new TraversalRequest(FocusNavigationDirection.Next);
+                focusedTextBox.MoveFocus(tRequest);
+            }
         }
 
         public string StatusText
@@ -158,6 +171,7 @@ namespace KinectDemoCommon
             {
                 workspaceList.Add(activeWorkspace);
             }
+            kinectServer.AddWorkspace(activeWorkspace);
             activeWorkspace = new Workspace();
             EditWorkspace.DataContext = activeWorkspace;
             WorkspaceList.Items.Refresh();
@@ -165,13 +179,12 @@ namespace KinectDemoCommon
 
         private void WorkspaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if ((Workspace)WorkspaceList.SelectedItem == null)
-            //{
-            //    return;
-            //}
-            //activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
-            //EditWorkspace.DataContext = activeWorkspace;
-            //cloudView.SetWorkspace(activeWorkspace);
+            if ((Workspace)WorkspaceList.SelectedItem == null)
+            {
+                return;
+            }
+            activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
+            EditWorkspace.DataContext = activeWorkspace;
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {

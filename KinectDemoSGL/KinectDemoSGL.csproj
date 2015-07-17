@@ -96,7 +96,6 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />
-    <Compile Include="UIElement\Model\Workspace.cs" />
     <Compile Include="UIElement\RoomPointCloudView.xaml.cs">
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>

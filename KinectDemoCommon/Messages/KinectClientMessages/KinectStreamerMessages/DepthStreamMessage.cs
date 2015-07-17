@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.Kinect;
 
-namespace KinectDemoCommon.KinectStreamerMessages
+namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
 {
     [Serializable]
-    public class DepthStreamMessage : KinectStreamerMessage
+    public class DepthStreamMessage : KinectClientMessage
     {
         public byte[] DepthPixels { get;set; }
 

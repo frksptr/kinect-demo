@@ -1,21 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using KinectDemoCommon.KinectStreamerMessages;
-using KinectDemoCommon.UIElement;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectClientMessages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 
-namespace KinectDemoSGL
+namespace KinectDemoCommon
 {
-    public delegate void KinectServerDataArrived(KinectStreamerMessage message);
+    public delegate void KinectServerDataArrived(KinectDemoMessage message);
 
     // Singleton
     class KinectServer
     {
 
-        string ip = "192.168.32.1";
+        private readonly string ip = NetworkHelper.LocalIPAddress();
         private Socket socket, clientSocket;
         private byte[] buffer;
         
@@ -23,6 +27,8 @@ namespace KinectDemoSGL
         public KinectServerDataArrived DepthDataArrived;
         public KinectServerDataArrived ColorDataArrived;
         public KinectServerDataArrived BodyDataArrived;
+
+        public KinectServerDataArrived WorkspaceUpdated;
 
         private static KinectServer kinectServer;
 
@@ -44,7 +50,7 @@ namespace KinectDemoSGL
                 socket.ReceiveBufferSize = 9000000; 
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(0);
-                socket.BeginAccept(new AsyncCallback(AcceptCallback), null);
+                socket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
@@ -59,7 +65,7 @@ namespace KinectDemoSGL
             {
                 clientSocket = socket.EndAccept(ar);
                 buffer = new byte[clientSocket.ReceiveBufferSize];
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
             {
@@ -91,7 +97,7 @@ namespace KinectDemoSGL
 
                 }
                 
-                if (obj is KinectStreamerMessage)
+                if (obj is KinectClientMessage)
                 {
                     if (obj is DepthStreamMessage)
                     {
@@ -108,15 +114,51 @@ namespace KinectDemoSGL
                         }
                     }
                 }
+                if (obj is WorkspaceMessage)
+                {
+                    WorkspaceUpdated((WorkspaceMessage) obj);
+
+                }
                 
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
 
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        public void AddWorkspace(Workspace workspace)
+        {
+            WorkspaceMessage message = new WorkspaceMessage()
+            {
+                Vertices = workspace.Vertices.ToArray()
+            };
+            SerializeAndSendMessage(message);
+        }
+
+        private void SerializeAndSendMessage(KinectDemoMessage msg)
+        {
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            MemoryStream stream = new MemoryStream();
+            formatter.Serialize(stream, msg);
+            buffer = stream.ToArray();
+
+            if (clientSocket != null)
+            {
+                if (clientSocket.Connected)
+                {
+                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
+                }
+            }
+        }
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            
         }
     }
 }
