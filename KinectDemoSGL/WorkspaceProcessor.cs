@@ -25,11 +25,6 @@ namespace KinectDemoCommon
                 pointCollection.Add(new Point(p.X, p.Y));
             }
 
-            polygon.Points = pointCollection;
-            polygon.Stroke = Brushes.Black;
-            polygon.Fill = Brushes.LightSeaGreen;
-            polygon.StrokeThickness = 2;
-
             int height = (int)polygon.ActualHeight;
             int width = (int)polygon.ActualWidth;
 
