@@ -12,6 +12,8 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
 using System.Collections.Generic;
+using System.Windows.Threading;
+using System.Windows.Shapes;
 
 namespace KinectDemoCommon
 {
@@ -76,7 +78,7 @@ namespace KinectDemoCommon
                 MessageBox.Show(ex.Message);
             }
         }
-
+        [STAThread]
         private void ReceiveCallback(IAsyncResult ar)
         {
             try
@@ -132,6 +134,7 @@ namespace KinectDemoCommon
                         Vertices = new System.Collections.ObjectModel.ObservableCollection<Point>(msg.Vertices),
                         Vertices3D = msg.Vertices3D
                     };
+                    Polygon polygon = new Polygon();
                     WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
                     WorkspaceUpdated((WorkspaceMessage)obj);
                 }
@@ -142,7 +145,7 @@ namespace KinectDemoCommon
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
 

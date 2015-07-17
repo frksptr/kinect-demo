@@ -9,12 +9,15 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
 using Microsoft.Kinect;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using System;
 
 namespace KinectDemoCommon
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+   
+    
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
 
@@ -81,9 +84,9 @@ namespace KinectDemoCommon
 
             //roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
 
-            //WorkspaceList.ItemsSource = workspaceList;
+            WorkspaceList.ItemsSource = workspaceList;
 
-            //EditWorkspace.DataContext = activeWorkspace;
+            EditWorkspace.DataContext = activeWorkspace;
 
 
         }

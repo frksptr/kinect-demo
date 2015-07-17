@@ -15,9 +15,9 @@ namespace KinectDemoCommon
 {
     public class WorkspaceProcessor
     {
+        
         public static void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-            
             Polygon polygon = new Polygon();
             PointCollection pointCollection = new PointCollection();
             foreach (Point3D p in workspace.Vertices3D)
