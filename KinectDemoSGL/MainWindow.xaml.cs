@@ -194,6 +194,7 @@ namespace KinectDemoCommon
                 return;
             }
             activeWorkspace = (Workspace)WorkspaceList.SelectedItem;
+            cloudView.SetWorkspace(activeWorkspace);
             EditWorkspace.DataContext = activeWorkspace;
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)

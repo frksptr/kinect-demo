@@ -15,7 +15,6 @@ namespace KinectDemoCommon
         
         public static void SetWorkspaceCloudAndCenter(Workspace workspace)
         {
-
             double sumX = 0;
             double sumY = 0;
             double sumZ = 0;
@@ -46,7 +45,6 @@ namespace KinectDemoCommon
                     numberOfPoints += 1;
 
                     pointCloud.Add(new Point3D(point.X, point.Y, point.Z));
-
                 }
             }
             workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);

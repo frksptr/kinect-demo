@@ -86,8 +86,7 @@ namespace KinectDemoClient
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
                 
-                kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-                kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+             
 
                 //kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
 
@@ -201,6 +200,30 @@ namespace KinectDemoClient
 
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
+        }
+
+        private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+        }
+
+        private void ColorCHeckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+        }
+
+        private void ColorCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColorDataReady -= kinectStreamer_ColorDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideColorData = false;
+        }
+
+        private void DepthCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
         }
     }
 }

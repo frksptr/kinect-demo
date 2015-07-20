@@ -31,7 +31,7 @@ namespace KinectDemoCommon.UIElement
             {
                 SetCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-                DrawFittedPlane();
+                //DrawFittedPlane();
             });
         }
 
@@ -63,7 +63,7 @@ namespace KinectDemoCommon.UIElement
             Scale.CenterY = center.Y;
             Scale.CenterZ = center.Z;
 
-            Camera.Position = new Point3D(center.X, center.Y, -3);
+            Camera.Position = new Point3D(center.X, center.Y, -5);
         }
 
         private void DrawTriangle(Viewport3D viewport, Point3D point, Color color)
