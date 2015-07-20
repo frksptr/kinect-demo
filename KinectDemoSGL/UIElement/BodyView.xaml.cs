@@ -11,7 +11,6 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using KinectDemoCommon.Annotations;
 using KinectDemoCommon.Messages;
-using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;

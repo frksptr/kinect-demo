@@ -6,7 +6,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon.Annotations;
 using KinectDemoCommon.Messages;
-using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
 namespace KinectDemoCommon.UIElement

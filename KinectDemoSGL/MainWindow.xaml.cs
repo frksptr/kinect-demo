@@ -3,13 +3,10 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
-using Microsoft.Kinect;
-using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
-using System;
 
 namespace KinectDemoCommon
 {
@@ -97,15 +94,10 @@ namespace KinectDemoCommon
             kinectServer.DepthDataArrived -= kinectServer_DepthDataArrived;
         }
 
-        private void kinectServer_WorkspaceUpdated(Messages.KinectDemoMessage message)
+        private void kinectServer_WorkspaceUpdated(KinectDemoMessage message)
         {
             WorkspaceMessage msg = (WorkspaceMessage)message;
-            cloudView.SetWorkspace(new Workspace()
-            {
-                Vertices = new ObservableCollection<Point>(msg.Vertices),
-                PointCloud = msg.PointCloud,
-                FittedVertices = msg.Vertices3D
-            });
+            cloudView.SetWorkspace(DataStore.Instance.WorkspaceDictionary[msg.ID]);
         }
 
         private void AddCameraWorkspace()
@@ -187,6 +179,7 @@ namespace KinectDemoCommon
             if (!workspaceList.Contains(activeWorkspace))
             {
                 workspaceList.Add(activeWorkspace);
+                DataStore.Instance.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace);
             }
             kinectServer.AddWorkspace(activeWorkspace);
             activeWorkspace = new Workspace();

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
@@ -198,6 +197,16 @@ namespace KinectDemoCommon.Util
                 Z = cameraSpacePoint.Z
             };
         }
+
+        public static CameraSpacePoint Point3DToCameraSpacePoint(Point3D point)
+        {
+            return new CameraSpacePoint()
+            {
+                X = (float) point.X,
+                Y = (float) point.Y,
+                Z = (float) point.Z
+            };
+        }
         public static List<Point3D> CameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
         {
             if (cameraSpacePoints == null)
@@ -224,6 +233,26 @@ namespace KinectDemoCommon.Util
             }
 
             return point3Ds;
+        }
+
+        public static List<CameraSpacePoint> Point3DsToCameraSpacePoints(Point3D[] points)
+        {
+            if (points == null)
+            {
+                return null;
+            }
+            if (points.Length == 0)
+            {
+                return null;
+            }
+            List<CameraSpacePoint> cspList = new List<CameraSpacePoint>();
+
+            foreach (Point3D point in points)
+            {
+                cspList.Add(Point3DToCameraSpacePoint(point));
+            }
+
+            return cspList;
         }
 
         public static Point3D CalculateCenterPoint(List<Point3D> pointCloud)

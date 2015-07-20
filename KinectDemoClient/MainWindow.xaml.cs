@@ -6,11 +6,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
-using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 
@@ -129,20 +127,21 @@ namespace KinectDemoClient
                 {
                     if (obj is WorkspaceMessage)
                     {
-                        //Dispatcher.Invoke(() =>
-                        //{
-                        //    //WorkspaceMessage msg = (WorkspaceMessage) obj;
-                        //    //TextBox.Text = ((WorkspaceMessage) obj).Vertices.ToString();
-                        //    //Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
-                        //    //    new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
-                        //    //WorkspaceMessage updatedMessage = new WorkspaceMessage()
-                        //    //{
-                        //    //    Name = msg.Name,
-                        //    //    Vertices3D = workspace.FittedVertices.ToArray(),
-                        //    //    Vertices = workspace.Vertices.ToArray(),
-                        //    //};
-                        //    //SerializeAndSendMessage(updatedMessage);
-                        //});
+                        Dispatcher.Invoke(() =>
+                        {
+                            WorkspaceMessage msg = (WorkspaceMessage)obj;
+                            TextBox.Text = ((WorkspaceMessage)obj).Vertices.ToString();
+                            Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
+                                new Workspace() { Vertices = new ObservableCollection<Point>(msg.Vertices) });
+                            WorkspaceMessage updatedMessage = new WorkspaceMessage()
+                            {
+                                ID = msg.ID,
+                                Name = msg.Name,
+                                Vertices3D = workspace.Vertices3D.ToArray(),
+                                Vertices = workspace.Vertices.ToArray(),
+                            };
+                            SerializeAndSendMessage(updatedMessage);
+                        });
                     }
                 }
 

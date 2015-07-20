@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,10 +11,6 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using SharpGL;
 using SharpGL.SceneGraph;
-using System;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Text;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -305,7 +304,7 @@ namespace KinectDemoCommon.UIElement
             string res = builder.ToString();
             if (!res.Equals(""))
             {
-                System.Console.WriteLine(res);
+                Console.WriteLine(res);
                 return false;
             }
 
@@ -321,7 +320,7 @@ namespace KinectDemoCommon.UIElement
             string res = builder.ToString();
             if (!res.Equals(""))
             {
-                System.Console.WriteLine(res);
+                Console.WriteLine(res);
                 return false;
             }
 

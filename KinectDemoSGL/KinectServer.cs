@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,9 +12,6 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
-using System.Collections.Generic;
-using System.Windows.Threading;
-using System.Windows.Shapes;
 
 namespace KinectDemoCommon
 {
@@ -130,12 +128,10 @@ namespace KinectDemoCommon
                 if (obj is WorkspaceMessage)
                 {
                     WorkspaceMessage msg = (WorkspaceMessage)obj;
-                    Workspace workspace = new Workspace()
-                    {
-                        Name = msg.Name,
-                        Vertices = new System.Collections.ObjectModel.ObservableCollection<Point>(msg.Vertices),
-                        Vertices3D = msg.Vertices3D
-                    };
+                    Workspace workspace = DataStore.Instance.WorkspaceDictionary[msg.ID];
+                    workspace.Name = msg.Name;
+                    workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
+                    workspace.Vertices3D = msg.Vertices3D;
                     WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
                     WorkspaceUpdated((WorkspaceMessage)obj);
                 }
@@ -154,6 +150,7 @@ namespace KinectDemoCommon
         {
             WorkspaceMessage message = new WorkspaceMessage()
             {
+                ID = workspace.ID,
                 Name = workspace.Name,
                 Vertices = workspace.Vertices.ToArray()
             };

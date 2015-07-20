@@ -10,6 +10,10 @@ namespace KinectDemoCommon.Model
     [Serializable]
     public class Workspace : INotifyPropertyChanged
     {
+        private string id;
+
+        public string ID { get { return id; } }
+
         private string name;
 
         // 2D Vertices defined by user in DepthSpace with coordinates normed to (0,1)
@@ -67,18 +71,12 @@ namespace KinectDemoCommon.Model
                 OnPropertyChanged("PointCloud");
             }
         }
-
         public Workspace()
         {
+            id = Guid.NewGuid().ToString();
             vertices = new ObservableCollection<Point> { new Point(), new Point(), new Point(), new Point() };
             Vertices3D = new[] { new Point3D(), new Point3D(), new Point3D(), new Point3D() };
             FittedVertices = new[]{ new Point3D(), new Point3D(), new Point3D(), new Point3D() };
-        }
-
-        public Workspace(string name, ObservableCollection<Point> points)
-        {
-            Name = name;
-            Vertices = points;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

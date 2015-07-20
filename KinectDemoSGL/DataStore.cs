@@ -1,10 +1,7 @@
-﻿using KinectDemoCommon.Model;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using KinectDemoCommon.Model;
 
 namespace KinectDemoCommon
 {
@@ -13,7 +10,7 @@ namespace KinectDemoCommon
     {
         private static DataStore dataStore;
 
-        public List<Workspace> workspaceList = new List<Workspace>();
+        public Dictionary<string, Workspace> WorkspaceDictionary = new Dictionary<string, Workspace>();
 
         public Point3D[] FullPointCloud { get; set; }
 
@@ -22,17 +19,21 @@ namespace KinectDemoCommon
             get { return dataStore ?? (dataStore = new DataStore()); }
         }
 
-        public void addWorkspace(Workspace workspace)
+        public void AddOrUpdateWorkspace(string workspaceId, Workspace workspace)
         {
-            if (!workspaceList.Contains(workspace))
+            if (!WorkspaceDictionary.Keys.Contains(workspaceId))
             {
-                workspaceList.Add(workspace);
+                WorkspaceDictionary.Add(workspaceId, workspace);
+            }
+            else
+            {
+                WorkspaceDictionary[workspace.ID] = workspace;
             }
         }
 
-        public void deleteWorkspace(Workspace workspace)
+        public void DeleteWorkspace(Workspace workspace)
         {
-            workspaceList.Remove(workspace);
+            WorkspaceDictionary.Remove(workspace.ID);
         }
     }
 }

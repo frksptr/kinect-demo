@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
-using Microsoft.Kinect;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon.Util;
+using Microsoft.Kinect;
 
 namespace KinectDemoClient
 {
