@@ -132,6 +132,7 @@ namespace KinectDemoCommon
                     workspace.Name = msg.Name;
                     workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
                     workspace.Vertices3D = msg.Vertices3D;
+                    workspace.VertexDepths = msg.VertexDepths;
                     WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
                     WorkspaceUpdated((WorkspaceMessage)obj);
                 }

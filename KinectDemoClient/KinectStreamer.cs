@@ -57,7 +57,7 @@ namespace KinectDemoClient
 
         byte[] colorPixels;
 
-        byte[] depthPixels;
+        public byte[] DepthPixels { get; set; }
 
         ushort[] depthArray;
 
@@ -107,7 +107,7 @@ namespace KinectDemoClient
 
             colorPixels = new byte[ColorFrameDescription.Width*ColorFrameDescription.Height*4];
 
-            depthPixels = new byte[DepthFrameDescription.Width*DepthFrameDescription.Height];
+            DepthPixels = new byte[DepthFrameDescription.Width*DepthFrameDescription.Height];
 
             depthArray = new ushort[DepthFrameDescription.Width*DepthFrameDescription.Height];
         }
@@ -292,7 +292,7 @@ namespace KinectDemoClient
             }
             if (DepthDataReady != null)
             {
-                DepthDataReady(new DepthStreamMessage(depthPixels, new FrameSize(DepthFrameDescription.Width,DepthFrameDescription.Height)));
+                DepthDataReady(new DepthStreamMessage(DepthPixels, new FrameSize(DepthFrameDescription.Width,DepthFrameDescription.Height)));
             }
         }
 
@@ -329,7 +329,7 @@ namespace KinectDemoClient
                 // To convert to a byte, we're mapping the depth value to the byte range.
                 // Values outside the reliable depth range are mapped to 0 (black).
                 depthArray[i] = (ushort)(depth >= minDepth && depth <= maxDepth ? (depth) : 0);
-                depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
+                DepthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
             }
         }
 

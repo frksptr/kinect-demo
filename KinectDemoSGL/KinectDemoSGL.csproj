@@ -94,7 +94,6 @@
     </ApplicationDefinition>
     <Compile Include="DataStore.cs" />
     <Compile Include="KinectServer.cs" />
-    <Compile Include="ObservableCollectioncameraSpacePoints.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />

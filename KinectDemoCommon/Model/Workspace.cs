@@ -19,6 +19,8 @@ namespace KinectDemoCommon.Model
         // 2D Vertices defined by user in DepthSpace with coordinates normed to (0,1)
         private ObservableCollection<Point> vertices;
 
+        public ushort[] VertexDepths { get; set; }
+
         // Vertices in 3D
         public Point3D[] Vertices3D { get; set; }
 

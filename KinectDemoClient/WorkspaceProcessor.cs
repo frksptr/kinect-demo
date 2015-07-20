@@ -14,6 +14,8 @@ namespace KinectDemoClient
     {
         public static IEnumerable<CameraSpacePoint> AllCameraSpacePoints { get; set; }
 
+        private const int MapDepthToByte = 8000 / 256;
+
         public static Workspace ProcessWorkspace(Workspace workspace)
         {
             Workspace newWorkspace = workspace;
@@ -27,11 +29,18 @@ namespace KinectDemoClient
 
             Point[] vertices = workspace.Vertices.ToArray();
 
+            workspace.VertexDepths = new ushort[vertices.Length];
+
             CameraSpacePoint[] csps = { new CameraSpacePoint() };
 
             for (int i = 0; i < vertices.Length; i++)
             {
                 Point vertex = vertices[i];
+
+                workspace.VertexDepths[i] = (ushort) (
+                    KinectStreamer.Instance.DepthPixels[
+                        (int)(vertex.Y*KinectStreamer.Instance.DepthFrameDescription.Width) + (int)vertex.X] * MapDepthToByte);
+
 
                 KinectStreamer.Instance.CoordinateMapper.MapDepthPointsToCameraSpace(
                     new[] {
@@ -40,7 +49,7 @@ namespace KinectDemoClient
                             Y = (float)vertex.Y
                         }
                     },
-                    new ushort[] { 1 }, csps);
+                    new ushort[] { workspace.VertexDepths[i] }, csps);
                 newWorkspace.Vertices3D[i] = new Point3D(csps[0].X, csps[0].Y, csps[0].Z);
             }
 
@@ -63,6 +72,8 @@ namespace KinectDemoClient
             CameraSpacePoint[] csps = { new CameraSpacePoint() };
 
             Point[] vertices = workspace.Vertices.ToArray();
+
+
 
             for (int i = 0; i < vertices.Length; i++)
             {

@@ -137,6 +137,7 @@ namespace KinectDemoClient
                             {
                                 ID = msg.ID,
                                 Name = msg.Name,
+                                VertexDepths = workspace.VertexDepths,
                                 Vertices3D = workspace.Vertices3D.ToArray(),
                                 Vertices = workspace.Vertices.ToArray(),
                             };

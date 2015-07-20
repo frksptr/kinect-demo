@@ -12,6 +12,7 @@ namespace KinectDemoCommon.Messages
 
         public Point[] Vertices { get; set; }
 
+        public ushort[] VertexDepths { get; set; }
         public Point3D[] PointCloud { get; set; }
 
         public Point3D[] Vertices3D { get;set; }
