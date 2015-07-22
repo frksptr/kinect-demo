@@ -199,9 +199,10 @@ namespace KinectDemoCommon
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
-            //workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
-            //activeWorkspace = new Workspace();
-            //cloudView.ClearScreen();
+            workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
+            DataStore.Instance.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
+            activeWorkspace = new Workspace();
+            cloudView.ClearScreen();
         }
     }
 }

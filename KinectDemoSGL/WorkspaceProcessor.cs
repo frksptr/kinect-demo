@@ -7,13 +7,15 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
 using System.Windows.Documents;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace KinectDemoCommon
 {
     public class WorkspaceProcessor
     {
         
-        public static void SetWorkspaceCloudAndCenter(Workspace workspace)
+        public static void SetWorkspaceCloudRealVerticesAndCenter(Workspace workspace)
         {
             double sumX = 0;
             double sumY = 0;
@@ -51,6 +53,41 @@ namespace KinectDemoCommon
 
             workspace.PointCloud = pointCloud.ToArray();
 
+            SetRealVertices(workspace);
+
+        }
+
+        private static void SetRealVertices(Workspace workspace)
+        {
+            Vector<double> fittedPlaneVector = GeometryHelper.FitPlaneToPoints(workspace.PointCloud.ToArray());
+
+            if (fittedPlaneVector == null)
+            {
+                return;
+            }
+
+            Point3D projectedPoint = GeometryHelper.ProjectPoint3DToPlane(workspace.PointCloud.First(), fittedPlaneVector);
+
+            Vector<double> planeNormal = new DenseVector(new[] { fittedPlaneVector[0], fittedPlaneVector[1], fittedPlaneVector[2] });
+
+            Point3D[] vertices3D = workspace.Vertices3D;
+
+            Point[] vertices = workspace.Vertices.ToArray();
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+
+                Vector<double> pointOnPlane = new DenseVector(new[] { projectedPoint.X, projectedPoint.Y, projectedPoint.Z });
+                Vector<double> pointOnLine = new DenseVector(new double[] { vertices3D[i].X, vertices3D[i].Y, vertices3D[i].Z });
+
+                double d = (pointOnPlane.Subtract(pointOnLine)).DotProduct(planeNormal) / (pointOnLine.DotProduct(planeNormal));
+
+                Vector<double> intersection = pointOnLine + pointOnLine.Multiply(d);
+
+                workspace.FittedVertices[i] = new Point3D(intersection[0], intersection[1], intersection[2]);
+            }
+
+            workspace.PlaneVector = fittedPlaneVector;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,7 @@ namespace KinectDemoClient
         readonly KinectStreamer kinectStreamer;
         private byte[] buffer;
         private bool pointCloudSent = false;
+        private bool canSend = true;
 
         public MainWindow()
         {
@@ -72,6 +74,9 @@ namespace KinectDemoClient
             {
                 if (clientSocket.Connected)
                 {
+                    Debug.WriteLine("Sending message: " + msg.GetType() + " | " + buffer.Length);
+                    //clientSocket.Send(buffer, buffer.Length, SocketFlags.None);
+                    //canSend = false;
                     clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
                 }
             }
@@ -160,11 +165,11 @@ namespace KinectDemoClient
             try
             {
                 clientSocket.EndSend(ar);
+                Debug.WriteLine("Message sent.");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
-                throw;
             }
         }
 

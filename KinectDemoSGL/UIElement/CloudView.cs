@@ -31,7 +31,7 @@ namespace KinectDemoCommon.UIElement
             {
                 SetCameraCenterAndShowCloud(MainViewPort, ActiveWorkspace);
 
-                //DrawFittedPlane();
+                DrawFittedPlane();
             });
         }
 

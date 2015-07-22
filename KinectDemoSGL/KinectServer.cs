@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -49,9 +50,12 @@ namespace KinectDemoCommon
         {
             try
             {
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 //  TODO: better solution for large buffer size?
-                socket.ReceiveBufferSize = 9000000; 
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                {
+                    ReceiveBufferSize = 10000000
+                };
+
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(0);
                 socket.BeginAccept(AcceptCallback, null);
@@ -76,12 +80,15 @@ namespace KinectDemoCommon
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
-        [STAThread]
         private void ReceiveCallback(IAsyncResult ar)
         {
             try
             {
                 int received = clientSocket.EndReceive(ar);
+                
+                
+                Debug.WriteLine("Received message of length " + received);
+                Debug.WriteLine("Buffer size: " + buffer.Length);
                 Array.Resize(ref buffer, received);
                 BinaryFormatter formatter = new BinaryFormatter();
                 
@@ -90,15 +97,20 @@ namespace KinectDemoCommon
                 
                 object obj = null;
                 stream.Position = 0;
+                Debug.WriteLine("Deserializing object...");
                 try
                 {
                     obj = formatter.Deserialize(stream);
                 }
                 catch (Exception ex )
                 {
-                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                    Debug.WriteLine("Message could not be deserialized!");
+                    //MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                 }
-                
+                if (obj != null)
+                {
+                    Debug.WriteLine("Object deserialized: " + obj.GetType());
+                }
                 if (obj is KinectClientMessage)
                 {
                     if (obj is DepthStreamMessage)
@@ -133,12 +145,12 @@ namespace KinectDemoCommon
                     workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
                     workspace.Vertices3D = msg.Vertices3D;
                     workspace.VertexDepths = msg.VertexDepths;
-                    WorkspaceProcessor.SetWorkspaceCloudAndCenter(workspace);
+                    WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace);
                     WorkspaceUpdated((WorkspaceMessage)obj);
                 }
                 
                 Array.Resize(ref buffer, clientSocket.ReceiveBufferSize);
-
+                Debug.WriteLine("Listening for new messages with buffer size " + buffer.Length);
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
             }
             catch (Exception ex)
