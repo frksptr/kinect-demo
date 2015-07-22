@@ -181,7 +181,7 @@ namespace KinectDemoCommon
                 workspaceList.Add(activeWorkspace);
                 DataStore.Instance.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace);
             }
-            kinectServer.AddWorkspace(activeWorkspace);
+            //kinectServer.AddWorkspace(activeWorkspace);
             activeWorkspace = new Workspace();
             EditWorkspace.DataContext = activeWorkspace;
             WorkspaceList.Items.Refresh();

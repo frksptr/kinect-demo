@@ -12,6 +12,8 @@ using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using System.Text;
+using KinectDemoCommon.Messages.KinectServerMessages;
 
 namespace KinectDemoClient
 {
@@ -27,11 +29,13 @@ namespace KinectDemoClient
         private byte[] buffer;
         private bool pointCloudSent = false;
         private bool canSend = true;
+        private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
+        private bool serverReady = true;
 
         public MainWindow()
         {
             InitializeComponent();
-
+            
             kinectStreamer = KinectStreamer.Instance;
 
         }
@@ -64,20 +68,31 @@ namespace KinectDemoClient
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
-
+            if (!serverReady)
+            {
+                return;
+            }
+            serverReady = false;
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
             byte[] buffer = stream.ToArray();
+            
 
             if (clientSocket != null)
             {
                 if (clientSocket.Connected)
                 {
+                    
                     Debug.WriteLine("Sending message: " + msg.GetType() + " | " + buffer.Length);
                     //clientSocket.Send(buffer, buffer.Length, SocketFlags.None);
                     //canSend = false;
-                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
+                    byte[] bufferWithEOOM = new byte[buffer.Length + endOfObjectMark.Length];
+                    buffer.CopyTo(bufferWithEOOM, 0);
+                    endOfObjectMark.CopyTo(bufferWithEOOM, buffer.Length);
+
+                    clientSocket.Send(bufferWithEOOM, SocketFlags.None);
+                    //clientSocket.BeginSend(bufferWithEOOM, 0, bufferWithEOOM.Length, SocketFlags.None, SendCallback, null);
                 }
             }
         }
@@ -90,8 +105,6 @@ namespace KinectDemoClient
 
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
-                
-             
 
                 //kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
 
@@ -147,6 +160,10 @@ namespace KinectDemoClient
                             };
                             SerializeAndSendMessage(updatedMessage);
                         });
+                    }
+                    if (obj is KinectServerReadyMessage)
+                    {
+                        serverReady = ((KinectServerReadyMessage)obj).Ready;
                     }
                 }
 
