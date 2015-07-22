@@ -27,7 +27,7 @@ namespace KinectDemoCommon
 
         private readonly string ip = NetworkHelper.LocalIPAddress();
         private Socket socket;
-        private byte[] buffer;
+        //private byte[] buffer;
 
         private CoordinateMapper coordinateMapper;
 
@@ -207,18 +207,25 @@ namespace KinectDemoCommon
                 if (received > 0)
                 {
                     Array.Resize(ref state.Buffer, received);
-                    state.PrevBytes.AddRange(state.Buffer);
 
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(Encoding.ASCII.GetString(
-                    state.Buffer, 0, received));
+                    //state.PrevBytes.AddRange(state.Buffer);
+                    ////  TODO:   processing too slow, try reverting to original method
+                    //ProcessBuffer(state);
 
-                    // Check for end-of-file tag. If it is not there, read 
-                    // more data.
-                    String content = sb.ToString();
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    MemoryStream stream = new MemoryStream(state.Buffer);
 
-                    //  TODO:   processing too slow, try reverting to original method
-                    ProcessBuffer(state);
+                    object obj = null;
+                    stream.Position = 0;
+                    try
+                    {
+                        obj = formatter.Deserialize(stream);
+                        ObjectArrived(obj, clientDictionary[state]);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                    }
 
                     Array.Resize(ref state.Buffer, 9000000);
                 }
@@ -233,7 +240,7 @@ namespace KinectDemoCommon
             }
         }
 
-        public void AddWorkspace(Workspace workspace, Socket clientSocket)
+        public void AddWorkspace(Workspace workspace, StateObject state)
         {
             WorkspaceMessage message = new WorkspaceMessage()
             {
@@ -241,22 +248,22 @@ namespace KinectDemoCommon
                 Name = workspace.Name,
                 Vertices = workspace.Vertices.ToArray()
             };
-            SerializeAndSendMessage(message, clientSocket);
+            SerializeAndSendMessage(message, state.WorkSocket);
         }
 
-        private void SerializeAndSendMessage(KinectDemoMessage msg, Socket clientSocket)
+        private void SerializeAndSendMessage(KinectDemoMessage msg, Socket socket)
         {
 
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
-            buffer = stream.ToArray();
+            byte[] buffer = stream.ToArray();
 
-            if (clientSocket != null)
+            if (socket != null)
             {
-                if (clientSocket.Connected)
+                if (socket.Connected)
                 {
-                    clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
+                    socket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
                 }
             }
         }
