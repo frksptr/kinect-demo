@@ -19,7 +19,7 @@ using KinectDemoCommon.Messages.KinectServerMessages;
 
 namespace KinectDemoCommon
 {
-    public delegate void KinectServerDataArrived(KinectDemoMessage message);
+    public delegate void KinectServerDataArrived(KinectDemoMessage message, KinectClient kinectClient);
 
     // Singleton
     class KinectServer
@@ -42,6 +42,8 @@ namespace KinectDemoCommon
         private static KinectServer kinectServer;
 
         private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
+
+        private Dictionary<StateObject, KinectClient> clientDictionary = new Dictionary<StateObject, KinectClient>();
 
         public static KinectServer Instance
         {
@@ -69,7 +71,7 @@ namespace KinectDemoCommon
                 //  TODO: better solution for large buffer size?
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
-                socket.Listen(0);
+                socket.Listen(10);
                 socket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
@@ -84,6 +86,7 @@ namespace KinectDemoCommon
             {
                 StateObject state = new StateObject();
                 state.WorkSocket = socket.EndAccept(ar);
+                clientDictionary.Add(state, new KinectClient());
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
 
@@ -128,7 +131,7 @@ namespace KinectDemoCommon
 
                     object obj = formatter.Deserialize(stream);
 
-                    ObjectArrived(obj);
+                    ObjectArrived(obj, clientDictionary[state]);
 
                     state.PrevBytes.RemoveRange(0, i + endOfObjectMark.Length);
                     i = 0;
@@ -137,7 +140,7 @@ namespace KinectDemoCommon
             }
         }
 
-        private void ObjectArrived(object obj)
+        private void ObjectArrived(object obj, KinectClient sender)
         {
             if (obj != null)
             {
@@ -149,14 +152,14 @@ namespace KinectDemoCommon
                 {
                     if (DepthDataArrived != null)
                     {
-                        DepthDataArrived((DepthStreamMessage)obj);
+                        DepthDataArrived((DepthStreamMessage)obj, sender);
                     }
                 }
                 if (obj is ColorStreamMessage)
                 {
                     if (ColorDataArrived != null)
                     {
-                        ColorDataArrived((ColorStreamMessage)obj);
+                        ColorDataArrived((ColorStreamMessage)obj, sender);
                     }
                 }
                 if (obj is PointCloudStreamMessage)
@@ -165,7 +168,7 @@ namespace KinectDemoCommon
 
                     if (PointCloudDataArrived != null)
                     {
-                        //PointCloudDataArrived((PointCloudStreamMessage)obj);
+                        PointCloudDataArrived((PointCloudStreamMessage)obj, sender);
                     }
                 }
             }
@@ -178,14 +181,14 @@ namespace KinectDemoCommon
                 workspace.Vertices3D = msg.Vertices3D;
                 workspace.VertexDepths = msg.VertexDepths;
                 WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace);
-                WorkspaceUpdated((WorkspaceMessage)obj);
+                WorkspaceUpdated((WorkspaceMessage)obj, sender);
             }
             if (obj is TextMessage)
             {
                 TextMessage msg = (TextMessage)obj;
                 if (TextMessageArrived != null)
                 {
-                    TextMessageArrived(msg);
+                    TextMessageArrived(msg, sender);
                 }
             }
         }

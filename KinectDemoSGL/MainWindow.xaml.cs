@@ -7,6 +7,7 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
+using System.Net.Sockets;
 
 namespace KinectDemoCommon
 {
@@ -89,21 +90,21 @@ namespace KinectDemoCommon
 
         }
 
-        private void kinectServer_TextMessageArrived(KinectDemoMessage message)
+        private void kinectServer_TextMessageArrived(KinectDemoMessage message, KinectClient client)
         {
             Dispatcher.Invoke(() =>
             {
-                ClientMessageBox.Text += "\n" + ((TextMessage)message).Text;
+                ClientMessageBox.Text += "\nFrom " + client.Name + ":\n" + ((TextMessage)message).Text;
             });
         }
 
-        private void kinectServer_DepthDataArrived(KinectDemoMessage message)
+        private void kinectServer_DepthDataArrived(KinectDemoMessage message, KinectClient client)
         {
             depthFrameSize = ((DepthStreamMessage)message).DepthFrameSize;
             kinectServer.DepthDataArrived -= kinectServer_DepthDataArrived;
         }
 
-        private void kinectServer_WorkspaceUpdated(KinectDemoMessage message)
+        private void kinectServer_WorkspaceUpdated(KinectDemoMessage message, KinectClient client)
         {
             WorkspaceMessage msg = (WorkspaceMessage)message;
             cloudView.SetWorkspace(DataStore.Instance.WorkspaceDictionary[msg.ID]);

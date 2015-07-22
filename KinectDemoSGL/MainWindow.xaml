@@ -76,7 +76,8 @@
                 </DockPanel>
             </TabItem>
         </TabControl>
-        <TextBlock Name="ClientMessageBox" HorizontalAlignment="Left" Margin="10,490,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="73" Width="881"/>
+        
+        <TextBox Name="ClientMessageBox" HorizontalAlignment="Left" Margin="10,490,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="73" Width="881"/>
 
 
     </Grid>

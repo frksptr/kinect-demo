@@ -163,7 +163,7 @@ namespace KinectDemoCommon.UIElement
             InitializeComponent();
         }
 
-        private void kinectServer_ColorDataArrived(KinectDemoMessage message)
+        private void kinectServer_ColorDataArrived(KinectDemoMessage message, KinectClient client)
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
 
