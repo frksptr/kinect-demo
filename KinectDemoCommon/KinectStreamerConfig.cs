@@ -5,6 +5,7 @@
         public bool ProvideDepthData { get; set; }
         public bool ProvideBodyData { get; set; }
         public bool ProvideColorData { get; set; }
+        public bool ProvidePointCloudData { get; set; }
 
         public KinectStreamerConfig()
         {
@@ -13,6 +14,8 @@
             ProvideColorData = false;
 
             ProvideBodyData = false;
+
+            ProvidePointCloudData = false;
         }
 
     }

@@ -50,6 +50,11 @@ namespace KinectDemoClient
             SerializeAndSendMessage((ColorStreamMessage)message);
         }
 
+        private void kinectStreamer_PointCloudDataReady(KinectClientMessage message)
+        {
+            SerializeAndSendMessage((PointCloudStreamMessage)message);
+        }
+
         private void kinectStreamer_DepthDataReady(KinectClientMessage message)
         {
             if (!pointCloudSent)
@@ -230,7 +235,7 @@ namespace KinectDemoClient
             kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
         }
 
-        private void ColorCHeckBox_Checked(object sender, RoutedEventArgs e)
+        private void ColorCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
@@ -246,6 +251,24 @@ namespace KinectDemoClient
         {
             kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+        }
+
+        private void PointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.PointCloudDataReady += kinectStreamer_PointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = true;
+        }
+
+        private void PointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.PointCloudDataReady -= kinectStreamer_PointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = false;
+        }
+
+        private void SendMessage(object sender, RoutedEventArgs e)
+        {
+            SerializeAndSendMessage(new TextMessage { Text = TextBox.Text });
+            TextBox.Text = "";
         }
     }
 }

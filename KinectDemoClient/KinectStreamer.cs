@@ -197,9 +197,14 @@ namespace KinectDemoClient
 
                 // Process depth frame if needed
 
-                if (KinectStreamerConfig.ProvideDepthData)
+                if (KinectStreamerConfig.ProvideDepthData || KinectStreamerConfig.ProvidePointCloudData)
                 {
                     ProcessDepthData();
+
+                    if (KinectStreamerConfig.ProvidePointCloudData)
+                    {
+                        GenerateFullPointCloud();
+                    }
                 }
 
                 // Process body data if needed
@@ -365,6 +370,11 @@ namespace KinectDemoClient
             }
 
             FullPointCloud = validPointList.ToArray();
+
+            if (PointCloudDataReady != null)
+            {
+                PointCloudDataReady(new PointCloudStreamMessage(FullPointCloud));
+            }
 
             return FullPointCloud;
         }

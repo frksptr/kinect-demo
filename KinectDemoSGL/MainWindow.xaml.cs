@@ -52,6 +52,7 @@ namespace KinectDemoCommon
 
             kinectServer.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
             kinectServer.DepthDataArrived += kinectServer_DepthDataArrived;
+            kinectServer.TextMessageArrived += kinectServer_TextMessageArrived;
 
             activeWorkspace = new Workspace()
             {
@@ -86,6 +87,14 @@ namespace KinectDemoCommon
             EditWorkspace.DataContext = activeWorkspace;
 
 
+        }
+
+        private void kinectServer_TextMessageArrived(KinectDemoMessage message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ClientMessageBox.Text += "\n" + ((TextMessage)message).Text;
+            });
         }
 
         private void kinectServer_DepthDataArrived(KinectDemoMessage message)

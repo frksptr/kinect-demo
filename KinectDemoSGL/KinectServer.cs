@@ -35,13 +35,14 @@ namespace KinectDemoCommon
         public KinectServerDataArrived ColorDataArrived;
         public KinectServerDataArrived BodyDataArrived;
         public KinectServerDataArrived PointCloudDataArrived;
+        public KinectServerDataArrived TextMessageArrived;
 
         public KinectServerDataArrived WorkspaceUpdated;
 
         private static KinectServer kinectServer;
 
         private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
-        
+
         public static KinectServer Instance
         {
             get { return kinectServer ?? (kinectServer = new KinectServer()); }
@@ -85,6 +86,8 @@ namespace KinectDemoCommon
                 state.WorkSocket = socket.EndAccept(ar);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
+
+                socket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
@@ -105,7 +108,7 @@ namespace KinectDemoCommon
             }
             return equals;
         }
-        
+
 
         private void ProcessBuffer(StateObject state)
         {
@@ -117,7 +120,8 @@ namespace KinectDemoCommon
                 {
                     return;
                 }
-                if (ArrayEquals(state.PrevBytes.GetRange(i, endOfObjectMark.Length).ToArray(), endOfObjectMark))
+                bool isEnd = ArrayEquals(state.PrevBytes.GetRange(i, endOfObjectMark.Length).ToArray(), endOfObjectMark);
+                if (isEnd)
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     MemoryStream stream = new MemoryStream(state.PrevBytes.GetRange(0, i + 1).ToArray());
@@ -131,7 +135,6 @@ namespace KinectDemoCommon
                 }
                 i++;
             }
-
         }
 
         private void ObjectArrived(object obj)
@@ -177,9 +180,17 @@ namespace KinectDemoCommon
                 WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace);
                 WorkspaceUpdated((WorkspaceMessage)obj);
             }
+            if (obj is TextMessage)
+            {
+                TextMessage msg = (TextMessage)obj;
+                if (TextMessageArrived != null)
+                {
+                    TextMessageArrived(msg);
+                }
+            }
         }
 
-                        
+
 
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -203,7 +214,7 @@ namespace KinectDemoCommon
                     // more data.
                     String content = sb.ToString();
 
-
+                    //  TODO:   processing too slow, try reverting to original method
                     ProcessBuffer(state);
 
                     Array.Resize(ref state.Buffer, 9000000);
@@ -211,7 +222,7 @@ namespace KinectDemoCommon
 
                 handler.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
 
-                SerializeAndSendMessage(new KinectServerReadyMessage{Ready = true}, handler);
+                SerializeAndSendMessage(new KinectServerReadyMessage { Ready = true }, handler);
             }
             catch (Exception ex)
             {
@@ -249,7 +260,7 @@ namespace KinectDemoCommon
 
         private void SendCallback(IAsyncResult ar)
         {
-            
+
         }
     }
 }

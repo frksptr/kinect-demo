@@ -53,6 +53,7 @@
     <Compile Include="Messages\KinectDemoMessage.cs" />
     <Compile Include="Messages\KinectServerMessages\KinectServerMessage.cs" />
     <Compile Include="Messages\KinectServerMessages\KinectServerReadyMessage.cs" />
+    <Compile Include="Messages\TextMessage.cs" />
     <Compile Include="Messages\WorkspaceMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\BodyStreamMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\ColorStreamMessage.cs" />
