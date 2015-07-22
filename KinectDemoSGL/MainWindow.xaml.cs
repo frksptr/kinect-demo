@@ -8,6 +8,9 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
 using System.Net.Sockets;
+using System.Windows.Media.Media3D;
+using System.Collections.Generic;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoCommon
 {
@@ -77,9 +80,9 @@ namespace KinectDemoCommon
 
             HandCheckBodyViewHolder.Children.Add(bodyView);
 
-            //roomPointCloudView = new RoomPointCloudView();
+            roomPointCloudView = new RoomPointCloudView();
 
-            //RoomPointCloudHolder.Children.Add(roomPointCloudView);
+            RoomPointCloudHolder.Children.Add(roomPointCloudView);
 
             //roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
 
@@ -175,11 +178,11 @@ namespace KinectDemoCommon
         private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             //CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
-            //List<Point3D> pointCloud = GeometryHelper.CameraSpacePointsToPoint3Ds(csps);
+            List<Point3D> pointCloud = new List<Point3D>(DataStore.Instance.FullPointCloud);
 
-            //roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
+            roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
 
-            //roomPointCloudView.FullPointCloud = pointCloud;
+            roomPointCloudView.DataContext = DataStore.Instance.FullPointCloud;
 
             //roomPointCloudView.WorkspaceList = workspaceList;
         }

@@ -16,6 +16,7 @@ using Microsoft.Kinect;
 using System.Collections.Generic;
 using System.Text;
 using KinectDemoCommon.Messages.KinectServerMessages;
+using System.Windows.Media.Media3D;
 
 namespace KinectDemoCommon
 {
@@ -87,6 +88,9 @@ namespace KinectDemoCommon
                 StateObject state = new StateObject();
                 state.WorkSocket = socket.EndAccept(ar);
                 clientDictionary.Add(state, new KinectClient());
+
+                DataStore.Instance.kinectClients.Add(clientDictionary[state]);
+                DataStore.Instance.clientPointClouds.Add(clientDictionary[state],new Point3D[0]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
 
@@ -166,6 +170,7 @@ namespace KinectDemoCommon
                 {
                     DataStore.Instance.FullPointCloud = ((PointCloudStreamMessage)obj).FullPointCloud;
 
+                    DataStore.Instance.clientPointClouds[sender] = ((PointCloudStreamMessage)obj).FullPointCloud;
                     if (PointCloudDataArrived != null)
                     {
                         PointCloudDataArrived((PointCloudStreamMessage)obj, sender);
@@ -193,9 +198,6 @@ namespace KinectDemoCommon
             }
         }
 
-
-
-
         private void ReceiveCallback(IAsyncResult ar)
         {
             try
@@ -209,7 +211,6 @@ namespace KinectDemoCommon
                     Array.Resize(ref state.Buffer, received);
 
                     //state.PrevBytes.AddRange(state.Buffer);
-                    ////  TODO:   processing too slow, try reverting to original method
                     //ProcessBuffer(state);
 
                     BinaryFormatter formatter = new BinaryFormatter();

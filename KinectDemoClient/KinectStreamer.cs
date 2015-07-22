@@ -156,7 +156,7 @@ namespace KinectDemoClient
         private void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
 
-            if (!(KinectStreamerConfig.ProvideBodyData || KinectStreamerConfig.ProvideColorData || KinectStreamerConfig.ProvideDepthData))
+            if (!(KinectStreamerConfig.ProvideBodyData || KinectStreamerConfig.ProvideColorData || KinectStreamerConfig.ProvideDepthData || KinectStreamerConfig.ProvidePointCloudData))
             {
                 return;
             }
@@ -212,8 +212,6 @@ namespace KinectDemoClient
                 {
                     ProcessBodyData();
                 }
-
-
 
             }
             finally

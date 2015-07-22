@@ -110,11 +110,6 @@ namespace KinectDemoClient
 
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
-
-                //kinectStreamer.WorkspaceChecker.WorkspaceActivated += kinectStreamer_WorkspaceActivated;
-
-                //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-                //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
             }
             catch (Exception ex)
             {

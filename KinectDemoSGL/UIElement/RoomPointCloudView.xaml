@@ -21,6 +21,8 @@
             Focusable="True"
             KeyDown="openGLControl_KeyDown" 
             MouseWheel="openGLControl_MouseWheel" 
-            />
+            >
+        </sharpGl:OpenGLControl>
+            <Button Content="Button" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
     </Grid>
 </UserControl>
