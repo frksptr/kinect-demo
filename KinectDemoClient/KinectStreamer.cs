@@ -371,19 +371,10 @@ namespace KinectDemoClient
             int i = 0;
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
-                if (i == 100000)
-                {
-                    int aasdasd = 42;
-                }
                 if (GeometryHelper.IsValidCameraPoint(point))
                 {
                     //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
                     validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));
-                    DepthSpacePoint dsp = kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(point);
-                    
-                    int b = (int)dsp.X + (int)dsp.Y;
-                    int x = i % DepthFrameDescription.Width;
-                    int y = i / DepthFrameDescription.Height;
                 }
                     //  Keep invalid points for easier depth space-camera space mapping on client side
                 else
@@ -398,7 +389,7 @@ namespace KinectDemoClient
 
             if (PointCloudDataReady != null)
             {
-                PointCloudDataReady(new PointCloudStreamMessage(FullPointCloud));
+                PointCloudDataReady(new SmartPointCloudStreamMessage(FullPointCloud));
             }
             
             return validPointList.ToArray();

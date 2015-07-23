@@ -26,7 +26,7 @@ namespace KinectDemoCommon
     class KinectServer
     {
 
-        private readonly string ip = NetworkHelper.LocalIPAddress();
+        private readonly string ip = "192.168.0.115";//NetworkHelper.LocalIPAddress();
         private Socket socket;
         //private byte[] buffer;
 
@@ -226,7 +226,12 @@ namespace KinectDemoCommon
                     stream.Position = 0;
                     try
                     {
+                        var watch = Stopwatch.StartNew();
+                        watch.Start();
                         obj = formatter.Deserialize(stream);
+                        watch.Stop();
+                        Debug.WriteLine("Deserialized in " + watch.ElapsedMilliseconds + " ms.");
+
                         ObjectArrived(obj, clientDictionary[state]);
                     }
                     catch (Exception ex)
