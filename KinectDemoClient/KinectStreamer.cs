@@ -368,18 +368,28 @@ namespace KinectDemoClient
             List<NullablePoint3D> validPointList = new List<NullablePoint3D>();
 
             kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depthArray, pointCloudCandidates);
+            int i = 0;
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
                 if (GeometryHelper.IsValidCameraPoint(point))
                 {
                     //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
                     validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));
+                    DepthSpacePoint dsp = kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(point);
+                    if (i == 100000)
+                    {
+                        int aasdasd = 42;
+                    }
+                    int b = (int)dsp.X + (int)dsp.Y;
+                    int x = i % DepthFrameDescription.Width;
+                    int y = i / DepthFrameDescription.Height;
                 }
                     //  Keep invalid points for easier depth space-camera space mapping on client side
                 else
                 {
                     validPointList.Add(null);
                 }
+                i++;
             }
 
             
