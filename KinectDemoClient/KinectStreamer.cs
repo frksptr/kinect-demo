@@ -371,15 +371,16 @@ namespace KinectDemoClient
             int i = 0;
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
+                if (i == 100000)
+                {
+                    int aasdasd = 42;
+                }
                 if (GeometryHelper.IsValidCameraPoint(point))
                 {
                     //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
                     validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));
                     DepthSpacePoint dsp = kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(point);
-                    if (i == 100000)
-                    {
-                        int aasdasd = 42;
-                    }
+                    
                     int b = (int)dsp.X + (int)dsp.Y;
                     int x = i % DepthFrameDescription.Width;
                     int y = i / DepthFrameDescription.Height;

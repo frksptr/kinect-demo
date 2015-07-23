@@ -28,7 +28,7 @@ namespace KinectDemoCommon
             List<Point3D> pointCloud = new List<Point3D>();
             for (int i = 0; i < DataStore.Instance.FullPointCloud.Count(); i++)
             {
-                if (GeometryHelper.InsidePolygon(workspaceVertices, new Point(i/depthFrameSize.Width,i%depthFrameSize.Width)))
+                if (GeometryHelper.InsidePolygon(workspaceVertices, new Point(i%depthFrameSize.Width, i/depthFrameSize.Width)))
                 {
                     NullablePoint3D point = DataStore.Instance.FullPointCloud[i];
                     if (point != null)
