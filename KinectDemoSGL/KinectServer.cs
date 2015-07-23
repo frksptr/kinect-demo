@@ -26,7 +26,9 @@ namespace KinectDemoCommon
     class KinectServer
     {
 
-        private readonly string ip = "192.168.0.115";//NetworkHelper.LocalIPAddress();
+        private readonly string ip = NetworkHelper.LocalIPAddress();
+        //private readonly string ip = "192.168.0.115";
+
         private Socket socket;
         //private byte[] buffer;
 
@@ -92,7 +94,7 @@ namespace KinectDemoCommon
                 clientDictionary.Add(state, new KinectClient());
 
                 DataStore.Instance.kinectClients.Add(clientDictionary[state]);
-                DataStore.Instance.clientPointClouds.Add(clientDictionary[state],new NullablePoint3D[0]);
+                DataStore.Instance.clientPointClouds.Add(clientDictionary[state], new NullablePoint3D[0]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
 
@@ -182,6 +184,27 @@ namespace KinectDemoCommon
                         PointCloudDataArrived((PointCloudStreamMessage)obj, sender);
                     }
                 }
+                if (obj is SmartPointCloudStreamMessage)
+                {
+                    
+                    SmartPointCloudStreamMessage msg = (SmartPointCloudStreamMessage)obj;
+                    double[] doubleArray = msg.PointCloud;
+                    NullablePoint3D[] pointArray = new NullablePoint3D[doubleArray.Length / 3];
+                    for (int i = 0; i < pointArray.Length; i+=3)
+                    {
+                        if (doubleArray[i] == double.NegativeInfinity) {
+                            pointArray[i/3] = null;
+                        } else{
+                            pointArray[i / 3] = new NullablePoint3D(doubleArray[i], doubleArray[i + 1], doubleArray[i + 2]);
+                        }
+                        
+                    }
+
+                    DataStore.Instance.FullPointCloud = pointArray;
+
+                    DataStore.Instance.clientPointClouds[sender] = pointArray;
+
+                }
             }
             if (obj is WorkspaceMessage)
             {
@@ -232,7 +255,12 @@ namespace KinectDemoCommon
                         watch.Stop();
                         Debug.WriteLine("Deserialized in " + watch.ElapsedMilliseconds + " ms.");
 
+                        watch = Stopwatch.StartNew();
+                        watch.Start();
                         ObjectArrived(obj, clientDictionary[state]);
+                        watch.Stop();
+                        Debug.WriteLine("Processed in " + watch.ElapsedMilliseconds + " ms.");
+
                     }
                     catch (Exception ex)
                     {
