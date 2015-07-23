@@ -382,6 +382,7 @@ namespace KinectDemoClient
                 }
             }
 
+            
             FullPointCloud = validPointList.ToArray();
 
             if (PointCloudDataReady != null)
