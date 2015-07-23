@@ -290,8 +290,6 @@ namespace KinectDemoClient
 
         private void ProcessDepthData()
         {
-            bool depthFrameProcessed = false;
-
             using (depthFrame)
             {
                 if (depthFrame != null)
@@ -315,7 +313,6 @@ namespace KinectDemoClient
 
                             ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size,
                                 depthFrame.DepthMinReliableDistance, maxDepth);
-                            depthFrameProcessed = true;
                         }
                     }
                 }
@@ -340,9 +337,15 @@ namespace KinectDemoClient
                     // As long as those body objects are not disposed and not set to null in the array,
                     // those body objects will be re-used.
                     bodyFrame.GetAndRefreshBodyData(Bodies);
+                    bool s = Bodies.GetType().IsSerializable;
                 }
             }
-            if (BodyDataReady != null) BodyDataReady(new BodyStreamMessage(Bodies));
+            List<SerializableBody> serializableBodies = new List<SerializableBody>();
+            foreach (Body body in Bodies)
+            {
+                serializableBodies.Add(new SerializableBody(body));
+            }
+            if (BodyDataReady != null) BodyDataReady(new BodyStreamMessage(serializableBodies.ToArray()));
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
