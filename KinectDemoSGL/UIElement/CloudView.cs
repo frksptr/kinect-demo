@@ -4,6 +4,8 @@ using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
+using System.Diagnostics;
+using System.Windows;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -43,7 +45,11 @@ namespace KinectDemoCommon.UIElement
         private void SetCameraCenterAndShowCloud(Viewport3D viewport, Workspace workspace)
         {
             ClearScreen();
-
+            if (workspace.PointCloud == null)
+            {
+                MessageBox.Show("Workspace has no point cloud");
+                return;
+            }
             foreach (Point3D point in workspace.PointCloud)
             {
                 DrawTriangle(viewport, point, Colors.Black);

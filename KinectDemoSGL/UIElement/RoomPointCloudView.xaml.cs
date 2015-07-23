@@ -20,8 +20,6 @@ namespace KinectDemoCommon.UIElement
     /// </summary>
     public partial class RoomPointCloudView : UserControl
     {
-        public ObservableCollection<Workspace> WorkspaceList { get; set; }
-
         public Point3D Center { get; set; }
 
         double rotationFactor = 0.1;
@@ -131,25 +129,25 @@ namespace KinectDemoCommon.UIElement
 
                 gl.End();
 
-                //gl.Begin(OpenGL.GL_TRIANGLES);
-                //gl.Color(0-0f, 1.0f, 0.0f);
-                //foreach (Workspace workspace in WorkspaceList)
-                //{
-                //    ObservableCollection<Point3D> vertices = workspace.FittedVertices;
-                //    Point3D v0 = vertices[0];
-                //    Point3D v1 = vertices[1];
-                //    Point3D v2 = vertices[2];
-                //    Point3D v3 = vertices[3];
-                //    gl.Vertex(v0.X, v0.Y, v0.Z);
-                //    gl.Vertex(v1.X, v1.Y, v1.Z);
-                //    gl.Vertex(v2.X, v2.Y, v2.Z);
+                gl.Begin(OpenGL.GL_TRIANGLES);
+                gl.Color(0 - 0f, 1.0f, 0.0f);
+                foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
+                {
+                    Point3D[] vertices = workspace.FittedVertices;
+                    Point3D v0 = vertices[0];
+                    Point3D v1 = vertices[1];
+                    Point3D v2 = vertices[2];
+                    Point3D v3 = vertices[3];
+                    gl.Vertex(v0.X, v0.Y, v0.Z);
+                    gl.Vertex(v1.X, v1.Y, v1.Z);
+                    gl.Vertex(v2.X, v2.Y, v2.Z);
 
-                //    gl.Vertex(v2.X, v2.Y, v2.Z);
-                //    gl.Vertex(v3.X, v3.Y, v3.Z);
-                //    gl.Vertex(v0.X, v0.Y, v0.Z);
-                    
-                //}
-                //gl.End();
+                    gl.Vertex(v2.X, v2.Y, v2.Z);
+                    gl.Vertex(v3.X, v3.Y, v3.Z);
+                    gl.Vertex(v0.X, v0.Y, v0.Z);
+
+                }
+                gl.End();
             }
         }
         private float angle = 0.0f;

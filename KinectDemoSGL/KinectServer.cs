@@ -243,6 +243,10 @@ namespace KinectDemoCommon
 
         public void AddWorkspace(Workspace workspace, StateObject state)
         {
+            if (state == null)
+            {
+                state = clientDictionary.Keys.First();
+            }
             WorkspaceMessage message = new WorkspaceMessage()
             {
                 ID = workspace.ID,
