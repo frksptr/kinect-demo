@@ -213,19 +213,6 @@ namespace KinectDemoClient
 
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
-
-        }
-
-        private void SendDepthDataButtonClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
-            }
         }
 
         private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
