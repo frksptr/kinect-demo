@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KinectDemoCommon.Util
+{
+    [Serializable]
+    public class SerializableDictionary<K,V>
+    {
+        public List<DictionaryItem<K, V>> items { get; set; }
+
+        public SerializableDictionary() {
+            items = new List<DictionaryItem<K,V>>();
+        }
+
+        public void Add(DictionaryItem<K, V> item)
+        {
+            items.Add(item);
+        }
+
+
+    }
+}

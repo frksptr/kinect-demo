@@ -19,22 +19,23 @@ namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
 
         public SmartPointCloudStreamMessage(NullablePoint3D[] pointCloud)
         {
-            PointCloud = new double[PointCloud.Length * 3];
+            PointCloud = new double[pointCloud.Length * 3];
             int i = 0;
             foreach (NullablePoint3D point in pointCloud)
             {
                 if (point == null)
                 {
-                    PointCloud[++i] = double.NegativeInfinity;
-                    PointCloud[++i] = double.NegativeInfinity;
-                    PointCloud[++i] = double.NegativeInfinity;
+                    PointCloud[i] = double.NegativeInfinity;
+                    PointCloud[i++] = double.NegativeInfinity;
+                    PointCloud[i++] = double.NegativeInfinity;
                 }
                 else
                 {
-                    PointCloud[++i] = point.X;
-                    PointCloud[++i] = point.Y;
-                    PointCloud[++i] = point.Z;
+                    PointCloud[i] = point.X;
+                    PointCloud[i] = point.Y;
+                    PointCloud[i] = point.Z;
                 }
+                i++;
             }
         }
     }

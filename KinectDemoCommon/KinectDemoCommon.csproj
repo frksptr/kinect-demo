@@ -62,10 +62,14 @@
     <Compile Include="KinectStreamerConfig.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectClientMessage.cs" />
     <Compile Include="Model\NullablePoint3D.cs" />
+    <Compile Include="Model\SerializableBody.cs" />
     <Compile Include="Model\Workspace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\GeometryHelper.cs" />
+    <Compile Include="Util\DictionaryItem.cs" />
     <Compile Include="Util\NetworkHelper.cs" />
+    <Compile Include="Util\SerializableDictionary.cs" />
+    <Compile Include="Util\SerializableDictionaryBuilder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
