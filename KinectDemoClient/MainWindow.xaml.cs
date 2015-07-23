@@ -24,7 +24,7 @@ namespace KinectDemoClient
     {
         private Socket clientSocket;
         public int[] DepthFrameSize { get; set; }
-        string ip = NetworkHelper.LocalIPAddress();
+        public string Ip { get; set; }
         readonly KinectStreamer kinectStreamer;
         private byte[] buffer;
         private bool pointCloudSent = false;
@@ -35,6 +35,10 @@ namespace KinectDemoClient
         public MainWindow()
         {
             InitializeComponent();
+
+            Ip = NetworkHelper.LocalIPAddress();
+
+            DataContext = this;
             
             kinectStreamer = KinectStreamer.Instance;
 
@@ -200,7 +204,7 @@ namespace KinectDemoClient
                 }
                 if (!clientSocket.Connected)
                 {
-                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ip), 3333), ConnectCallback,
+                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(Ip), 3333), ConnectCallback,
                         null);
                 }
             }

@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using Microsoft.Kinect;
-using System.Windows.Documents;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoCommon
 {
@@ -21,8 +18,7 @@ namespace KinectDemoCommon
             double sumY = 0;
             double sumZ = 0;
             double numberOfPoints = 0;
-            Point[] projectedWorkspacePoints = new Point[]
-            {
+            Point[] projectedWorkspacePoints = {
                 new Point(workspace.Vertices3D[0].X, workspace.Vertices3D[0].Y), 
                 new Point(workspace.Vertices3D[1].X, workspace.Vertices3D[1].Y), 
                 new Point(workspace.Vertices3D[2].X, workspace.Vertices3D[2].Y), 
@@ -32,9 +28,7 @@ namespace KinectDemoCommon
             List<Point3D> pointCloud = new List<Point3D>();
             foreach (Point3D point in DataStore.Instance.FullPointCloud)
             {
-                Point point2D = new Point(point.X, point.Y);
-
-                if (GeometryHelper.InsidePolygon(projectedWorkspacePoints, new Point(point2D.X, point2D.Y)))
+                if (GeometryHelper.InsidePolygon(projectedWorkspacePoints, new Point(point.X, point.Y)))
                 {
                     double x = point.X;
                     double y = point.Y;

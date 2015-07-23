@@ -69,6 +69,10 @@ namespace KinectDemoClient
 
         public WorkspaceChecker WorkspaceChecker { get; set; }
 
+        private CameraSpacePoint[] pointCloudCandidates;
+
+        private DepthSpacePoint[] allDepthSpacePoints;
+
         public static KinectStreamer Instance
         {
             get { return kinectStreamer ?? (kinectStreamer = new KinectStreamer()); }
@@ -81,7 +85,29 @@ namespace KinectDemoClient
             
             SetupBody();
 
+            SetupHelpArrays();
+
             kinectSensor.Open();
+        }
+
+        private void SetupHelpArrays()
+        {
+            int width = DepthFrameDescription.Width;
+            int height = DepthFrameDescription.Height;
+            int frameSize = width*height;
+
+            pointCloudCandidates = new CameraSpacePoint[frameSize];
+            allDepthSpacePoints = new DepthSpacePoint[frameSize];
+
+            for (int i = 0; i < height; ++i)
+            {
+                for (int j = 0; j < width; ++j)
+                {
+                    int index = i*width + j;
+                    allDepthSpacePoints[index] = new DepthSpacePoint {X = j, Y = i};
+                    pointCloudCandidates[index] = new CameraSpacePoint();
+                }
+            }
         }
 
         private void SetupKinectSensor()
@@ -338,27 +364,9 @@ namespace KinectDemoClient
 
         public Point3D[] GenerateFullPointCloud()
         {
-            int width = DepthFrameDescription.Width;
-            int height = DepthFrameDescription.Height;
-            int frameSize = width * height;
-            CameraSpacePoint[] pointCloudCandidates = new CameraSpacePoint[frameSize];
             List<Point3D> validPointList = new List<Point3D>();
-            DepthSpacePoint[] allDepthSpacePoints = new DepthSpacePoint[frameSize];
 
-            ushort[] depths = new ushort[frameSize];
-
-            for (int i = 0; i < height; ++i)
-            {
-                for (int j = 0; j < width; ++j)
-                {
-                    int index = i * width + j;
-                    allDepthSpacePoints[index] = new DepthSpacePoint { X = j, Y = i };
-                    pointCloudCandidates[index] = new CameraSpacePoint();
-                    depths[index] = depthArray[index];
-                }
-            }
-
-            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depths, pointCloudCandidates);
+            kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depthArray, pointCloudCandidates);
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
                 if (GeometryHelper.IsValidCameraPoint(point))
