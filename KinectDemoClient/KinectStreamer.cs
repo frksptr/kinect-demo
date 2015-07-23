@@ -8,6 +8,7 @@ using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
+using KinectDemoCommon.Model;
 
 namespace KinectDemoClient
 {
@@ -28,7 +29,7 @@ namespace KinectDemoClient
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
         
-        public Point3D[] FullPointCloud { get; set; }
+        public NullablePoint3D[] FullPointCloud { get; set; }
 
         KinectSensor kinectSensor;
 
@@ -362,16 +363,22 @@ namespace KinectDemoClient
             }
         }
 
-        public Point3D[] GenerateFullPointCloud()
+        public NullablePoint3D[] GenerateFullPointCloud()
         {
-            List<Point3D> validPointList = new List<Point3D>();
+            List<NullablePoint3D> validPointList = new List<NullablePoint3D>();
 
             kinectSensor.CoordinateMapper.MapDepthPointsToCameraSpace(allDepthSpacePoints, depthArray, pointCloudCandidates);
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
                 if (GeometryHelper.IsValidCameraPoint(point))
                 {
-                    validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
+                    //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
+                    validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));
+                }
+                    //  Keep invalid points for easier depth space-camera space mapping on client side
+                else
+                {
+                    validPointList.Add(null);
                 }
             }
 
@@ -381,8 +388,8 @@ namespace KinectDemoClient
             {
                 PointCloudDataReady(new PointCloudStreamMessage(FullPointCloud));
             }
-
-            return FullPointCloud;
+            
+            return validPointList.ToArray();
         }
     }
 }

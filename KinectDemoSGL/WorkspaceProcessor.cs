@@ -12,35 +12,39 @@ namespace KinectDemoCommon
     public class WorkspaceProcessor
     {
         
-        public static void SetWorkspaceCloudRealVerticesAndCenter(Workspace workspace)
+        public static void SetWorkspaceCloudRealVerticesAndCenter(Workspace workspace, FrameSize depthFrameSize)
         {
             double sumX = 0;
             double sumY = 0;
             double sumZ = 0;
             double numberOfPoints = 0;
-            Point[] projectedWorkspacePoints = {
-                new Point(workspace.Vertices3D[0].X, workspace.Vertices3D[0].Y), 
-                new Point(workspace.Vertices3D[1].X, workspace.Vertices3D[1].Y), 
-                new Point(workspace.Vertices3D[2].X, workspace.Vertices3D[2].Y), 
-                new Point(workspace.Vertices3D[3].X, workspace.Vertices3D[3].Y),
+            Point[] workspaceVertices = {
+                new Point(workspace.Vertices[0].X, workspace.Vertices[0].Y), 
+                new Point(workspace.Vertices[1].X, workspace.Vertices[1].Y), 
+                new Point(workspace.Vertices[2].X, workspace.Vertices[2].Y), 
+                new Point(workspace.Vertices[3].X, workspace.Vertices[3].Y),
             };
 
             List<Point3D> pointCloud = new List<Point3D>();
-            foreach (Point3D point in DataStore.Instance.FullPointCloud)
+            for (int i = 0; i < DataStore.Instance.FullPointCloud.Count(); i++)
             {
-                if (GeometryHelper.InsidePolygon(projectedWorkspacePoints, new Point(point.X, point.Y)))
+                if (GeometryHelper.InsidePolygon(workspaceVertices, new Point(i/depthFrameSize.Width,i%depthFrameSize.Width)))
                 {
-                    double x = point.X;
-                    double y = point.Y;
-                    double z = point.Z;
+                    NullablePoint3D point = DataStore.Instance.FullPointCloud[i];
+                    if (point != null)
+                    {
+                        double x = point.X;
+                        double y = point.Y;
+                        double z = point.Z;
 
-                    sumX += x;
-                    sumY += y;
-                    sumZ += z;
+                        sumX += x;
+                        sumY += y;
+                        sumZ += z;
 
-                    numberOfPoints += 1;
+                        numberOfPoints += 1;
 
-                    pointCloud.Add(new Point3D(point.X, point.Y, point.Z));
+                        pointCloud.Add(new Point3D(point.X, point.Y, point.Z));
+                    }
                 }
             }
             workspace.Center = new Point3D(sumX / numberOfPoints, sumY / numberOfPoints, sumZ / numberOfPoints);

@@ -42,6 +42,8 @@ namespace KinectDemoCommon
 
         private static KinectServer kinectServer;
 
+        private FrameSize depthFrameSize;
+
         private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
 
         private Dictionary<StateObject, KinectClient> clientDictionary = new Dictionary<StateObject, KinectClient>();
@@ -90,7 +92,7 @@ namespace KinectDemoCommon
                 clientDictionary.Add(state, new KinectClient());
 
                 DataStore.Instance.kinectClients.Add(clientDictionary[state]);
-                DataStore.Instance.clientPointClouds.Add(clientDictionary[state],new Point3D[0]);
+                DataStore.Instance.clientPointClouds.Add(clientDictionary[state],new NullablePoint3D[0]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
 
@@ -157,6 +159,10 @@ namespace KinectDemoCommon
                     if (DepthDataArrived != null)
                     {
                         DepthDataArrived((DepthStreamMessage)obj, sender);
+                        if (depthFrameSize == null)
+                        {
+                            depthFrameSize = ((DepthStreamMessage)obj).DepthFrameSize;
+                        }
                     }
                 }
                 if (obj is ColorStreamMessage)
@@ -185,7 +191,7 @@ namespace KinectDemoCommon
                 workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
                 workspace.Vertices3D = msg.Vertices3D;
                 workspace.VertexDepths = msg.VertexDepths;
-                WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace);
+                WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace, depthFrameSize);
                 WorkspaceUpdated((WorkspaceMessage)obj, sender);
             }
             if (obj is TextMessage)

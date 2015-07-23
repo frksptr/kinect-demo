@@ -28,7 +28,7 @@ namespace KinectDemoCommon.UIElement
 
         public KinectClient activeClient { get; set; }
 
-        public Dictionary<KinectClient, Point3D[]> pointCloudDictionary = new Dictionary<KinectClient, Point3D[]>();
+        public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
 
         public RoomPointCloudView()
         {
@@ -118,7 +118,7 @@ namespace KinectDemoCommon.UIElement
                 gl.Begin(OpenGL.GL_POINTS);
                 gl.Color(1.0f, 0.0f, 0.0f);
                 //  Move the geometry into a fairly central position.
-                foreach (Point3D point in pointCloudDictionary[activeClient])
+                foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
                 {
                     gl.Vertex(point.X, point.Y, point.Z);
                 }

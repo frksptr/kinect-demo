@@ -14,9 +14,9 @@ namespace KinectDemoCommon
 
         public List<KinectClient> kinectClients = new List<KinectClient>();
 
-        public Dictionary<KinectClient, Point3D[]> clientPointClouds = new Dictionary<KinectClient, Point3D[]>();
+        public Dictionary<KinectClient, NullablePoint3D[]> clientPointClouds = new Dictionary<KinectClient, NullablePoint3D[]>();
 
-        public Point3D[] FullPointCloud { get; set; }
+        public NullablePoint3D[] FullPointCloud { get; set; }
 
         public static DataStore Instance
         {
