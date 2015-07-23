@@ -269,5 +269,17 @@ namespace KinectDemoClient
             SerializeAndSendMessage(new TextMessage { Text = TextBox.Text });
             TextBox.Text = "";
         }
+
+        private void SkeletonCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
+        }
+
+        private void SkeletonCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+        }
     }
 }

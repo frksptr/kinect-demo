@@ -10,5 +10,6 @@
         <CheckBox Content="Point Cloud" HorizontalAlignment="Left" Margin="90,77,0,0" VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
         <Button Content="Send" HorizontalAlignment="Left" Margin="10,167,0,0" VerticalAlignment="Top" Width="75" Click="SendMessage"/>
         <TextBox Name="ServerIpTextBox" HorizontalAlignment="Left" Height="20" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding Path=Ip}" VerticalAlignment="Top" Width="140"/>
+        <CheckBox Content="Skeleton" HorizontalAlignment="Left" Margin="90,97,0,0" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>
     </Grid>
 </Window>
