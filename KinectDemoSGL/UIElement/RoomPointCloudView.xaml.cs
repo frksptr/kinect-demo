@@ -47,6 +47,10 @@ namespace KinectDemoCommon.UIElement
 
         private List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
 
+        private bool showMerged = false;
+
+        NullablePoint3D[] transformedPointCloud;
+
         public RoomPointCloudView()
         {
             InitializeComponent();
@@ -168,6 +172,22 @@ namespace KinectDemoCommon.UIElement
 
                 gl.End();
 
+                if (showMerged)
+                {
+                    gl.Begin(OpenGL.GL_POINTS);
+                    gl.Color(1.0f, 0.0f, 1.0f);
+                    //  Move the geometry into a fairly central position.
+                    foreach (NullablePoint3D point in transformedPointCloud)
+                    {
+                        if (point != null)
+                        {
+                            gl.Vertex(point.X, point.Y, point.Z);
+                        }
+                    }
+
+                    gl.End();
+                }
+
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
                 {
@@ -208,8 +228,6 @@ namespace KinectDemoCommon.UIElement
                 }
             }
         }
-
-        private float angle = 0.0f;
 
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
@@ -337,30 +355,46 @@ namespace KinectDemoCommon.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            var watch = Stopwatch.StartNew();
-            watch.Start();
-            List<double[]> pointCloudDoubles = new List<double[]>();
+            showMerged = true;
+            var kinect2CalPoints = new NullablePoint3D[]{
+                new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
+                new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
+                new NullablePoint3D(0.1402809, -0.3342402, 2.077 ),
+                new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
+                new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
+                new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
+            };
+
+            var kinect1CalPoints = new NullablePoint3D[]{
+                new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
+                new NullablePoint3D(-0.5510268, -0.3471858,  2.119 ),
+                new NullablePoint3D(-0.4770563, -0.09818071, 2.456), 
+                new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
+                new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
+                new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
+            };
+
+            var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
+
+            Matrix<double> rot = A.R;
+            Vector<double> translate = A.T;
+
+            
+            List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
             foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
             {
-                pointCloudDoubles.Add(new []{point.X,point.Y,point.Z});
+                if (point != null)
+                {
+                    var pointVector = DenseVector.OfArray(new[] { point.X, point.Y, point.Z });
+                    var rottranv = (pointVector * rot).Add(translate);
+                    transformedPointCloudList.Add(new NullablePoint3D(rottranv[0], rottranv[1], rottranv[2]));
+                }
             }
+
+            transformedPointCloud = transformedPointCloudList.ToArray();
+
         }
 
-//        ajtó
-//-0.3635642, -0.4667397, 1.891
-//-0.2965499, -0.2976018, 2.139
-//0.1402809, -0.3342402, 2.077
-//-0.3312522, -0.2975046, 2.139
-//-0.2726442, -0.5310401, 1.798
-//-0.3915003, -0.4241526, 1.953
-
-//fal
-//-0,2141886, -0,3827868, 2,077 
-//-0,5510268, -0,3471858, 2,119 
-//-0,4770563, -0,09818071, 2,456 
-//-0,5368629, -0,3702611, 2,065 
-//-0,08871523, -0,3175019, 2,163 
-//-0,3015684, -0,3948682, 2,046 
 
     }
 }
