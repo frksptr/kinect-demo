@@ -356,22 +356,23 @@ namespace KinectDemoCommon.UIElement
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
             showMerged = true;
-            var kinect2CalPoints = new NullablePoint3D[]{
-                new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
-                new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
-                new NullablePoint3D(0.1402809, -0.3342402, 2.077 ),
-                new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
-                new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
-                new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
-            };
-
+            //fal
             var kinect1CalPoints = new NullablePoint3D[]{
                 new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
                 new NullablePoint3D(-0.5510268, -0.3471858,  2.119 ),
-                new NullablePoint3D(-0.4770563, -0.09818071, 2.456), 
-                new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
-                new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
-                new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
+                //new NullablePoint3D(-0.4770563, -0.09818071, 2.456), 
+                //new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
+                //new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
+                //new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
+            };
+            //ajtó
+            var kinect2CalPoints = new NullablePoint3D[]{
+                new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
+                new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
+                //new NullablePoint3D(0.1402809, -0.3342402,  2.077),
+                //new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
+                //new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
+                //new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
             };
 
             var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
@@ -379,14 +380,19 @@ namespace KinectDemoCommon.UIElement
             Matrix<double> rot = A.R;
             Vector<double> translate = A.T;
 
-            
+
+            var a = DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) * rot + translate;
+
+
+
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-            foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
+
+            foreach (NullablePoint3D point in pointCloudDictionary[DataStore.Instance.kinectClients[1]])
             {
                 if (point != null)
                 {
                     var pointVector = DenseVector.OfArray(new[] { point.X, point.Y, point.Z });
-                    var rottranv = (pointVector * rot).Add(translate);
+                    var rottranv = (pointVector * rot) + translate;
                     transformedPointCloudList.Add(new NullablePoint3D(rottranv[0], rottranv[1], rottranv[2]));
                 }
             }
