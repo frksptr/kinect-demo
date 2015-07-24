@@ -11,6 +11,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Media.Animation;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
@@ -336,9 +337,30 @@ namespace KinectDemoCommon.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            
-
+            var watch = Stopwatch.StartNew();
+            watch.Start();
+            List<double[]> pointCloudDoubles = new List<double[]>();
+            foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
+            {
+                pointCloudDoubles.Add(new []{point.X,point.Y,point.Z});
+            }
         }
+
+//        ajtó
+//-0.3635642, -0.4667397, 1.891
+//-0.2965499, -0.2976018, 2.139
+//0.1402809, -0.3342402, 2.077
+//-0.3312522, -0.2975046, 2.139
+//-0.2726442, -0.5310401, 1.798
+//-0.3915003, -0.4241526, 1.953
+
+//fal
+//-0,2141886, -0,3827868, 2,077 
+//-0,5510268, -0,3471858, 2,119 
+//-0,4770563, -0,09818071, 2,456 
+//-0,5368629, -0,3702611, 2,065 
+//-0,08871523, -0,3175019, 2,163 
+//-0,3015684, -0,3948682, 2,046 
 
     }
 }

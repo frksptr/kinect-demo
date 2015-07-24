@@ -57,17 +57,17 @@ namespace KinectDemoCommon.Model
         public ulong TrackingId { get; set; }
 
         public SerializableBody(Body body) {
-            this.HandLeftConfidence = body.HandLeftConfidence;
-            this.HandLeftState = body.HandLeftState;
-            this.HandRightConfidence = body.HandRightConfidence;
-            this.HandRightState = body.HandRightState;
-            this.IsRestricted = body.IsRestricted;
-            this.IsTracked = body.IsTracked;
-            this.JointOrientations = new SerializableDictionaryBuilder<JointType,JointOrientation>().Build(body.JointOrientations);
-            this.Joints = new SerializableDictionaryBuilder<JointType, Joint>().Build(body.Joints);
-            this.Lean = body.Lean;
-            this.LeanTrackingState = body.LeanTrackingState;
-            this.TrackingId = body.TrackingId;
+            HandLeftConfidence = body.HandLeftConfidence;
+            HandLeftState = body.HandLeftState;
+            HandRightConfidence = body.HandRightConfidence;
+            HandRightState = body.HandRightState;
+            IsRestricted = body.IsRestricted;
+            IsTracked = body.IsTracked;
+            JointOrientations = new SerializableDictionaryBuilder<JointType,JointOrientation>().Build(body.JointOrientations);
+            Joints = new SerializableDictionaryBuilder<JointType, Joint>().Build(body.Joints);
+            Lean = body.Lean;
+            LeanTrackingState = body.LeanTrackingState;
+            TrackingId = body.TrackingId;
         }
 
 

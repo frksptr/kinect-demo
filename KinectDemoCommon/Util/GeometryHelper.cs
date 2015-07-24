@@ -299,8 +299,8 @@ namespace KinectDemoCommon.Util
 
         public static TransformationAndRotation GetTransformationAndRotation(NullablePoint3D[] pointCloud1, NullablePoint3D[] pointCloud2)
         {
-            var center1 = GeometryHelper.CalculateCenterPoint(pointCloud1);
-            var center2 = GeometryHelper.CalculateCenterPoint(pointCloud2);
+            var center1 = CalculateCenterPoint(pointCloud1);
+            var center2 = CalculateCenterPoint(pointCloud2);
             Vector<double> centerV1 = DenseVector.OfArray(new[] { center1.X, center1.Y, center1.Z });
             Vector<double> centerV2 = DenseVector.OfArray(new[] { center2.X, center2.Y, center2.Z });
 
