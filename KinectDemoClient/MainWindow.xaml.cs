@@ -36,7 +36,7 @@ namespace KinectDemoClient
             Ip = NetworkHelper.LocalIPAddress();
 
             DataContext = this;
-            
+
             kinectStreamer = KinectStreamer.Instance;
         }
 
@@ -89,13 +89,13 @@ namespace KinectDemoClient
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
             byte[] buffer = stream.ToArray();
-            
+
 
             if (clientSocket != null)
             {
                 if (clientSocket.Connected)
                 {
-                    
+
                     Debug.WriteLine("Sending message: " + msg.GetType() + " | " + buffer.Length);
                     //clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
                     clientSocket.Send(buffer, SocketFlags.None);
@@ -126,7 +126,7 @@ namespace KinectDemoClient
                 int received = clientSocket.EndReceive(ar);
                 Array.Resize(ref buffer, received);
                 BinaryFormatter formatter = new BinaryFormatter();
-                
+
                 MemoryStream stream = new MemoryStream(buffer);
 
                 object obj = null;
@@ -193,22 +193,37 @@ namespace KinectDemoClient
 
         private void ConnectToServer(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (clientSocket == null)
-                {
-                    clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                }
-                if (!clientSocket.Connected)
-                {
-                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(Ip), 3333), ConnectCallback,
-                        null);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
-            }
+
+            NullablePoint3D[] pc1 = {
+                                        new NullablePoint3D(0,0,0),
+                                        new NullablePoint3D(1,0,0),
+                                        new NullablePoint3D(2,0,0)
+                                    };
+
+            NullablePoint3D[] pc2 = {
+                                        new NullablePoint3D(0,0,0),
+                                        new NullablePoint3D(0,1,0),
+                                        new NullablePoint3D(0,2,0)
+                                    };
+
+            GeometryHelper.GetTransformationAndRotation(pc1, pc2);
+
+            //try
+            //{
+            //    if (clientSocket == null)
+            //    {
+            //        clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //    }
+            //    if (!clientSocket.Connected)
+            //    {
+            //        clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(Ip), 3333), ConnectCallback,
+            //            null);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+            //}
         }
 
         private void SendMessage(object sender, RoutedEventArgs e)

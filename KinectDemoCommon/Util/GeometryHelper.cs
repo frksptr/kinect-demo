@@ -8,6 +8,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Kinect;
+using KinectDemoCommon.Model;
 
 namespace KinectDemoCommon.Util
 {
@@ -255,6 +256,16 @@ namespace KinectDemoCommon.Util
             return cspList;
         }
 
+        public static Point3D CalculateCenterPoint(NullablePoint3D[] pointCloud)
+        {
+            List<Point3D> points = new List<Point3D>();
+            foreach (NullablePoint3D point in pointCloud)
+            {
+                points.Add(new Point3D(point.X, point.Y, point.Z));
+            }
+            return CalculateCenterPoint(points);
+        }
+
         public static Point3D CalculateCenterPoint(List<Point3D> pointCloud)
         {
             Point3D center = new Point3D();
@@ -284,6 +295,51 @@ namespace KinectDemoCommon.Util
                 radius*Math.Sin(theta)*Math.Sin(phi),
                 radius*Math.Cos(theta)
                 );
+        }
+
+        public static TransformationAndRotation GetTransformationAndRotation(NullablePoint3D[] pointCloud1, NullablePoint3D[] pointCloud2)
+        {
+            var center1 = GeometryHelper.CalculateCenterPoint(pointCloud1);
+            var center2 = GeometryHelper.CalculateCenterPoint(pointCloud2);
+            Vector<double> centerV1 = DenseVector.OfArray(new[] { center1.X, center1.Y, center1.Z });
+            Vector<double> centerV2 = DenseVector.OfArray(new[] { center2.X, center2.Y, center2.Z });
+
+            Matrix<double> H = Matrix<double>.Build.Dense(3, 3, 0);
+            for (int i = 0; i < pointCloud1.Length; i++)
+            {
+                var p1 = pointCloud1[i];
+                var p2 = pointCloud2[i];
+                Vector<double> vec1 = DenseVector.OfArray(new[] { p1.X, p1.Y, p1.Z });
+                Vector<double> vec2 = DenseVector.OfArray(new[] { p2.X, p2.Y, p2.Z });
+                var a = DenseVector.OuterProduct(vec1.Subtract(centerV1), vec2.Subtract(centerV2));
+                H += a;
+            }
+
+            Svd<double> svdDecomp = H.Svd(true);
+            var V = svdDecomp.VT.Transpose();
+            var U = svdDecomp.U;
+            var R = V.Multiply(U.Transpose());
+
+
+            if (R.Determinant() < 0)
+            {
+                R.Column(2).Multiply(-1);
+            }
+
+            var t = -R * centerV1 + centerV2;
+            return new TransformationAndRotation(t, R);
+
+        }
+
+        public class TransformationAndRotation
+        {
+            public Vector<double> T {get;set;}
+            public Matrix<double> R { get; set; }
+            public TransformationAndRotation(Vector<double> t, Matrix<double> r)
+            {
+                T = t;
+                R = r;
+            }
         }
 
     }
