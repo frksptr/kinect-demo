@@ -14,6 +14,7 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using System.Text;
 using KinectDemoCommon.Messages.KinectServerMessages;
+using System.Collections.Generic;
 
 namespace KinectDemoClient
 {
@@ -74,7 +75,6 @@ namespace KinectDemoClient
         {
             SerializeAndSendMessage(message);
         }
-
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
@@ -211,7 +211,6 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
