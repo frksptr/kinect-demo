@@ -163,16 +163,16 @@ namespace KinectDemoCommon.UIElement
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
 
-            if (colorBitmap == null)
-            {
-                colorBitmap = new WriteableBitmap(msg.ColorFrameSize.Width, msg.ColorFrameSize.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
-            }
+            
 
             try
             {
                 Dispatcher.Invoke(() =>
                 {
-
+                    if (colorBitmap == null)
+                    {
+                        colorBitmap = new WriteableBitmap(msg.ColorFrameSize.Width, msg.ColorFrameSize.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+                    }
                     colorBitmap.WritePixels(
                         new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
                         msg.ColorPixels,

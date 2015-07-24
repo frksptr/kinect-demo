@@ -120,7 +120,10 @@ namespace KinectDemoCommon.UIElement
                 //  Move the geometry into a fairly central position.
                 foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
                 {
-                    gl.Vertex(point.X, point.Y, point.Z);
+                    if (point != null)
+                    {
+                        gl.Vertex(point.X, point.Y, point.Z);
+                    }
                 }
 
                 gl.End();
