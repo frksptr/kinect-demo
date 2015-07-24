@@ -38,8 +38,6 @@ namespace KinectDemoClient
             DataContext = this;
             
             kinectStreamer = KinectStreamer.Instance;
-            kinectStreamer.KinectStreamerConfig.SendInUnified = true;
-
         }
 
         void kinectStreamer_BodyDataReady(KinectClientMessage message)
@@ -59,20 +57,26 @@ namespace KinectDemoClient
 
         private void kinectStreamer_DepthDataReady(KinectClientMessage message)
         {
+            SendFirstPointCloud();
+            SerializeAndSendMessage((DepthStreamMessage)message);
+        }
+
+        private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
+        {
+            SendFirstPointCloud();
+            SerializeAndSendMessage((UnifiedStreamerMessage)message);
+        }
+
+        private void SendFirstPointCloud()
+        {
             if (!pointCloudSent)
             {
                 pointCloudSent = true;
                 kinectStreamer.GenerateFullPointCloud();
                 SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
             }
-            SerializeAndSendMessage((DepthStreamMessage)message);
         }
 
-
-        private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
-        {
-            SerializeAndSendMessage((UnifiedStreamerMessage)message);
-        }
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
@@ -207,6 +211,12 @@ namespace KinectDemoClient
             }
         }
 
+        private void SendMessage(object sender, RoutedEventArgs e)
+        {
+            SerializeAndSendMessage(new TextMessage { Text = TextBox.Text });
+            TextBox.Text = "";
+        }
+
         private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
@@ -243,12 +253,6 @@ namespace KinectDemoClient
             kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = false;
         }
 
-        private void SendMessage(object sender, RoutedEventArgs e)
-        {
-            SerializeAndSendMessage(new TextMessage { Text = TextBox.Text });
-            TextBox.Text = "";
-        }
-
         private void SkeletonCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
@@ -260,7 +264,6 @@ namespace KinectDemoClient
             kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
         }
-
 
         private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
         {
