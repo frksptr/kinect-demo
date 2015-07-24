@@ -120,34 +120,6 @@ namespace KinectDemoCommon
             return equals;
         }
 
-
-        private void ProcessBuffer(StateObject state)
-        {
-            byte[] prevBytesArray = state.PrevBytes.ToArray();
-            int i = 0;
-            while (i < state.PrevBytes.Count)
-            {
-                if (i + endOfObjectMark.Length > state.PrevBytes.Count)
-                {
-                    return;
-                }
-                bool isEnd = ArrayEquals(state.PrevBytes.GetRange(i, endOfObjectMark.Length).ToArray(), endOfObjectMark);
-                if (isEnd)
-                {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    MemoryStream stream = new MemoryStream(state.PrevBytes.GetRange(0, i + 1).ToArray());
-
-                    object obj = formatter.Deserialize(stream);
-
-                    ObjectArrived(obj, clientDictionary[state]);
-
-                    state.PrevBytes.RemoveRange(0, i + endOfObjectMark.Length);
-                    i = 0;
-                }
-                i++;
-            }
-        }
-
         private void ObjectArrived(object obj, KinectClient sender)
         {
             if (obj != null)
@@ -176,18 +148,8 @@ namespace KinectDemoCommon
                 }
                 if (obj is PointCloudStreamMessage)
                 {
-                    DataStore.Instance.FullPointCloud = ((PointCloudStreamMessage)obj).FullPointCloud;
-
-                    DataStore.Instance.clientPointClouds[sender] = ((PointCloudStreamMessage)obj).FullPointCloud;
-                    if (PointCloudDataArrived != null)
-                    {
-                        PointCloudDataArrived((PointCloudStreamMessage)obj, sender);
-                    }
-                }
-                if (obj is SmartPointCloudStreamMessage)
-                {
                     
-                    SmartPointCloudStreamMessage msg = (SmartPointCloudStreamMessage)obj;
+                    PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
                     double[] doubleArray = msg.PointCloud;
                     NullablePoint3D[] pointArray = new NullablePoint3D[doubleArray.Length / 3];
                     for (int i = 0; i < pointArray.Length; i+=3)
@@ -204,6 +166,14 @@ namespace KinectDemoCommon
 
                     DataStore.Instance.clientPointClouds[sender] = pointArray;
 
+                }
+                if (obj is BodyStreamMessage)
+                {
+                    BodyStreamMessage msg = (BodyStreamMessage)obj;
+                    if (BodyDataArrived != null)
+                    {
+                        BodyDataArrived(msg, sender);
+                    }
                 }
             }
             if (obj is WorkspaceMessage)

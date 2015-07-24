@@ -56,7 +56,7 @@ namespace KinectDemoClient
 
         private void kinectStreamer_PointCloudDataReady(KinectClientMessage message)
         {
-            if (message is SmartPointCloudStreamMessage) SerializeAndSendMessage((SmartPointCloudStreamMessage)message);
+            if (message is PointCloudStreamMessage) SerializeAndSendMessage((PointCloudStreamMessage)message);
             if (message is PointCloudStreamMessage) SerializeAndSendMessage((PointCloudStreamMessage)message);
         }
 
@@ -66,7 +66,7 @@ namespace KinectDemoClient
             {
                 pointCloudSent = true;
                 kinectStreamer.GenerateFullPointCloud();
-                SerializeAndSendMessage(new SmartPointCloudStreamMessage(kinectStreamer.FullPointCloud));
+                SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
             }
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
