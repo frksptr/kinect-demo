@@ -21,13 +21,16 @@ namespace KinectDemoCommon.UIElement
         WriteableBitmap depthBitmap = null;
         public int[] DepthFrameSize { get; set; }
         private byte[] depthPixels;
+        private MessageProcessor messageProcessor;
+        private KinectServer kinectServer;
+
         public CameraWorkspace()
         {
             DataContext = this;
             //  TODO: set width, height from framedescription data provided by client
             depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
-            KinectServer kinectServer = KinectServer.Instance;
-            kinectServer.MessageProcessor.DepthDataArrived += kinectServer_DepthDataReady;
+            kinectServer = KinectServer.Instance;
+            messageProcessor = kinectServer.MessageProcessor;
 
             InitializeComponent();
         }
@@ -83,16 +86,14 @@ namespace KinectDemoCommon.UIElement
 
         private void CameraWorkspace_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            //    if ((bool) e.NewValue == true)
-            //    {
-            //        kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-            //        kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
-            //    }
-            //    else
-            //    {
-            //        kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
-            //        kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
-            //    }
+            if ((bool)e.NewValue == true)
+            {
+                messageProcessor.DepthDataArrived += kinectServer_DepthDataReady;
+            }
+            else
+            {
+                messageProcessor.DepthDataArrived -= kinectServer_DepthDataReady;
+            }
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
-using KinectDemoCommon.Util;
 
 namespace KinectDemoCommon
 {

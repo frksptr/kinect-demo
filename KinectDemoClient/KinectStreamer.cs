@@ -326,7 +326,7 @@ namespace KinectDemoClient
             }
 
             colorStreamMessage = new ColorStreamMessage(colorPixels,
-                new[] { ColorFrameDescription.Width, ColorFrameDescription.Height });
+                new FrameSize(ColorFrameDescription.Width, ColorFrameDescription.Height));
 
         }
 

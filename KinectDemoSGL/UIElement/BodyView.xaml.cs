@@ -120,26 +120,32 @@ namespace KinectDemoCommon.UIElement
         // Distance tolerance in meters
         private const double DistanceTolerance = 0.1;
 
+        private MessageProcessor messageProcessor;
+
         public BodyView()
         {
 
             KinectServer kinectServer = KinectServer.Instance;
 
-            kinectServer.MessageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
-            //kinectStreamer = KinectStreamer.Instance;
+            messageProcessor = kinectServer.MessageProcessor;
+            //  TODO: only bind when visible
+            messageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
+            //messageProcessor.BodyDataArrived += kinectServer_BodyDataArrived;
 
-            //  TODO: get size from framedescription provided by client
-            colorBitmap = new WriteableBitmap(1920, 1080, 96.0, 96.0, PixelFormats.Bgr32, null);
+            imageSource = new DrawingImage(drawingGroup);
+
+            //// use the window object as the view model in this simple example
+            DataContext = this;
+
+            //// initialize the components (controls) of the window
+            InitializeComponent();
+        }
+
+        private void kinectServer_BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            BodyStreamMessage msg = (BodyStreamMessage) message;
 
             //bones = kinectStreamer.Bones;
-
-            //displayHeight = kinectStreamer.ColorFrameDescription.Height;
-            //displayWidth = kinectStreamer.ColorFrameDescription.Width;
-
-            //colorBitmap = new WriteableBitmap(
-            //    kinectStreamer.ColorFrameDescription.Width,
-            //    kinectStreamer.ColorFrameDescription.Height,
-            //    96.0, 96.0, PixelFormats.Bgr32, null);
 
             //// populate body colors, one for each BodyIndex
             //bodyColors = new List<Pen>();
@@ -151,26 +157,22 @@ namespace KinectDemoCommon.UIElement
             //bodyColors.Add(new Pen(Brushes.Indigo, 6));
             //bodyColors.Add(new Pen(Brushes.Violet, 6));
 
-            //// Create the drawing group we'll use for drawing
-            //drawingGroup = new DrawingGroup();
-
-            imageSource = new DrawingImage(drawingGroup);
-
-            //// use the window object as the view model in this simple example
-            DataContext = this;
-
-            //// initialize the components (controls) of the window
-            InitializeComponent();
         }
 
         private void kinectServer_ColorDataArrived(KinectDemoMessage message, KinectClient client)
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
 
+            if (colorBitmap == null)
+            {
+                colorBitmap = new WriteableBitmap(msg.ColorFrameSize.Width, msg.ColorFrameSize.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+            }
+
             try
             {
                 Dispatcher.Invoke(() =>
                 {
+
                     colorBitmap.WritePixels(
                         new Int32Rect(0, 0, colorBitmap.PixelWidth, colorBitmap.PixelHeight),
                         msg.ColorPixels,

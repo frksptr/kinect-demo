@@ -1,6 +1,6 @@
-﻿using KinectDemoCommon.Model;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 using System;
+using KinectDemoCommon.Model;
 
 namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
 {

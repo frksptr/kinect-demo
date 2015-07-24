@@ -7,9 +7,9 @@ namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
     {
         public byte[] ColorPixels { get; set; }
 
-        public int[] ColorFrameSize { get; set; }
+        public FrameSize ColorFrameSize { get; set; }
 
-        public ColorStreamMessage(byte[] colorPixels, int[] colorFrameSize)
+        public ColorStreamMessage(byte[] colorPixels, FrameSize colorFrameSize)
         {
             ColorPixels = colorPixels;
             ColorFrameSize = colorFrameSize;

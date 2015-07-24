@@ -8,12 +8,11 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using KinectDemoCommon.Messages;
-using KinectDemoCommon.Messages.KinectClientMessages;
-using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using System.Collections.Generic;
 using KinectDemoCommon.Messages.KinectServerMessages;
+using KinectDemoCommon;
 
 namespace KinectDemoCommon
 {
