@@ -84,8 +84,6 @@ namespace KinectDemoCommon
 
             RoomPointCloudHolder.Children.Add(roomPointCloudView);
 
-            //roomPointCloudView.DataContext = cloudView.AllCameraSpacePoints;
-
             WorkspaceList.ItemsSource = workspaceList;
 
             EditWorkspace.DataContext = activeWorkspace;

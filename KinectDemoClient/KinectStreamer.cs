@@ -392,7 +392,7 @@ namespace KinectDemoClient
 
             if (PointCloudDataReady != null)
             {
-                PointCloudDataReady(new SmartPointCloudStreamMessage(FullPointCloud));
+                PointCloudDataReady(new PointCloudStreamMessage(FullPointCloud));
             }
             
             return validPointList.ToArray();
