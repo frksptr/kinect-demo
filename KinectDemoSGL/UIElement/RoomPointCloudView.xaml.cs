@@ -7,6 +7,14 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using SharpGL;
 using SharpGL.SceneGraph;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using System;
+using System.Collections.ObjectModel;
+using System.Windows.Media.Animation;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using Microsoft.Kinect;
 
 namespace KinectDemoCommon.UIElement
 {
@@ -30,20 +38,48 @@ namespace KinectDemoCommon.UIElement
 
         public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
 
+        public double DistanceTolerance = 0.2;
+
+        private KinectServer kinectServer;
+
+        private MessageProcessor messageProcessor;
         public RoomPointCloudView()
         {
             InitializeComponent();
 
+            kinectServer = KinectServer.Instance;
+            messageProcessor = kinectServer.MessageProcessor;
+            messageProcessor.BodyDataArrived += BodyDataArrived;
             pointCloudDictionary = DataStore.Instance.clientPointClouds;
-
         }
-        
+
+        private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            BodyStreamMessage msg = (BodyStreamMessage) message;
+            List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
+            foreach (SerializableBody body in msg.Bodies)
+            {
+                if (body != null)
+                {
+                    if (body.IsTracked)
+                    {
+                        IDictionary<JointType, Joint> joints = new Dictionary<JointType, Joint>();
+                        body.Joints.CopyToDictionary(joints);
+                        handPositions.Add(joints[JointType.HandLeft].Position);
+                        handPositions.Add(joints[JointType.HandRight].Position);
+                    }
+                }
+
+            }
+            CheckActiveWorkspace(handPositions.ToArray());
+        }
+
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
             double radius = -4;
             double theta = 0;
             double phi = 0;
-            
+
             cameraPosSphere = new Point3D(
                 radius,
                 theta,
@@ -149,9 +185,16 @@ namespace KinectDemoCommon.UIElement
                 gl.End();
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
-                gl.Color(0.0f, 0.0f, 1.0f);
                 foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
                 {
+                    if (workspace.Active)
+                    {
+                        gl.Color(0.0f, 0.0f, 1.0f);
+                    }
+                    else
+                    {
+                        gl.Color(0.0f, 1.0f, 1.0f);
+                    }
                     Point3D[] vertices = workspace.Vertices3D;
                     Point3D v0 = vertices[0];
                     Point3D v1 = vertices[1];
@@ -169,10 +212,12 @@ namespace KinectDemoCommon.UIElement
                 gl.End();
             }
         }
+
         private float angle = 0.0f;
+
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
             if (e.Key.Equals(Key.S))
             {
                 cameraPosSphere.Y -= rotationFactor;
@@ -195,7 +240,7 @@ namespace KinectDemoCommon.UIElement
             }
 
             cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
-            
+
             //cameraPos.X += Center.X;
             //cameraPos.Y += Center.Y;
             //cameraPos.Z += Center.Z;
@@ -221,6 +266,47 @@ namespace KinectDemoCommon.UIElement
             Transform();
         }
 
+        public void CheckActiveWorkspace(CameraSpacePoint[] handPositions)
+        {
+            CheckActiveWorkspace(GeometryHelper.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
+        }
+
+        public void CheckActiveWorkspace(Point3D[] handPositions)
+        {
+            foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
+            {
+                Point3D[] vertices = workspace.FittedVertices;
+
+                Point[] vertices2d = new[]
+                { 
+                    new Point(vertices[0].X, vertices[0].Y),
+                    new Point(vertices[1].X, vertices[1].Y),
+                    new Point(vertices[2].X, vertices[2].Y),
+                    new Point(vertices[3].X, vertices[3].Y) };
+
+                bool isActive = false;
+                foreach (Point3D handPosition in handPositions)
+                {
+                    Vector<double> handVector = new DenseVector(new double[] {
+                        handPosition.X,
+                        handPosition.Y,
+                        handPosition.Z
+                    });
+
+                    if (GeometryHelper.InsidePolygon3D(vertices, GeometryHelper.ProjectPoint3DToPlane(handPosition, workspace.PlaneVector)))
+                    {
+                        double distance = GeometryHelper.CalculatePointPlaneDistance(handPosition, workspace.PlaneVector);
+
+                        if (Math.Abs(distance) <= DistanceTolerance)
+                        {
+                            isActive = true;
+                        }
+                    }
+                }
+                workspace.Active = isActive;
+            }
+        }
+
         private void openGLControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if ((bool)e.NewValue == false)
@@ -231,7 +317,6 @@ namespace KinectDemoCommon.UIElement
                 activeClient = DataStore.Instance.kinectClients[0];
                 OpenGlControl.Focus();
             }
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

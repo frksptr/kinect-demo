@@ -162,9 +162,6 @@ namespace KinectDemoCommon.UIElement
         private void kinectServer_ColorDataArrived(KinectDemoMessage message, KinectClient client)
         {
             ColorStreamMessage msg = (ColorStreamMessage)message;
-
-            
-
             try
             {
                 Dispatcher.Invoke(() =>

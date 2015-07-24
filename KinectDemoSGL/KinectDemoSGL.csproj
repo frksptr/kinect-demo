@@ -103,6 +103,7 @@
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIElement\CloudView.cs" />
+    <Compile Include="WorkspaceChecker.cs" />
     <Compile Include="WorkspaceProcessor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

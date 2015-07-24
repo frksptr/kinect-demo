@@ -20,6 +20,15 @@ namespace KinectDemoCommon.Util
             items.Add(item);
         }
 
+        public void CopyToDictionary(IDictionary<K,V> dictionary)
+        {
+            foreach (DictionaryItem<K, V> item in items)
+            {
+                dictionary.Add(item.Key, item.Value);
+            }
+            
+        }
+
 
     }
 }

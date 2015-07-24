@@ -69,5 +69,7 @@ namespace KinectDemoCommon.Model
             this.LeanTrackingState = body.LeanTrackingState;
             this.TrackingId = body.TrackingId;
         }
+
+
     }
 }
