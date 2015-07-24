@@ -12,11 +12,8 @@ using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using Microsoft.Kinect;
 using System.Collections.Generic;
-using System.Text;
 using KinectDemoCommon.Messages.KinectServerMessages;
-using System.Windows.Media.Media3D;
 
 namespace KinectDemoCommon
 {
@@ -32,23 +29,12 @@ namespace KinectDemoCommon
         private Socket socket;
         //private byte[] buffer;
 
-        private CoordinateMapper coordinateMapper;
-
-        public KinectServerDataArrived DepthDataArrived;
-        public KinectServerDataArrived ColorDataArrived;
-        public KinectServerDataArrived BodyDataArrived;
-        public KinectServerDataArrived PointCloudDataArrived;
-        public KinectServerDataArrived TextMessageArrived;
-
-        public KinectServerDataArrived WorkspaceUpdated;
-
         private static KinectServer kinectServer;
 
         private FrameSize depthFrameSize;
 
-        private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
-
         private Dictionary<StateObject, KinectClient> clientDictionary = new Dictionary<StateObject, KinectClient>();
+        public MessageProcessor MessageProcessor { get; set; }
 
         public static KinectServer Instance
         {
@@ -57,6 +43,7 @@ namespace KinectDemoCommon
 
         private KinectServer()
         {
+            MessageProcessor = new MessageProcessor();
             StartServer();
         }
 
@@ -73,7 +60,6 @@ namespace KinectDemoCommon
         {
             try
             {
-                //  TODO: better solution for large buffer size?
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
                 socket.Listen(10);
@@ -96,7 +82,7 @@ namespace KinectDemoCommon
                 DataStore.Instance.kinectClients.Add(clientDictionary[state]);
                 DataStore.Instance.clientPointClouds.Add(clientDictionary[state], new NullablePoint3D[0]);
 
-                state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
+                state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
                 socket.BeginAccept(AcceptCallback, null);
             }
@@ -105,96 +91,13 @@ namespace KinectDemoCommon
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
-
-        private bool ArrayEquals(byte[] array, byte[] pattern)
-        {
-            bool equals = false;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] != pattern[i])
-                {
-                    return false;
-                }
-                equals = true;
-            }
-            return equals;
-        }
-
         private void ObjectArrived(object obj, KinectClient sender)
         {
             if (obj != null)
             {
                 Debug.WriteLine("Object deserialized: " + obj.GetType());
             }
-            if (obj is KinectClientMessage)
-            {
-                if (obj is DepthStreamMessage)
-                {
-                    if (DepthDataArrived != null)
-                    {
-                        DepthDataArrived((DepthStreamMessage)obj, sender);
-                        if (depthFrameSize == null)
-                        {
-                            depthFrameSize = ((DepthStreamMessage)obj).DepthFrameSize;
-                        }
-                    }
-                }
-                if (obj is ColorStreamMessage)
-                {
-                    if (ColorDataArrived != null)
-                    {
-                        ColorDataArrived((ColorStreamMessage)obj, sender);
-                    }
-                }
-                if (obj is PointCloudStreamMessage)
-                {
-                    
-                    PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
-                    double[] doubleArray = msg.PointCloud;
-                    NullablePoint3D[] pointArray = new NullablePoint3D[doubleArray.Length / 3];
-                    for (int i = 0; i < pointArray.Length; i+=3)
-                    {
-                        if (doubleArray[i] == double.NegativeInfinity) {
-                            pointArray[i/3] = null;
-                        } else{
-                            pointArray[i / 3] = new NullablePoint3D(doubleArray[i], doubleArray[i + 1], doubleArray[i + 2]);
-                        }
-                        
-                    }
-
-                    DataStore.Instance.FullPointCloud = pointArray;
-
-                    DataStore.Instance.clientPointClouds[sender] = pointArray;
-
-                }
-                if (obj is BodyStreamMessage)
-                {
-                    BodyStreamMessage msg = (BodyStreamMessage)obj;
-                    if (BodyDataArrived != null)
-                    {
-                        BodyDataArrived(msg, sender);
-                    }
-                }
-            }
-            if (obj is WorkspaceMessage)
-            {
-                WorkspaceMessage msg = (WorkspaceMessage)obj;
-                Workspace workspace = DataStore.Instance.WorkspaceDictionary[msg.ID];
-                workspace.Name = msg.Name;
-                workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
-                workspace.Vertices3D = msg.Vertices3D;
-                workspace.VertexDepths = msg.VertexDepths;
-                WorkspaceProcessor.SetWorkspaceCloudRealVerticesAndCenter(workspace, depthFrameSize);
-                WorkspaceUpdated((WorkspaceMessage)obj, sender);
-            }
-            if (obj is TextMessage)
-            {
-                TextMessage msg = (TextMessage)obj;
-                if (TextMessageArrived != null)
-                {
-                    TextMessageArrived(msg, sender);
-                }
-            }
+            MessageProcessor.ProcessStreamMessage(obj, sender);
         }
 
         private void ReceiveCallback(IAsyncResult ar)

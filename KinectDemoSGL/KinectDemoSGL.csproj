@@ -95,6 +95,7 @@
     <Compile Include="DataStore.cs" />
     <Compile Include="KinectClient.cs" />
     <Compile Include="KinectServer.cs" />
+    <Compile Include="MessageProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
     <Compile Include="UIElement\CameraWorkspace.xaml.cs" />

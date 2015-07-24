@@ -125,7 +125,7 @@ namespace KinectDemoCommon.UIElement
 
             KinectServer kinectServer = KinectServer.Instance;
 
-            kinectServer.ColorDataArrived += kinectServer_ColorDataArrived;
+            kinectServer.MessageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
             //kinectStreamer = KinectStreamer.Instance;
 
             //  TODO: get size from framedescription provided by client

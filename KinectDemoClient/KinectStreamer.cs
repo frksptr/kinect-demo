@@ -26,9 +26,10 @@ namespace KinectDemoClient
         public event KinectStreamerEventHandler ColorDataReady;
         public event KinectStreamerEventHandler DepthDataReady;
         public event KinectStreamerEventHandler PointCloudDataReady;
+        public event KinectStreamerEventHandler UnifiedDataReady;
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
-        
+
         public NullablePoint3D[] FullPointCloud { get; set; }
 
         KinectSensor kinectSensor;
@@ -74,6 +75,11 @@ namespace KinectDemoClient
 
         private DepthSpacePoint[] allDepthSpacePoints;
 
+        private DepthStreamMessage depthStreamMessage;
+        private ColorStreamMessage colorStreamMessage;
+        private BodyStreamMessage bodyStreamMessage;
+        private PointCloudStreamMessage pointCloudStreamMessage;
+
         public static KinectStreamer Instance
         {
             get { return kinectStreamer ?? (kinectStreamer = new KinectStreamer()); }
@@ -83,7 +89,7 @@ namespace KinectDemoClient
         {
             KinectStreamerConfig = new KinectStreamerConfig();
             SetupKinectSensor();
-            
+
             SetupBody();
 
             SetupHelpArrays();
@@ -95,7 +101,7 @@ namespace KinectDemoClient
         {
             int width = DepthFrameDescription.Width;
             int height = DepthFrameDescription.Height;
-            int frameSize = width*height;
+            int frameSize = width * height;
 
             pointCloudCandidates = new CameraSpacePoint[frameSize];
             allDepthSpacePoints = new DepthSpacePoint[frameSize];
@@ -104,8 +110,8 @@ namespace KinectDemoClient
             {
                 for (int j = 0; j < width; ++j)
                 {
-                    int index = i*width + j;
-                    allDepthSpacePoints[index] = new DepthSpacePoint {X = j, Y = i};
+                    int index = i * width + j;
+                    allDepthSpacePoints[index] = new DepthSpacePoint { X = j, Y = i };
                     pointCloudCandidates[index] = new CameraSpacePoint();
                 }
             }
@@ -132,11 +138,11 @@ namespace KinectDemoClient
             colorBitmap = new WriteableBitmap(ColorFrameDescription.Width, ColorFrameDescription.Height, 96.0, 96.0,
                 PixelFormats.Bgr32, null);
 
-            colorPixels = new byte[ColorFrameDescription.Width*ColorFrameDescription.Height*4];
+            colorPixels = new byte[ColorFrameDescription.Width * ColorFrameDescription.Height * 4];
 
-            DepthPixels = new byte[DepthFrameDescription.Width*DepthFrameDescription.Height];
+            DepthPixels = new byte[DepthFrameDescription.Width * DepthFrameDescription.Height];
 
-            depthArray = new ushort[DepthFrameDescription.Width*DepthFrameDescription.Height];
+            depthArray = new ushort[DepthFrameDescription.Width * DepthFrameDescription.Height];
         }
 
         private void SetupBody()
@@ -192,6 +198,11 @@ namespace KinectDemoClient
             colorFrame = null;
             bodyFrame = null;
 
+            bodyStreamMessage = null;
+            colorStreamMessage = null;
+            pointCloudStreamMessage = null;
+            depthStreamMessage = null;
+
             multiSourceFrame = e.FrameReference.AcquireFrame();
 
             // If the Frame has expired by the time we process this event, return.
@@ -239,7 +250,7 @@ namespace KinectDemoClient
                 {
                     ProcessBodyData();
                 }
-
+                SendData();
             }
             finally
             {
@@ -254,6 +265,37 @@ namespace KinectDemoClient
                 if (bodyFrame != null)
                 {
                     bodyFrame.Dispose();
+                }
+            }
+        }
+
+        private void SendData()
+        {
+            if (KinectStreamerConfig.SendInUnified)
+            {
+                if (UnifiedDataReady != null)
+                {
+                    UnifiedDataReady(new UnifiedStreamerMessage(bodyStreamMessage, colorStreamMessage, depthStreamMessage,
+                        pointCloudStreamMessage));
+                }
+            }
+            else
+            {
+                if (BodyDataReady != null && bodyStreamMessage != null)
+                {
+                    BodyDataReady(bodyStreamMessage);
+                }
+                if (ColorDataReady != null && colorStreamMessage != null)
+                {
+                    ColorDataReady(colorStreamMessage);
+                }
+                if (DepthDataReady != null && depthStreamMessage != null)
+                {
+                    DepthDataReady(depthStreamMessage);
+                }
+                if (PointCloudDataReady != null && pointCloudStreamMessage != null)
+                {
+                    PointCloudDataReady(pointCloudStreamMessage);
                 }
             }
         }
@@ -282,10 +324,10 @@ namespace KinectDemoClient
                     }
                 }
             }
-            if (ColorDataReady != null)
-            {
-                ColorDataReady(new ColorStreamMessage(colorPixels, new[] { ColorFrameDescription.Width, ColorFrameDescription.Height }));
-            }
+
+            colorStreamMessage = new ColorStreamMessage(colorPixels,
+                new[] { ColorFrameDescription.Width, ColorFrameDescription.Height });
+
         }
 
         private void ProcessDepthData()
@@ -317,10 +359,7 @@ namespace KinectDemoClient
                     }
                 }
             }
-            if (DepthDataReady != null)
-            {
-                DepthDataReady(new DepthStreamMessage(DepthPixels, new FrameSize(DepthFrameDescription.Width,DepthFrameDescription.Height)));
-            }
+            depthStreamMessage = new DepthStreamMessage(DepthPixels, new FrameSize(DepthFrameDescription.Width, DepthFrameDescription.Height));
         }
 
         private void ProcessBodyData()
@@ -345,7 +384,7 @@ namespace KinectDemoClient
             {
                 serializableBodies.Add(new SerializableBody(body));
             }
-            if (BodyDataReady != null) BodyDataReady(new BodyStreamMessage(serializableBodies.ToArray()));
+            bodyStreamMessage = new BodyStreamMessage(serializableBodies.ToArray());
         }
 
         private unsafe void ProcessDepthFrameData(IntPtr depthFrameData, uint depthFrameDataSize, ushort minDepth, ushort maxDepth)
@@ -379,7 +418,7 @@ namespace KinectDemoClient
                     //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
                     validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));
                 }
-                    //  Keep invalid points for easier depth space-camera space mapping on client side
+                //  Keep invalid points for easier depth space-camera space mapping on client side
                 else
                 {
                     validPointList.Add(null);
@@ -387,14 +426,10 @@ namespace KinectDemoClient
                 i++;
             }
 
-            
             FullPointCloud = validPointList.ToArray();
 
-            if (PointCloudDataReady != null)
-            {
-                PointCloudDataReady(new PointCloudStreamMessage(FullPointCloud));
-            }
-            
+            pointCloudStreamMessage = new PointCloudStreamMessage(FullPointCloud);
+
             return validPointList.ToArray();
         }
     }

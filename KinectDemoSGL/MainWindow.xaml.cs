@@ -7,18 +7,12 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.UIElement;
-using System.Net.Sockets;
-using System.Windows.Media.Media3D;
-using System.Collections.Generic;
-using KinectDemoCommon.Util;
 
 namespace KinectDemoCommon
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-   
-    
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
 
@@ -46,6 +40,7 @@ namespace KinectDemoCommon
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
         private KinectServer kinectServer;
+        private MessageProcessor messageProcessor;
 
         public MainWindow()
         {
@@ -53,10 +48,11 @@ namespace KinectDemoCommon
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
+            messageProcessor = kinectServer.MessageProcessor;
 
-            kinectServer.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
-            kinectServer.DepthDataArrived += kinectServer_DepthDataArrived;
-            kinectServer.TextMessageArrived += kinectServer_TextMessageArrived;
+            messageProcessor.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
+            messageProcessor.DepthDataArrived += kinectServer_DepthDataArrived;
+            messageProcessor.TextMessageArrived += kinectServer_TextMessageArrived;
 
             activeWorkspace = new Workspace()
             {
@@ -102,7 +98,7 @@ namespace KinectDemoCommon
         private void kinectServer_DepthDataArrived(KinectDemoMessage message, KinectClient client)
         {
             depthFrameSize = ((DepthStreamMessage)message).DepthFrameSize;
-            kinectServer.DepthDataArrived -= kinectServer_DepthDataArrived;
+            messageProcessor.DepthDataArrived -= kinectServer_DepthDataArrived;
         }
 
         private void kinectServer_WorkspaceUpdated(KinectDemoMessage message, KinectClient client)

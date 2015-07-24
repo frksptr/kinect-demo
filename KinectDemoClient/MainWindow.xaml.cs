@@ -12,9 +12,7 @@ using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using System.Text;
 using KinectDemoCommon.Messages.KinectServerMessages;
-using System.Collections.Generic;
 
 namespace KinectDemoClient
 {
@@ -29,8 +27,6 @@ namespace KinectDemoClient
         readonly KinectStreamer kinectStreamer;
         private byte[] buffer;
         private bool pointCloudSent = false;
-        private bool canSend = true;
-        private byte[] endOfObjectMark = Encoding.ASCII.GetBytes("<EOO>");
         private bool serverReady = true;
 
         public MainWindow()
@@ -42,6 +38,7 @@ namespace KinectDemoClient
             DataContext = this;
             
             kinectStreamer = KinectStreamer.Instance;
+            kinectStreamer.KinectStreamerConfig.SendInUnified = true;
 
         }
 
@@ -57,8 +54,7 @@ namespace KinectDemoClient
 
         private void kinectStreamer_PointCloudDataReady(KinectClientMessage message)
         {
-            if (message is PointCloudStreamMessage) SerializeAndSendMessage((PointCloudStreamMessage)message);
-            if (message is PointCloudStreamMessage) SerializeAndSendMessage((PointCloudStreamMessage)message);
+            SerializeAndSendMessage((PointCloudStreamMessage)message);
         }
 
         private void kinectStreamer_DepthDataReady(KinectClientMessage message)
@@ -71,9 +67,11 @@ namespace KinectDemoClient
             }
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
-        private void kinectStreamer_WorkspaceActivated(WorkspaceMessage message)
+
+
+        private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
         {
-            SerializeAndSendMessage(message);
+            SerializeAndSendMessage((UnifiedStreamerMessage)message);
         }
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
@@ -95,14 +93,7 @@ namespace KinectDemoClient
                 {
                     
                     Debug.WriteLine("Sending message: " + msg.GetType() + " | " + buffer.Length);
-                    //clientSocket.Send(buffer, buffer.Length, SocketFlags.None);
-                    //canSend = false;
-                    byte[] bufferWithEOOM = new byte[buffer.Length + endOfObjectMark.Length];
-                    buffer.CopyTo(bufferWithEOOM, 0);
-                    endOfObjectMark.CopyTo(bufferWithEOOM, buffer.Length);
-
-                    clientSocket.Send(bufferWithEOOM, SocketFlags.None);
-                    //clientSocket.BeginSend(bufferWithEOOM, 0, bufferWithEOOM.Length, SocketFlags.None, SendCallback, null);
+                    clientSocket.Send(buffer, SocketFlags.None);
                 }
             }
         }
@@ -267,6 +258,19 @@ namespace KinectDemoClient
         {
             kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+        }
+
+
+        private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.UnifiedDataReady += kinectStreamer_UnifiedDataReady;
+            kinectStreamer.KinectStreamerConfig.SendInUnified = true;
+        }
+
+        private void UnifiedCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.UnifiedDataReady -= kinectStreamer_UnifiedDataReady;
+            kinectStreamer.KinectStreamerConfig.SendInUnified = false;
         }
     }
 }
