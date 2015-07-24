@@ -93,6 +93,7 @@ namespace KinectDemoClient
                 {
                     
                     Debug.WriteLine("Sending message: " + msg.GetType() + " | " + buffer.Length);
+                    //clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
                     clientSocket.Send(buffer, SocketFlags.None);
                 }
             }

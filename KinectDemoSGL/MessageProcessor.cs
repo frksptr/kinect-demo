@@ -109,7 +109,7 @@ namespace KinectDemoCommon
             PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
             double[] doubleArray = msg.PointCloud;
             NullablePoint3D[] pointArray = new NullablePoint3D[doubleArray.Length / 3];
-            for (int i = 0; i < pointArray.Length; i += 3)
+            for (int i = 0; i < doubleArray.Length; i += 3)
             {
                 if (double.IsNegativeInfinity(doubleArray[i]))
                 {

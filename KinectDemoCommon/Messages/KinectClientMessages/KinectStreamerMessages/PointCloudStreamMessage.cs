@@ -22,16 +22,16 @@ namespace KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages
                 if (point == null)
                 {
                     PointCloud[i] = double.NegativeInfinity;
-                    PointCloud[i++] = double.NegativeInfinity;
-                    PointCloud[i++] = double.NegativeInfinity;
+                    PointCloud[i+1] = double.NegativeInfinity;
+                    PointCloud[i+2] = double.NegativeInfinity;
                 }
                 else
                 {
                     PointCloud[i] = point.X;
-                    PointCloud[i] = point.Y;
-                    PointCloud[i] = point.Z;
+                    PointCloud[i+1] = point.Y;
+                    PointCloud[i+2] = point.Z;
                 }
-                i++;
+                i+=3;
             }
         }
     }

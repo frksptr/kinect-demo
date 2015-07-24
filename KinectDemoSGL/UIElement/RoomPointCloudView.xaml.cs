@@ -43,6 +43,9 @@ namespace KinectDemoCommon.UIElement
         private KinectServer kinectServer;
 
         private MessageProcessor messageProcessor;
+
+        private List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
+
         public RoomPointCloudView()
         {
             InitializeComponent();
@@ -55,8 +58,8 @@ namespace KinectDemoCommon.UIElement
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
         {
-            BodyStreamMessage msg = (BodyStreamMessage) message;
-            List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
+            BodyStreamMessage msg = (BodyStreamMessage)message;
+            handPositions = new List<CameraSpacePoint>();
             foreach (SerializableBody body in msg.Bodies)
             {
                 if (body != null)
@@ -165,26 +168,6 @@ namespace KinectDemoCommon.UIElement
                 gl.End();
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
-                gl.Color(0.0f, 1.0f, 0.0f);
-                foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
-                {
-                    Point3D[] vertices = workspace.FittedVertices;
-                    Point3D v0 = vertices[0];
-                    Point3D v1 = vertices[1];
-                    Point3D v2 = vertices[2];
-                    Point3D v3 = vertices[3];
-                    gl.Vertex(v0.X, v0.Y, v0.Z);
-                    gl.Vertex(v1.X, v1.Y, v1.Z);
-                    gl.Vertex(v2.X, v2.Y, v2.Z);
-
-                    gl.Vertex(v2.X, v2.Y, v2.Z);
-                    gl.Vertex(v3.X, v3.Y, v3.Z);
-                    gl.Vertex(v0.X, v0.Y, v0.Z);
-
-                }
-                gl.End();
-
-                gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
                 {
                     if (workspace.Active)
@@ -210,6 +193,18 @@ namespace KinectDemoCommon.UIElement
 
                 }
                 gl.End();
+
+                if (handPositions.Count > 0)
+                {
+                    gl.Color(0.0f, 1.0f, 0.0f);
+                    gl.PointSize(5.0f);
+                    gl.Begin(OpenGL.GL_POINTS);
+                    foreach (CameraSpacePoint hand in handPositions)
+                    {
+                        gl.Vertex(hand.X, hand.Y, hand.Z);
+                    }
+                    gl.End();
+                }
             }
         }
 
@@ -268,11 +263,18 @@ namespace KinectDemoCommon.UIElement
 
         public void CheckActiveWorkspace(CameraSpacePoint[] handPositions)
         {
-            CheckActiveWorkspace(GeometryHelper.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
+            if (handPositions.Length > 0)
+            {
+                CheckActiveWorkspace(GeometryHelper.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
+            }
         }
 
         public void CheckActiveWorkspace(Point3D[] handPositions)
         {
+            if (handPositions.Length == 0)
+            {
+                return;
+            }
             foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
             {
                 Point3D[] vertices = workspace.FittedVertices;
