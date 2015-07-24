@@ -321,7 +321,7 @@ namespace KinectDemoCommon.UIElement
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SwitchButton_Click(object sender, RoutedEventArgs e)
         {
             int activeIndex = DataStore.Instance.kinectClients.IndexOf(activeClient);
             try
@@ -332,6 +332,12 @@ namespace KinectDemoCommon.UIElement
             {
                 activeClient = DataStore.Instance.kinectClients[0];
             }
+        }
+
+        private void MergeButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+
         }
 
     }

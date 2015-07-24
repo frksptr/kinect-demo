@@ -23,6 +23,7 @@
             MouseWheel="openGLControl_MouseWheel" 
             >
         </sharpGl:OpenGLControl>
-            <Button Content="Button" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button Content="Switch KINECT" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="88" Click="SwitchButton_Click"/>
+        <Button Content="Merged Cloud" HorizontalAlignment="Left" Margin="202,10,0,0" VerticalAlignment="Top" Width="88" Click="MergeButton_Click"/>
     </Grid>
 </UserControl>
