@@ -6,6 +6,7 @@
         public bool ProvideBodyData { get; set; }
         public bool ProvideColorData { get; set; }
         public bool ProvidePointCloudData { get; set; }
+        public bool ProvideCalibrationData { get; set; }
 
         public bool SendInUnified { get; set; }
 
@@ -18,6 +19,8 @@
             ProvideBodyData = false;
 
             ProvidePointCloudData = false;
+
+            ProvideCalibrationData = false;
 
             SendInUnified = false;
         }

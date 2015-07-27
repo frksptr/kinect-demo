@@ -27,6 +27,7 @@ namespace KinectDemoClient
         public event KinectStreamerEventHandler DepthDataReady;
         public event KinectStreamerEventHandler PointCloudDataReady;
         public event KinectStreamerEventHandler UnifiedDataReady;
+        public event KinectStreamerEventHandler CalibrationDataReady;
 
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
 
@@ -79,6 +80,7 @@ namespace KinectDemoClient
         private ColorStreamMessage colorStreamMessage;
         private BodyStreamMessage bodyStreamMessage;
         private PointCloudStreamMessage pointCloudStreamMessage;
+        private CalibrationDataMessage calibrationDataMessage;
 
         public static KinectStreamer Instance
         {
@@ -189,7 +191,11 @@ namespace KinectDemoClient
         private void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
 
-            if (!(KinectStreamerConfig.ProvideBodyData || KinectStreamerConfig.ProvideColorData || KinectStreamerConfig.ProvideDepthData || KinectStreamerConfig.ProvidePointCloudData))
+            if (!(KinectStreamerConfig.ProvideBodyData ||
+                KinectStreamerConfig.ProvideColorData || 
+                KinectStreamerConfig.ProvideDepthData || 
+                KinectStreamerConfig.ProvidePointCloudData ||
+                KinectStreamerConfig.ProvideCalibrationData))
             {
                 return;
             }
@@ -202,6 +208,7 @@ namespace KinectDemoClient
             colorStreamMessage = null;
             pointCloudStreamMessage = null;
             depthStreamMessage = null;
+            calibrationDataMessage = null;
 
             multiSourceFrame = e.FrameReference.AcquireFrame();
 
@@ -246,10 +253,11 @@ namespace KinectDemoClient
                 }
 
                 // Process body data if needed
-                if (KinectStreamerConfig.ProvideBodyData)
+                if (KinectStreamerConfig.ProvideBodyData || KinectStreamerConfig.ProvideCalibrationData)
                 {
                     ProcessBodyData();
                 }
+
                 SendData();
             }
             finally
@@ -296,6 +304,10 @@ namespace KinectDemoClient
                 if (PointCloudDataReady != null && pointCloudStreamMessage != null)
                 {
                     PointCloudDataReady(pointCloudStreamMessage);
+                }
+                if (CalibrationDataReady != null && calibrationDataMessage != null)
+                {
+                    CalibrationDataReady(calibrationDataMessage);
                 }
             }
         }
@@ -380,9 +392,17 @@ namespace KinectDemoClient
                 }
             }
             List<SerializableBody> serializableBodies = new List<SerializableBody>();
+            List<SerializableBody> calibrationBody = new List<SerializableBody>();
             foreach (Body body in Bodies)
             {
                 serializableBodies.Add(new SerializableBody(body));
+                if (body.IsTracked)
+                {
+                    if (body.HandRightState == HandState.Lasso && body.HandLeftState == HandState.Lasso)
+                    {
+                        calibrationDataMessage = new CalibrationDataMessage(new SerializableBody(body));
+                    }
+                }
             }
             bodyStreamMessage = new BodyStreamMessage(serializableBodies.ToArray());
         }

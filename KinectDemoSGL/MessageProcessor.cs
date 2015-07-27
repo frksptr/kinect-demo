@@ -66,6 +66,10 @@ namespace KinectDemoCommon
                 {
                     ProcessBodyStreamMessage(obj, sender);
                 }
+                else if (obj is CalibrationDataMessage)
+                {
+                    ProcessCalibrationData(obj, sender);
+                }
 
             }
             else if (obj is WorkspaceMessage)
@@ -76,6 +80,11 @@ namespace KinectDemoCommon
             {
                 ProcessTextMessage(obj, sender);
             }
+        }
+
+        private void ProcessCalibrationData(object obj, KinectClient sender)
+        {
+            DataStore.Instance.AddCalibrationBody(sender, ((CalibrationDataMessage)obj).CalibrationBody);
         }
 
         private void ProcessTextMessage(object obj, KinectClient sender)

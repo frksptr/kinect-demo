@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameSize.cs" />
+    <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\CalibrationDataMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\PointCloudStreamMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\UnifiedStreamerMessage.cs" />
     <Compile Include="Messages\KinectDemoMessage.cs" />

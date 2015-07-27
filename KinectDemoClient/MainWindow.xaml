@@ -12,5 +12,6 @@
         <TextBox Name="ServerIpTextBox" HorizontalAlignment="Left" Height="20" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding Path=Ip}" VerticalAlignment="Top" Width="140"/>
         <CheckBox Content="Skeleton" HorizontalAlignment="Left" Margin="90,97,0,0" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>
         <CheckBox Content="Unified" HorizontalAlignment="Left" Margin="90,117,0,0" VerticalAlignment="Top" Checked="UnifiedCheckBox_Checked" Unchecked="UnifiedCheckBox_Unchecked"/>
+        <CheckBox x:Name="CalibrationCheckBox" Content="Calibration" HorizontalAlignment="Left" Margin="90,147,0,0" VerticalAlignment="Top"  Checked="CalibrationCheckBox_Checked" Unchecked="CalibrationCheckBox_Unchecked"/>
     </Grid>
 </Window>
