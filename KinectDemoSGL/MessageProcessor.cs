@@ -117,7 +117,7 @@ namespace KinectDemoCommon
             }
         }
 
-        private static void ProcessPointCloudStreamMessage(object obj, KinectClient sender)
+        private void ProcessPointCloudStreamMessage(object obj, KinectClient sender)
         {
             PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
             double[] doubleArray = msg.PointCloud;
@@ -137,6 +137,11 @@ namespace KinectDemoCommon
             DataStore.Instance.FullPointCloud = pointArray;
 
             DataStore.Instance.clientPointClouds[sender] = pointArray;
+
+            if (PointCloudDataArrived != null)
+            {
+                PointCloudDataArrived(msg, sender);
+            }
         }
 
         private void ProcessColorStreamMessage(object obj, KinectClient sender)

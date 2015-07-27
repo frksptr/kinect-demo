@@ -93,7 +93,7 @@ namespace KinectDemoCommon
         {
             if (obj != null)
             {
-                Debug.WriteLine("Object deserialized: " + obj.GetType());
+                Debug.WriteLine("Object from " + sender.Name + " deserialized: " + obj.GetType());
             }
             MessageProcessor.ProcessStreamMessage(obj, sender);
         }

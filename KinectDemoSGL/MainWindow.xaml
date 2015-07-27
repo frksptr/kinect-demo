@@ -68,7 +68,7 @@
             </TabItem>
         
             <TabItem Name="RoomPointCloud" Header="Full 3D view">
-                <DockPanel Name="RoomPointCloudHolder" IsVisibleChanged="RoomPointCloudHolder_IsVisibleChanged">
+                <DockPanel Name="RoomPointCloudHolder">
                 </DockPanel>
             </TabItem>
         </TabControl>
