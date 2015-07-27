@@ -17,7 +17,7 @@
             DrawFPS="True" 
             RenderContextType="FBO"
             IsVisibleChanged="openGLControl_IsVisibleChanged"
-            
+            MouseDoubleClick="OpenGlControl_MouseDoubleClick"
             Focusable="True"
             KeyDown="openGLControl_KeyDown" 
             MouseWheel="openGLControl_MouseWheel" 
