@@ -13,13 +13,21 @@ namespace KinectDemoCommon
 
         public Dictionary<string, Workspace> WorkspaceDictionary = new Dictionary<string, Workspace>();
 
-        public List<KinectClient> kinectClients = new List<KinectClient>();
+        private List<KinectClient> kinectClients = new List<KinectClient>();
 
         public Dictionary<KinectClient, NullablePoint3D[]> clientPointClouds = new Dictionary<KinectClient, NullablePoint3D[]>();
 
         public Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
 
         public NullablePoint3D[] FullPointCloud { get; set; }
+
+        public List<KinectClient> KinectClients
+        {
+            get
+            {
+                return kinectClients;
+            }
+        }
 
         public static DataStore Instance
         {
@@ -45,6 +53,22 @@ namespace KinectDemoCommon
 
         public void AddCalibrationBody(KinectClient client, SerializableBody body) {
             clientCalibrationBodies[client].Add(body);
+        }
+
+        public void AddClient(KinectClient client)
+        {
+            if (!kinectClients.Contains(client))
+            {
+                kinectClients.Add(client);
+            }
+            if (!clientPointClouds.Keys.Contains(client))
+            {
+                clientPointClouds.Add(client,new NullablePoint3D[]{});
+            }
+            if (!clientCalibrationBodies.Keys.Contains(client))
+            {
+                clientCalibrationBodies.Add(client, new List<SerializableBody>());
+            }
         }
     }
 }

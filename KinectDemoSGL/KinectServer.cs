@@ -78,8 +78,7 @@ namespace KinectDemoCommon
                 state.WorkSocket = socket.EndAccept(ar);
                 clientDictionary.Add(state, new KinectClient());
 
-                DataStore.Instance.kinectClients.Add(clientDictionary[state]);
-                DataStore.Instance.clientPointClouds.Add(clientDictionary[state], new NullablePoint3D[0]);
+                DataStore.Instance.AddClient(clientDictionary[state]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
