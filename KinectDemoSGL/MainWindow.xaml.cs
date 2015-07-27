@@ -169,18 +169,6 @@ namespace KinectDemoCommon
             //bodyView.WorkspaceList = workspaceList;
         }
 
-        private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            //CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
-            //List<Point3D> pointCloud = new List<Point3D>(DataStore.Instance.FullPointCloud);
-
-            //roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
-
-            roomPointCloudView.DataContext = DataStore.Instance.FullPointCloud;
-
-            //roomPointCloudView.WorkspaceList = workspaceList;
-        }
-
         private void AddWorkspace(object sender, RoutedEventArgs e)
         {
             if (!workspaceList.Contains(activeWorkspace))
