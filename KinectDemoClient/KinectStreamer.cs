@@ -398,7 +398,7 @@ namespace KinectDemoClient
                 serializableBodies.Add(new SerializableBody(body));
                 if (body.IsTracked)
                 {
-                    if (body.HandRightState == HandState.Lasso && body.HandLeftState == HandState.Lasso)
+                    if (body.HandLeftState == HandState.Closed)
                     {
                         calibrationDataMessage = new CalibrationDataMessage(new SerializableBody(body));
                     }

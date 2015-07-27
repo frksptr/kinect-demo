@@ -341,7 +341,7 @@ namespace KinectDemoCommon.UIElement
             {
                 try
                 {
-                    activeClient = DataStore.Instance.kinectClients[0];
+                    activeClient = DataStore.Instance.KinectClients[0];
                     OpenGlControl.Focus();
                 }
                 catch (Exception)
@@ -355,14 +355,14 @@ namespace KinectDemoCommon.UIElement
 
         private void SwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            int activeIndex = DataStore.Instance.kinectClients.IndexOf(activeClient);
+            int activeIndex = DataStore.Instance.KinectClients.IndexOf(activeClient);
             try
             {
-                activeClient = DataStore.Instance.kinectClients[activeIndex + 1];
+                activeClient = DataStore.Instance.KinectClients[activeIndex + 1];
             }
             catch
             {
-                activeClient = DataStore.Instance.kinectClients[0];
+                activeClient = DataStore.Instance.KinectClients[0];
             }
         }
 
@@ -410,7 +410,7 @@ namespace KinectDemoCommon.UIElement
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
 
-            foreach (NullablePoint3D point in pointCloudDictionary[DataStore.Instance.kinectClients[1]])
+            foreach (NullablePoint3D point in pointCloudDictionary[DataStore.Instance.KinectClients[1]])
             {
                 if (point != null)
                 {
