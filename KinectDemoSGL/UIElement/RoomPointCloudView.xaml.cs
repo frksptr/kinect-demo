@@ -346,10 +346,10 @@ namespace KinectDemoCommon.UIElement
                 }
                 catch (Exception)
                 {
-                    
-//                    throw;
+
+                    //                    throw;
                 }
-                
+
             }
         }
 
@@ -366,11 +366,58 @@ namespace KinectDemoCommon.UIElement
             }
         }
 
+        private List<NullablePoint3D[]> GetPointClouds()
+        {
+            SerializableBody[] bodies1;
+            SerializableBody[] bodies2;
+            KinectClient client1 = DataStore.Instance.KinectClients[0];
+            KinectClient client2 = DataStore.Instance.KinectClients[1];
+            bodies1 = DataStore.Instance.clientCalibrationBodies[client1].ToArray();
+            bodies2 = DataStore.Instance.clientCalibrationBodies[client2].ToArray();
+
+            List<NullablePoint3D> pointCloud1 = new List<NullablePoint3D>();
+            List<NullablePoint3D> pointCloud2 = new List<NullablePoint3D>();
+
+            for (int i = 0; i < bodies1.Length; i++)
+            {
+                Dictionary<JointType, Joint> joints1 = new Dictionary<JointType, Joint>();
+                Dictionary<JointType, Joint> joints2 = new Dictionary<JointType, Joint>();
+                bodies1[i].Joints.CopyToDictionary(joints1);
+                bodies2[i].Joints.CopyToDictionary(joints2);
+
+                foreach (JointType type in joints1.Keys)
+                {
+                    if (joints1[type].TrackingState == TrackingState.Tracked && joints2[type].TrackingState == TrackingState.Tracked)
+                    {
+                        pointCloud1.Add(
+                            new NullablePoint3D(
+                                joints1[type].Position.X,
+                                joints1[type].Position.Y,
+                                joints1[type].Position.Z
+                                ));
+                        pointCloud2.Add(
+                            new NullablePoint3D(
+                                joints2[type].Position.X,
+                                joints2[type].Position.Y,
+                                joints2[type].Position.Z
+                                ));
+                    }
+                }
+            }
+            
+            return new List<NullablePoint3D[]>() { 
+                pointCloud1.ToArray(),
+                pointCloud2.ToArray(),
+            };
+
+        }
+
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
+            List<NullablePoint3D[]> pointClouds = GetPointClouds();
             showMerged = true;
             //fal
-            var kinect1CalPoints = new NullablePoint3D[]{
+            var kinect1CalPoints = pointClouds[0]; //new NullablePoint3D[]{
 
                 //new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
                 //new NullablePoint3D(-0.5510268, -0.3471858,  2.119 ),
@@ -382,9 +429,9 @@ namespace KinectDemoCommon.UIElement
                 //new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
                 //new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
                 //new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
-            };
+            //};
             //ajtó
-            var kinect2CalPoints = new NullablePoint3D[]{
+            var kinect2CalPoints = pointClouds[1]; //new NullablePoint3D[]{
 
                 //new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
                 //new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
@@ -396,7 +443,7 @@ namespace KinectDemoCommon.UIElement
                 //new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
                 //new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
                 //new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
-            };
+           // };
 
             var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
@@ -405,8 +452,6 @@ namespace KinectDemoCommon.UIElement
 
 
             var a = DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) * rot + translate;
-
-
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
 
