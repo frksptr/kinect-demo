@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Kinect Server" Width="909" Height="604" >
     <Grid>
-        <TabControl Margin="5,5,5,88">
+        
+        <TabControl  Margin="5,5,5,88">
             <TabItem Name="WorkspaceDefineTab" Header="Define Workspaces">
                 <DockPanel Name="Holder" Margin="0,0,0,6">
                     <DockPanel Name="RightBarHolder" DockPanel.Dock="Right">
