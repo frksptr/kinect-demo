@@ -3,12 +3,13 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.UIElement;
+using KinectDemoSGL.UIElement;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

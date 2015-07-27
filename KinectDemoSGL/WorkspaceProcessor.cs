@@ -1,13 +1,14 @@
-﻿ using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using KinectDemoCommon;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public class WorkspaceProcessor
     {

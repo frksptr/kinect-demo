@@ -3,14 +3,11 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using System.Collections.ObjectModel;
 using System.Windows;
+using KinectDemoCommon;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public class MessageProcessor
     {

@@ -12,7 +12,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
 
-namespace KinectDemoClient
+namespace KinectDemoSGL
 {
 
     public delegate void WorkspaceActivatedEventHandler(WorkspaceMessage message);

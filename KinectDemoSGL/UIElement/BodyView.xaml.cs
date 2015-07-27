@@ -9,7 +9,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
-using KinectDemoCommon.Annotations;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
@@ -17,8 +16,9 @@ using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
+using KinectDemoSGL.Annotations;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
     /// <summary>
     /// Interaction logic for BodyView.xaml

@@ -10,9 +10,6 @@ using SharpGL.SceneGraph;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows.Media.Animation;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using Microsoft.Kinect;
@@ -21,7 +18,7 @@ using SharpGL.VertexBuffers;
 using SharpGL.Shaders;
 using SharpGL.SceneGraph.Assets;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
 
     /// <summary>

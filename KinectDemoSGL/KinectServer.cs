@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,14 +7,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
-using KinectDemoCommon.Messages;
-using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using System.Collections.Generic;
-using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon;
+using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectServerMessages;
+using KinectDemoCommon.Model;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public delegate void KinectServerDataArrived(KinectDemoMessage message, KinectClient kinectClient);
 

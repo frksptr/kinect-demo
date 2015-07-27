@@ -7,7 +7,7 @@ using System.Windows;
 using KinectDemoCommon.Util;
 using KinectDemoCommon.Model;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
     /// <summary>
     /// Interaction logic for CloudView.xaml
