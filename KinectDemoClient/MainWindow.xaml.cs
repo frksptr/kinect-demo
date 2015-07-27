@@ -291,14 +291,14 @@ namespace KinectDemoClient
 
         private void CalibrationCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            pointCloudSent = false;
+            calibrationDataSent = false;
             kinectStreamer.CalibrationDataReady += kinectStreamer_CalibrationDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = true;
         }
 
         private void CalibrationCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            pointCloudSent = true;
+            calibrationDataSent = true;
             kinectStreamer.CalibrationDataReady -= kinectStreamer_CalibrationDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
         }
