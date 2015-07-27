@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
 namespace KinectDemoCommon
 {
@@ -15,6 +16,8 @@ namespace KinectDemoCommon
         public List<KinectClient> kinectClients = new List<KinectClient>();
 
         public Dictionary<KinectClient, NullablePoint3D[]> clientPointClouds = new Dictionary<KinectClient, NullablePoint3D[]>();
+
+        public Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
 
         public NullablePoint3D[] FullPointCloud { get; set; }
 
@@ -38,6 +41,10 @@ namespace KinectDemoCommon
         public void DeleteWorkspace(Workspace workspace)
         {
             WorkspaceDictionary.Remove(workspace.ID);
+        }
+
+        public void AddCalibrationBody(KinectClient client, SerializableBody body) {
+            clientCalibrationBodies[client].Add(body);
         }
     }
 }

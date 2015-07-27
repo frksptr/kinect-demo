@@ -28,6 +28,7 @@ namespace KinectDemoClient
         private byte[] buffer;
         private bool pointCloudSent = false;
         private bool serverReady = true;
+        private bool calibrationDataSent = false;
 
         public MainWindow()
         {
@@ -67,6 +68,17 @@ namespace KinectDemoClient
             SerializeAndSendMessage((UnifiedStreamerMessage)message);
         }
 
+
+        private void kinectStreamer_CalibrationDataReady(KinectClientMessage message)
+        {
+            if (!calibrationDataSent)
+            {
+                calibrationDataSent = true;
+                CalibrationCheckBox.IsChecked = false;
+                SerializeAndSendMessage((CalibrationDataMessage)message);
+            }
+        }
+
         private void SendFirstPointCloud()
         {
             if (!pointCloudSent)
@@ -76,7 +88,6 @@ namespace KinectDemoClient
                 SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
             }
         }
-
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
@@ -156,6 +167,7 @@ namespace KinectDemoClient
                                 ID = msg.ID,
                                 Name = msg.Name,
                                 VertexDepths = workspace.VertexDepths,
+
                                 Vertices3D = workspace.Vertices3D.ToArray(),
                                 Vertices = workspace.Vertices.ToArray(),
                             };
@@ -275,6 +287,20 @@ namespace KinectDemoClient
         {
             kinectStreamer.UnifiedDataReady -= kinectStreamer_UnifiedDataReady;
             kinectStreamer.KinectStreamerConfig.SendInUnified = false;
+        }
+
+        private void CalibrationCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            pointCloudSent = false;
+            kinectStreamer.CalibrationDataReady += kinectStreamer_CalibrationDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = true;
+        }
+
+        private void CalibrationCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            pointCloudSent = true;
+            kinectStreamer.CalibrationDataReady -= kinectStreamer_CalibrationDataReady;
+            kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
         }
     }
 }
