@@ -119,6 +119,10 @@ namespace KinectDemoClient
         {
             try
             {
+                Dispatcher.Invoke(() =>
+                {
+                    TextBox.Text += "\n Connected to server.";
+                });
                 clientSocket.EndConnect(ar);
 
                 buffer = new byte[clientSocket.ReceiveBufferSize];
@@ -193,7 +197,10 @@ namespace KinectDemoClient
                     if (SocketError.ConnectionReset.Equals(socketException.SocketErrorCode))
                     {
                         clientSocket = null;
-
+                        Dispatcher.Invoke(() =>
+                        {
+                            TextBox.Text += "\n Server disconnected.";
+                        });
                     }
                 }
                 else
