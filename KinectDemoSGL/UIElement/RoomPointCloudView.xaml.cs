@@ -66,7 +66,7 @@ namespace KinectDemoSGL.UIElement
         //PointCloud
         const uint pointCloudAttributeIndexPosition = 0;
         const uint pointCloudAttributeIndexColor = 1;
-        float[] pointCloudVertices;
+        float[] pointCloudVertices = { };
         VertexBufferArray pointCloudVertexBufferArray;
         private ShaderProgram shaderProgramPointCloud; //irregular name
 
@@ -85,30 +85,52 @@ namespace KinectDemoSGL.UIElement
 
             kinectServer = KinectServer.Instance;
             messageProcessor = kinectServer.MessageProcessor;
-            
+
             pointCloudDictionary = DataStore.Instance.clientPointClouds;
         }
 
         private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
         {
-            if (default(mat4).Equals(projectionMatrix))
+            Dispatcher.Invoke(() =>
             {
-                createVerticesForPointCloud(OpenGlControl.OpenGL);
-            }
-            LoadData();
+                if (default(mat4).Equals(projectionMatrix))
+                {
+                    createVerticesForPointCloud(OpenGlControl.OpenGL);
+                }
+                LoadData();
+            });
         }
 
         private void LoadData()
         {
-            NullablePoint3D[] pointCloud = DataStore.Instance.clientPointClouds[activeClient];
-            List<float> cloudVerticesList = new List<float>();
-            foreach (NullablePoint3D point in pointCloud)
+            string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
+            //string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
+
+            List<float> cloudVerticiesList = new List<float>();
+            List<float> wsVerticiesList = new List<float>();
+
+            foreach (string l in cloudLines)
             {
-                cloudVerticesList.Add((float)point.X);
-                cloudVerticesList.Add((float)point.Y);
-                cloudVerticesList.Add((float)point.Z);
+                //string lc = l.Replace('.', ',');
+                string[] coords = l.Split(' ');
+                cloudVerticiesList.Add(Single.Parse(coords[0]));
+                cloudVerticiesList.Add(Single.Parse(coords[1]));
+                cloudVerticiesList.Add(Single.Parse(coords[2]));
             }
-            pointCloudVertices = cloudVerticesList.ToArray();
+            pointCloudVertices = cloudVerticiesList.ToArray();
+
+            //NullablePoint3D[] pointCloud = DataStore.Instance.clientPointClouds[activeClient];
+            //List<float> cloudVerticesList = new List<float>();
+            //foreach (NullablePoint3D point in pointCloud)
+            //{
+            //    if (point != null)
+            //    {
+            //        cloudVerticesList.Add((float)point.X);
+            //        cloudVerticesList.Add((float)point.Y);
+            //        cloudVerticesList.Add((float)point.Z);
+            //    }
+            //}
+            //pointCloudVertices = cloudVerticesList.ToArray();
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
@@ -151,7 +173,7 @@ namespace KinectDemoSGL.UIElement
             shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
             shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "in_Color");
             shaderProgramPointCloud.AssertValid(gl);
-            //createVerticesForPointCloud(gl);
+            createVerticesForPointCloud(gl);
             //createVerticesForFloor(gl);
 
 
@@ -252,7 +274,18 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
-            Transform();
+            //  Create a perspective projection matrix.
+            const float rads = (45.0f / 360.0f) * (float)Math.PI * 2.0f;
+            projectionMatrix = glm.perspective(rads, (float)Width / (float)Height, 0.1f, 100.0f);
+
+            //  Create a view matrix to move us back a bit.
+            //viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -10.0f));
+
+            viewMatrix = glm.lookAt(position, lookat, up);
+
+            //  Create a model matrix to make the model a little bigger.
+            modelMatrix = glm.scale(new mat4(1.0f), new vec3(2.5f));
+            //Transform();
         }
 
         private void Transform()
@@ -280,7 +313,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (IsVisible)
             {
-                if (default(mat4).Equals(projectionMatrix ))
+                if (default(mat4).Equals(projectionMatrix))
                 {
                     return;
                 }
@@ -305,14 +338,14 @@ namespace KinectDemoSGL.UIElement
                 shaderProgramPointCloud.Unbind(gl);
 
 
-                floorTexture.Bind(gl);
-                floorShaderProgram.Bind(gl);
-                floorShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
-                floorShaderProgram.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
-                floorVertexBufferArray.Bind(gl);
-                gl.DrawArrays(OpenGL.GL_QUADS, 0, 4);
-                floorVertexBufferArray.Unbind(gl);
-                floorShaderProgram.Unbind(gl);
+                //floorTexture.Bind(gl);
+                //floorShaderProgram.Bind(gl);
+                //floorShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
+                //floorShaderProgram.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
+                //floorVertexBufferArray.Bind(gl);
+                //gl.DrawArrays(OpenGL.GL_QUADS, 0, 4);
+                //floorVertexBufferArray.Unbind(gl);
+                //floorShaderProgram.Unbind(gl);
 
 
 
@@ -636,7 +669,7 @@ namespace KinectDemoSGL.UIElement
             Vector<double> translate = A.T;
 
 
-            var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z })  + translate;
+            var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
 
