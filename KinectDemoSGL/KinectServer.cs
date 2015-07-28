@@ -120,7 +120,7 @@ namespace KinectDemoCommon
                     stream.Position = 0;
                     try
                     {
-                        var watch = Stopwatch.StartNew();
+                        Stopwatch watch = Stopwatch.StartNew();
                         watch.Start();
                         obj = formatter.Deserialize(stream);
                         watch.Stop();
@@ -186,6 +186,14 @@ namespace KinectDemoCommon
         private void SendCallback(IAsyncResult ar)
         {
 
+        }
+
+        public void CloseConnections()
+        {
+            foreach (StateObject client in clientDictionary.Keys)
+            {
+                client.WorkSocket.Close();
+            }
         }
     }
 }
