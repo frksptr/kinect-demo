@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
@@ -81,6 +80,12 @@ namespace KinectDemoClient
         private BodyStreamMessage bodyStreamMessage;
         private PointCloudStreamMessage pointCloudStreamMessage;
         private CalibrationDataMessage calibrationDataMessage;
+        private const int AvgCount = 5;
+        private int bodyAvgCount = 0;
+
+        private enum BodyAveragingStatus { Ready, Averaging, Done }
+
+        private BodyAveragingStatus bodyAveragingStatus = BodyAveragingStatus.Ready;
 
         public static KinectStreamer Instance
         {
@@ -192,8 +197,8 @@ namespace KinectDemoClient
         {
 
             if (!(KinectStreamerConfig.ProvideBodyData ||
-                KinectStreamerConfig.ProvideColorData || 
-                KinectStreamerConfig.ProvideDepthData || 
+                KinectStreamerConfig.ProvideColorData ||
+                KinectStreamerConfig.ProvideDepthData ||
                 KinectStreamerConfig.ProvidePointCloudData ||
                 KinectStreamerConfig.ProvideCalibrationData))
             {
@@ -305,9 +310,10 @@ namespace KinectDemoClient
                 {
                     PointCloudDataReady(pointCloudStreamMessage);
                 }
-                if (CalibrationDataReady != null && calibrationDataMessage != null)
+                if (CalibrationDataReady != null && calibrationDataMessage != null && bodyAveragingStatus == BodyAveragingStatus.Done)
                 {
                     CalibrationDataReady(calibrationDataMessage);
+                    bodyAveragingStatus = BodyAveragingStatus.Ready;
                 }
             }
         }
@@ -398,10 +404,41 @@ namespace KinectDemoClient
                 serializableBodies.Add(new SerializableBody(body));
                 if (body.IsTracked)
                 {
-                    if (body.HandLeftState == HandState.Closed && body.HandRightState == HandState.Closed)
+                    if (body.HandLeftState == HandState.Closed && body.HandRightState == HandState.Closed && bodyAveragingStatus == BodyAveragingStatus.Ready)
                     {
+                        bodyAvgCount = 0;
+                        bodyAveragingStatus = BodyAveragingStatus.Averaging;
                         calibrationDataMessage = new CalibrationDataMessage(new SerializableBody(body));
                     }
+                    if (bodyAveragingStatus == BodyAveragingStatus.Averaging)
+                    {
+                        Dictionary<JointType, Joint> joints = new Dictionary<JointType, Joint>();
+
+                        calibrationDataMessage.CalibrationBody.Joints.CopyToDictionary(joints);
+                        foreach (JointType type in joints.Keys)
+                        {
+                            var p = joints[type].Position;
+                            p.X += body.Joints[type].Position.X;
+                            p.Y += body.Joints[type].Position.Y;
+                            p.Z += body.Joints[type].Position.Z;
+                        }
+
+                        if (bodyAvgCount == AvgCount)
+                        {
+                            bodyAveragingStatus = BodyAveragingStatus.Done;
+                            bodyAvgCount = 0;
+                            foreach (JointType type in joints.Keys)
+                            {
+                                var p = joints[type].Position;
+                                p.X /= AvgCount;
+                                p.Y /= AvgCount;
+                                p.Z /= AvgCount;
+                            }
+                        }
+
+                        bodyAvgCount++;
+                    }
+                    
                 }
             }
             bodyStreamMessage = new BodyStreamMessage(serializableBodies.ToArray());
