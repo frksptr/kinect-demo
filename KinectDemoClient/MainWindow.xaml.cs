@@ -13,6 +13,7 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using KinectDemoCommon.Messages.KinectServerMessages;
+using SharpGL.Enumerations;
 
 namespace KinectDemoClient
 {
@@ -186,7 +187,19 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                if (ex is SocketException)
+                {
+                    SocketException socketException = (SocketException) ex;
+                    if (SocketError.ConnectionReset.Equals(socketException.SocketErrorCode))
+                    {
+                        clientSocket = null;
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 

@@ -47,6 +47,8 @@ namespace KinectDemoCommon
 
             InitializeComponent();
 
+            Closing += MainWindow_Closing;
+
             kinectServer = KinectServer.Instance;
             messageProcessor = kinectServer.MessageProcessor;
 
@@ -85,6 +87,11 @@ namespace KinectDemoCommon
             EditWorkspace.DataContext = activeWorkspace;
 
 
+        }
+
+        void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            kinectServer.CloseConnections();
         }
 
         private void kinectServer_TextMessageArrived(KinectDemoMessage message, KinectClient client)
@@ -211,5 +218,7 @@ namespace KinectDemoCommon
             activeWorkspace = new Workspace();
             cloudView.ClearScreen();
         }
+
+        
     }
 }
