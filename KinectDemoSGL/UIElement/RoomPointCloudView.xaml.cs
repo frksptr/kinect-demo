@@ -111,8 +111,8 @@ namespace KinectDemoSGL.UIElement
 
             foreach (string l in cloudLines)
             {
-                //string lc = l.Replace('.', ',');
-                string[] coords = l.Split(' ');
+                string lc = l.Replace('.', ',');
+                string[] coords = lc.Split(' ');
                 cloudVerticiesList.Add(Single.Parse(coords[0]));
                 cloudVerticiesList.Add(Single.Parse(coords[1]));
                 cloudVerticiesList.Add(Single.Parse(coords[2]));
