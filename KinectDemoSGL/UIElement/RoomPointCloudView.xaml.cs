@@ -135,6 +135,7 @@ namespace KinectDemoSGL.UIElement
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
             OpenGL gl = OpenGlControl.OpenGL;
+            OpenGlControl.RenderContextType = RenderContextType.DIBSection;
 
             gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
