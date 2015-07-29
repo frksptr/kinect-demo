@@ -21,8 +21,8 @@ namespace KinectDemoSGL
     class KinectServer
     {
 
-        private readonly string ip = NetworkHelper.LocalIPAddress();
-        //private readonly string ip = "192.168.0.115";
+        //private readonly string ip = NetworkHelper.LocalIPAddress();
+        private readonly string ip = "192.168.0.107";
 
         private Socket socket;
         //private byte[] buffer;

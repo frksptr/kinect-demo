@@ -93,12 +93,13 @@ namespace KinectDemoSGL.UIElement
         {
             Dispatcher.Invoke(() =>
             {
+                LoadPointCloud(DataStore.Instance.clientPointClouds[activeClient]);
+                //
                 createVerticesForPointCloud(OpenGlControl.OpenGL);
-                LoadData();
             });
         }
 
-        private void LoadData()
+        private void LoadPointCloud(NullablePoint3D[] pointCloud)
         {
             //string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
             ////string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
@@ -116,7 +117,7 @@ namespace KinectDemoSGL.UIElement
             //}
             //pointCloudVertices = cloudVerticiesList.ToArray();
 
-            NullablePoint3D[] pointCloud = DataStore.Instance.clientPointClouds[activeClient];
+            
             List<float> cloudVerticesList = new List<float>();
             foreach (NullablePoint3D point in pointCloud)
             {
@@ -128,6 +129,7 @@ namespace KinectDemoSGL.UIElement
                 }
             }
             pointCloudVertices = cloudVerticesList.ToArray();
+            createVerticesForPointCloud(OpenGlControl.OpenGL);
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
@@ -585,6 +587,7 @@ namespace KinectDemoSGL.UIElement
             {
                 activeClient = DataStore.Instance.KinectClients[0];
             }
+            LoadPointCloud(pointCloudDictionary[activeClient]);
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
@@ -635,10 +638,10 @@ namespace KinectDemoSGL.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            List<NullablePoint3D[]> pointClouds = GetPointClouds();
+            //List<NullablePoint3D[]> pointClouds = GetPointClouds();
             showMerged = true;
             //fal
-            var kinect1CalPoints = pointClouds[0];
+            //var kinect1CalPoints = pointClouds[0];
             //var kinect1CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
@@ -656,7 +659,7 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1, 1,  0)
             //};
             //ajtó
-            var kinect2CalPoints = pointClouds[1];
+            //var kinect2CalPoints = pointClouds[1];
             //var kinect2CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
@@ -674,17 +677,35 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1.95, -0.05, -1.05)
             //};
 
-            var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
+            //var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
-            Matrix<double> rot = A.R;
-            Vector<double> translate = A.T;
+            //Matrix<double> rot = A.R;
+            //Vector<double> translate = A.T;
+
+            Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
+                 	new[]{-0.01868811233840361,
+		            -0.34501377370318648,
+		            -0.93841155705389412},
+		            new[]{0.5320510930426815,
+		            0.79121684933040015,
+		            -0.30149217523472005},
+		            new[]{0.84650598866713045,
+		            -0.50491721429434455,
+		            0.16877860604923636	}
+            });
+            Vector<double> translate = DenseVector.OfArray(new[]{
+                -1.875871904795692,	
+		        0.47458577514168565,	
+		        1.1320225857947943
+            });
 
 
-            var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
+            //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-
-            foreach (NullablePoint3D point in pointCloudDictionary[DataStore.Instance.KinectClients[0]])
+            NullablePoint3D[] pointCloud1 = pointCloudDictionary[DataStore.Instance.KinectClients[0]];
+            NullablePoint3D[] pointCloud2 = pointCloudDictionary[DataStore.Instance.KinectClients[1]];
+            foreach (NullablePoint3D point in pointCloud1)
             //foreach (NullablePoint3D point in kinect1CalPoints)
             {
                 if (point != null)
@@ -696,6 +717,11 @@ namespace KinectDemoSGL.UIElement
             }
 
             transformedPointCloud = transformedPointCloudList.ToArray();
+            var mergedCloud = new NullablePoint3D[pointCloud1.Length+transformedPointCloud.Length];
+            pointCloud2.CopyTo(mergedCloud, 0);
+            transformedPointCloud.CopyTo(mergedCloud, pointCloud2.Length);
+            LoadPointCloud(mergedCloud);
+            createVerticesForPointCloud(OpenGlControl.OpenGL);
             OpenGlControl.Focus();
         }
 
