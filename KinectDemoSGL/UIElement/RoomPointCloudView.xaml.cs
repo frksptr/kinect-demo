@@ -273,7 +273,7 @@ namespace KinectDemoSGL.UIElement
         {
             //  Create a perspective projection matrix.
             const float rads = (45.0f / 360.0f) * (float)Math.PI * 2.0f;
-            projectionMatrix = glm.perspective(rads, (float)ActualWidth / (float)ActualWidth, 0.1f, 100.0f);
+            projectionMatrix = glm.perspective(rads, (float)ActualWidth / (float)ActualHeight, 0.1f, 100.0f);
 
             //  Create a view matrix to move us back a bit.
             //viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -10.0f));
@@ -350,34 +350,136 @@ namespace KinectDemoSGL.UIElement
 
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.W)
+            {
+                vec3 forward = lookat - position;
+                forward = glm.normalize(forward);
+                vec3 diff = forward * new vec3(0.1f, 0.1f, 0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
 
-            if (e.Key.Equals(Key.S))
-            {
-                cameraPosSphere.Y -= rotationFactor;
+
             }
-            else if (e.Key.Equals(Key.W))
+            if (e.Key == Key.S)
             {
-                cameraPosSphere.Y += rotationFactor;
+                vec3 forward = lookat - position;
+                forward = glm.normalize(forward);
+                vec3 diff = forward * new vec3(0.1f, 0.1f, 0.1f);
+                position -= diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
-            else if (e.Key.Equals(Key.A))
+            /*if (e.Key == Key.A)
             {
-                cameraPosSphere.Z -= rotationFactor;
+                vec3 diff = new vec3(-0.1f, 0f, 0.0f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
-            else if (e.Key.Equals(Key.D))
+            if (e.Key == Key.D)
             {
-                cameraPosSphere.Z += rotationFactor;
-            }
-            else
+                vec3 diff = new vec3(0.1f, 0f, 0.0f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }*/
+
+            if (e.Key == Key.Space)
             {
-                return;
+                vec3 diff = glm.normalize(up) * new vec3(0.1f, 0.1f, 0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
 
-            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
+            if (e.Key == Key.C)
+            {
+                vec3 diff = glm.normalize(up) * new vec3(-0.1f, -0.1f, -0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
 
-            //cameraPos.X += Center.X;
-            //cameraPos.Y += Center.Y;
-            //cameraPos.Z += Center.Z;
-            Transform();
+
+            if (e.Key == Key.Q)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, up);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.E)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, up);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+
+            if (e.Key == Key.R)
+            {
+                vec3 right = glm.cross(up, lookat - position);
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, right);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.T)
+            {
+                vec3 right = glm.cross(up, lookat - position);
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, right);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.F)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, lookat - position);
+                vec4 upNorm = rot * new vec4(up, 1);
+                up = new vec3(upNorm);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.G)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, lookat - position);
+                vec4 upNorm = rot * new vec4(up, 1);
+                up = new vec3(upNorm);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            //if (e.Key.Equals(Key.S))
+            //{
+            //    cameraPosSphere.Y -= rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.W))
+            //{
+            //    cameraPosSphere.Y += rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.A))
+            //{
+            //    cameraPosSphere.Z -= rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.D))
+            //{
+            //    cameraPosSphere.Z += rotationFactor;
+            //}
+            //else
+            //{
+            //    return;
+            //}
+
+            //cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
+
+            ////cameraPos.X += Center.X;
+            ////cameraPos.Y += Center.Y;
+            ////cameraPos.Z += Center.Z;
+            //Transform();
         }
 
         private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -594,7 +696,7 @@ namespace KinectDemoSGL.UIElement
             }
 
             transformedPointCloud = transformedPointCloudList.ToArray();
-
+            OpenGlControl.Focus();
         }
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
