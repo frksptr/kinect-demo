@@ -11,6 +11,7 @@ using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoSGL
 {
@@ -20,8 +21,8 @@ namespace KinectDemoSGL
     class KinectServer
     {
 
-        //private readonly string ip = NetworkHelper.LocalIPAddress();
-        private readonly string ip = "192.168.0.115";
+        private readonly string ip = NetworkHelper.LocalIPAddress();
+        //private readonly string ip = "192.168.0.115";
 
         private Socket socket;
         //private byte[] buffer;
