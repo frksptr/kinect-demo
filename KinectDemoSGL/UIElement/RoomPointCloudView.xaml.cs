@@ -723,6 +723,14 @@ namespace KinectDemoSGL.UIElement
             LoadPointCloud(mergedCloud);
             createVerticesForPointCloud(OpenGlControl.OpenGL);
             OpenGlControl.Focus();
+
+
+            transformedPointCloud = transformedPointCloudList.ToArray();
+
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect1PointCloud), @"C:\asd\kinect1cloud.txt");
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect2PointCloud), @"C:\asd\kinect2cloud.txt");
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\kinect1to2cloud.txt");
+
         }
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
