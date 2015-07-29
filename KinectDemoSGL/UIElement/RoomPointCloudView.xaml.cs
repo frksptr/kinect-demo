@@ -718,19 +718,19 @@ namespace KinectDemoSGL.UIElement
             }
 
             transformedPointCloud = transformedPointCloudList.ToArray();
-            var mergedCloud = new NullablePoint3D[pointCloud1.Length+transformedPointCloud.Length];
+            var mergedCloud = new NullablePoint3D[pointCloud1.Length + transformedPointCloud.Length];
             pointCloud2.CopyTo(mergedCloud, 0);
             transformedPointCloud.CopyTo(mergedCloud, pointCloud2.Length);
             LoadPointCloud(mergedCloud);
             createVerticesForPointCloud(OpenGlControl.OpenGL);
             OpenGlControl.Focus();
 
-
             transformedPointCloud = transformedPointCloudList.ToArray();
 
             FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud1)), @"C:\asd\kinect1cloud.pcd");
             FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud2)), @"C:\asd\kinect2cloud.pcd");
             FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(transformedPointCloudList)), @"C:\asd\cloud1to2.pcd");
+        }
 
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
