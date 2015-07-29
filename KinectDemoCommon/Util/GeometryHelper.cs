@@ -41,29 +41,13 @@ namespace KinectDemoCommon.Util
             return normalizedPoints;
         }
 
-        public static double[,] Point3DToPointArrays(Point3D[] points)
-        {
-            double[,] vectors = new double[points.Count(), 4];
-            for (int i = 0; i < points.Count(); i++)
-            {
-                double x = points[i].X;
-                double y = points[i].Y;
-                double z = points[i].Z;
-                vectors[i, 0] = x;
-                vectors[i, 1] = y;
-                vectors[i, 2] = z;
-                vectors[i, 3] = 1;
-            }
-            return vectors;
-        }
-
         public static Vector<double> FitPlaneToPoints(Point3D[] points)
         {
             if (points.Length == 0)
             {
                 return null;
             }
-            double[,] pointArrays = Point3DToPointArrays(points);
+            double[,] pointArrays = Converter.Point3DToPointArrays(points);
 
             Matrix<double> pointMatrix = Matrix<double>.Build.DenseOfArray(pointArrays);
 
@@ -187,73 +171,6 @@ namespace KinectDemoCommon.Util
             Vector3D v1 = new Vector3D(
                 p2.X - p1.X, p2.Y - p1.Y, p2.Z - p1.Z);
             return Vector3D.CrossProduct(v0, v1);
-        }
-
-        public static Point3D CameraSpacePointToPoint3D(CameraSpacePoint cameraSpacePoint)
-        {
-            return new Point3D
-            {
-                X = cameraSpacePoint.X,
-                Y = cameraSpacePoint.Y,
-                Z = cameraSpacePoint.Z
-            };
-        }
-
-        public static CameraSpacePoint Point3DToCameraSpacePoint(Point3D point)
-        {
-            return new CameraSpacePoint()
-            {
-                X = (float) point.X,
-                Y = (float) point.Y,
-                Z = (float) point.Z
-            };
-        }
-        public static List<Point3D> CameraSpacePointsToPoint3Ds(CameraSpacePoint[] cameraSpacePoints)
-        {
-            if (cameraSpacePoints == null)
-            {
-                return null;
-            }
-            if (cameraSpacePoints.Length == 0)
-            {
-                return null;
-            }
-            List<Point3D> point3Ds = new List<Point3D>();
-
-            foreach (CameraSpacePoint point in cameraSpacePoints)
-            {
-                if (IsValidCameraPoint(point))
-                {
-                    point3Ds.Add(new Point3D
-                    {
-                        X = point.X,
-                        Y = point.Y,
-                        Z = point.Z
-                    });
-                }
-            }
-
-            return point3Ds;
-        }
-
-        public static List<CameraSpacePoint> Point3DsToCameraSpacePoints(Point3D[] points)
-        {
-            if (points == null)
-            {
-                return null;
-            }
-            if (points.Length == 0)
-            {
-                return null;
-            }
-            List<CameraSpacePoint> cspList = new List<CameraSpacePoint>();
-
-            foreach (Point3D point in points)
-            {
-                cspList.Add(Point3DToCameraSpacePoint(point));
-            }
-
-            return cspList;
         }
 
         public static Point3D CalculateCenterPoint(NullablePoint3D[] pointCloud)

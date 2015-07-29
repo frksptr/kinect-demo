@@ -4,7 +4,7 @@ using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     // Singleton
     class DataStore

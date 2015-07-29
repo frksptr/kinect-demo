@@ -6,9 +6,10 @@ using System.Windows.Input;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.UIElement;
+using KinectDemoSGL.UIElement;
+using KinectDemoCommon;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

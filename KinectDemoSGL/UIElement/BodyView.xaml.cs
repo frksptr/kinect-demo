@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
-using KinectDemoCommon.Annotations;
+using KinectDemoSGL.Annotations;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
@@ -18,7 +18,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
     /// <summary>
     /// Interaction logic for BodyView.xaml
@@ -222,9 +222,9 @@ namespace KinectDemoCommon.UIElement
                         handPosition.Z
                     });
 
-                    if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector)))
+                    if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector)))
                     {
-                        double distance = GeometryHelper.CalculatePointPlaneDistance(GeometryHelper.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector);
+                        double distance = GeometryHelper.CalculatePointPlaneDistance(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector);
 
                         if (Math.Abs(distance) <= DistanceTolerance)
                         {

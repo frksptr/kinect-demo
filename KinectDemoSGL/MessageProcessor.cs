@@ -1,4 +1,5 @@
 ﻿
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
@@ -10,7 +11,7 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public class MessageProcessor
     {

@@ -48,9 +48,9 @@ namespace KinectDemoClient
                         handPosition.Z
                     });
 
-                    if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(GeometryHelper.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector)))
+                    if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector)))
                     {
-                        double distance = GeometryHelper.CalculatePointPlaneDistance(GeometryHelper.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector);
+                        double distance = GeometryHelper.CalculatePointPlaneDistance(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector);
 
                         if (Math.Abs(distance) <= DistanceTolerance)
                         {

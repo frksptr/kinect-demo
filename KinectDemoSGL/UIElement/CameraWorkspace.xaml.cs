@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using KinectDemoCommon.Annotations;
+using KinectDemoSGL.Annotations;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using System.Net.Sockets;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
     /// <summary>
     /// Interaction logic for CameraWorkspace.xaml

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public class KinectClient
     {

@@ -16,8 +16,9 @@ using System.Windows.Media.Animation;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using Microsoft.Kinect;
+using System.IO;
 
-namespace KinectDemoCommon.UIElement
+namespace KinectDemoSGL.UIElement
 {
 
     /// <summary>
@@ -288,7 +289,7 @@ namespace KinectDemoCommon.UIElement
         {
             if (handPositions.Length > 0)
             {
-                CheckActiveWorkspace(GeometryHelper.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
+                CheckActiveWorkspace(Converter.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
             }
         }
 
@@ -462,8 +463,11 @@ namespace KinectDemoCommon.UIElement
             var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z })  + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
+            List<NullablePoint3D> kinect1PointCloud = new List<NullablePoint3D>(pointCloudDictionary[DataStore.Instance.KinectClients[0]]);
+            List<NullablePoint3D> kinect2PointCloud = new List<NullablePoint3D>(pointCloudDictionary[DataStore.Instance.KinectClients[1]]);
+            
 
-            foreach (NullablePoint3D point in pointCloudDictionary[DataStore.Instance.KinectClients[0]])
+            foreach (NullablePoint3D point in kinect1PointCloud)
             //foreach (NullablePoint3D point in kinect1CalPoints)
             {
                 if (point != null)
@@ -476,7 +480,9 @@ namespace KinectDemoCommon.UIElement
 
             transformedPointCloud = transformedPointCloudList.ToArray();
 
-
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect1PointCloud), @"C:\asd\kinect1cloud.txt");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect2PointCloud), @"C:\asd\kinect2cloud.txt");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\kinect1to2cloud.txt");
 
         }
 

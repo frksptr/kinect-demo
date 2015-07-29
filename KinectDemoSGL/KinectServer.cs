@@ -12,9 +12,10 @@ using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using System.Collections.Generic;
 using KinectDemoCommon.Messages.KinectServerMessages;
+using KinectDemoSGL;
 using KinectDemoCommon;
 
-namespace KinectDemoCommon
+namespace KinectDemoSGL
 {
     public delegate void KinectServerDataArrived(KinectDemoMessage message, KinectClient kinectClient);
 
