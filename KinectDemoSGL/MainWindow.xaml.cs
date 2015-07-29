@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
@@ -168,18 +169,6 @@ namespace KinectDemoSGL
         private void HandCheck_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             //bodyView.WorkspaceList = workspaceList;
-        }
-
-        private void RoomPointCloudHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            //CameraSpacePoint[] csps = cloudView.AllCameraSpacePoints;
-            //List<Point3D> pointCloud = new List<Point3D>(DataStore.Instance.FullPointCloud);
-
-            //roomPointCloudView.Center = GeometryHelper.CalculateCenterPoint(pointCloud);
-
-            roomPointCloudView.DataContext = DataStore.Instance.FullPointCloud;
-
-            //roomPointCloudView.WorkspaceList = workspaceList;
         }
 
         private void AddWorkspace(object sender, RoutedEventArgs e)

@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Microsoft.Kinect;
-using System.Diagnostics;
 using System.Windows;
 using KinectDemoCommon.Util;
 using KinectDemoCommon.Model;

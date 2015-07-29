@@ -104,7 +104,7 @@ namespace KinectDemoCommon.Util
             {
                 if (point != null)
                 {
-                    points.Add(new Point3D(point.X,point.Y,point.Z));
+                    points.Add(new Point3D(point.X, point.Y, point.Z));
                 }
             }
             return points;

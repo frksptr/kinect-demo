@@ -4,12 +4,9 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.LinearAlgebra.Factorization;
 using System.Collections.ObjectModel;
 using System.Windows;
+using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {
@@ -118,7 +115,7 @@ namespace KinectDemoSGL
             }
         }
 
-        private static void ProcessPointCloudStreamMessage(object obj, KinectClient sender)
+        private void ProcessPointCloudStreamMessage(object obj, KinectClient sender)
         {
             PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
             double[] doubleArray = msg.PointCloud;
@@ -138,6 +135,11 @@ namespace KinectDemoSGL
             DataStore.Instance.FullPointCloud = pointArray;
 
             DataStore.Instance.clientPointClouds[sender] = pointArray;
+
+            if (PointCloudDataArrived != null)
+            {
+                PointCloudDataArrived(msg, sender);
+            }
         }
 
         private void ProcessColorStreamMessage(object obj, KinectClient sender)

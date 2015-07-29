@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media.Media3D;
 using KinectDemoCommon.Model;
-using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 
 namespace KinectDemoSGL
 {

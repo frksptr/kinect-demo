@@ -13,9 +13,9 @@ namespace KinectDemoCommon.Util
     {
         private static string pcdHeader =
             @"# .PCD v.7 - Point Cloud Data file format
-            VERSION .7
+            VERSION 0.7
             FIELDS x y z
-            SIZE 8 8 8
+            SIZE 4 4 4
             TYPE F F F
             COUNT 1 1 1
             WIDTH numberofpoints
@@ -24,8 +24,9 @@ namespace KinectDemoCommon.Util
             POINTS numberofpoints
             DATA ascii";
 
-        public static void WritePCD(List<Point3D> points, string path) {
-            string header = pcdHeader.Replace("numberofpoints",points.Count.ToString());
+        public static void WritePCD(List<Point3D> points, string path)
+        {
+            string header = pcdHeader.Replace("numberofpoints", points.Count.ToString());
 
             using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(fs))

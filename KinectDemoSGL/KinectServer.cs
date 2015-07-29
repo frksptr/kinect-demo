@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using System.Collections.Generic;
@@ -24,7 +26,7 @@ namespace KinectDemoSGL
     {
 
         //private readonly string ip = NetworkHelper.LocalIPAddress();
-        private readonly string ip = "192.168.0.115";
+        private readonly string ip = "192.168.0.107";
 
         private Socket socket;
         //private byte[] buffer;

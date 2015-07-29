@@ -17,6 +17,7 @@ using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
+using KinectDemoSGL.Annotations;
 
 namespace KinectDemoSGL.UIElement
 {

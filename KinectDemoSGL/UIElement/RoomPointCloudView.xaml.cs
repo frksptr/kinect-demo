@@ -10,13 +10,14 @@ using SharpGL.SceneGraph;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows.Media.Animation;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using Microsoft.Kinect;
 using System.IO;
+using GlmNet;
+using SharpGL.VertexBuffers;
+using SharpGL.Shaders;
+using SharpGL.SceneGraph.Assets;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -52,14 +53,84 @@ namespace KinectDemoSGL.UIElement
 
         NullablePoint3D[] transformedPointCloud;
 
+        //
+
+        vec3 position = new vec3(0, 0, -1);
+        vec3 lookat = new vec3(0, 0, 0);
+        vec3 up = new vec3(0, 1, 0);
+
+        //Common
+        mat4 projectionMatrix;
+        mat4 viewMatrix;
+        mat4 modelMatrix;
+
+        //PointCloud
+        const uint pointCloudAttributeIndexPosition = 0;
+        const uint pointCloudAttributeIndexColor = 1;
+        float[] pointCloudVertices = { };
+        VertexBufferArray pointCloudVertexBufferArray;
+        private ShaderProgram shaderProgramPointCloud; //irregular name
+
+        //Floor
+        const uint attributeIndexPosition = 0;
+        const uint attributeIndexVertexUV = 1;
+        Texture floorTexture = new Texture();
+        VertexBufferArray floorVertexBufferArray;
+        private ShaderProgram floorShaderProgram;
+
+        //
+
         public RoomPointCloudView()
         {
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
             messageProcessor = kinectServer.MessageProcessor;
-            messageProcessor.BodyDataArrived += BodyDataArrived;
+
             pointCloudDictionary = DataStore.Instance.clientPointClouds;
+        }
+
+        private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LoadPointCloud(DataStore.Instance.clientPointClouds[activeClient]);
+                //
+                createVerticesForPointCloud(OpenGlControl.OpenGL);
+            });
+        }
+
+        private void LoadPointCloud(NullablePoint3D[] pointCloud)
+        {
+            //string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
+            ////string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
+
+            //List<float> cloudVerticiesList = new List<float>();
+            //List<float> wsVerticiesList = new List<float>();
+
+            //foreach (string l in cloudLines)
+            //{
+            //    string lc = l.Replace('.', ',');
+            //    string[] coords = lc.Split(' ');
+            //    cloudVerticiesList.Add(Single.Parse(coords[0]));
+            //    cloudVerticiesList.Add(Single.Parse(coords[1]));
+            //    cloudVerticiesList.Add(Single.Parse(coords[2]));
+            //}
+            //pointCloudVertices = cloudVerticiesList.ToArray();
+
+            
+            List<float> cloudVerticesList = new List<float>();
+            foreach (NullablePoint3D point in pointCloud)
+            {
+                if (point != null)
+                {
+                    cloudVerticesList.Add((float)point.X);
+                    cloudVerticesList.Add((float)point.Y);
+                    cloudVerticesList.Add((float)point.Z);
+                }
+            }
+            pointCloudVertices = cloudVerticesList.ToArray();
+            createVerticesForPointCloud(OpenGlControl.OpenGL);
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
@@ -85,19 +156,105 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLEventArgs args)
         {
-            double radius = -4;
-            double theta = 0;
-            double phi = 0;
+            OpenGL gl = OpenGlControl.OpenGL;
 
-            cameraPosSphere = new Point3D(
-                radius,
-                theta,
-                phi
-                );
+            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.Enable(OpenGL.GL_DEPTH_TEST);
+            gl.Enable(OpenGL.GL_BLEND);
+            gl.Enable(OpenGL.GL_TEXTURE_2D);
+            gl.Enable(OpenGL.GL_PROGRAM_POINT_SIZE);
+            gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
-            //  Enable the OpenGL depth testing functionality.
-            //args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
+            //  Create the shader program for point cloud
+            var vertexShaderSource = System.IO.File.ReadAllText("pointcloud.vert");
+            var fragmentShaderSource = System.IO.File.ReadAllText("pointcloud.frag");
+            shaderProgramPointCloud = new ShaderProgram();
+            shaderProgramPointCloud.Create(gl, vertexShaderSource, fragmentShaderSource, null);
+            shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
+            shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "in_Color");
+            shaderProgramPointCloud.AssertValid(gl);
+            createVerticesForPointCloud(gl);
+            //createVerticesForFloor(gl);
+
+
+            //var floorVertSource = System.IO.File.ReadAllText("floor.vert");
+            //var floorFragSource = System.IO.File.ReadAllText("floor.frag");
+            //floorShaderProgram = new ShaderProgram();
+            //floorShaderProgram.Create(gl, floorVertSource, floorFragSource, null);
+            //floorShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
+            //floorShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "vertexUV"); //change
+            //floorShaderProgram.AssertValid(gl);
+            //floorTexture.Create(gl, "cat1.jpg");
+
+            //----------------
+
+            //double radius = -4;
+            //double theta = 0;
+            //double phi = 0;
+
+            //cameraPosSphere = new Point3D(
+            //    radius,
+            //    theta,
+            //    phi
+            //    );
+
+            //cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
+            ////  Enable the OpenGL depth testing functionality.
+            ////args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
+        }
+
+        private void createVerticesForPointCloud(OpenGL gl)
+        {
+            pointCloudVertexBufferArray = new VertexBufferArray();
+            pointCloudVertexBufferArray.Create(gl);
+            pointCloudVertexBufferArray.Bind(gl);
+
+            var vertexDataBuffer = new VertexBuffer();
+            vertexDataBuffer.Create(gl);
+            vertexDataBuffer.Bind(gl);
+            vertexDataBuffer.SetData(gl, 0, pointCloudVertices, false, 3);
+
+            /* var colorDataBuffer = new VertexBuffer();
+             colorDataBuffer.Create(gl);
+             colorDataBuffer.Bind(gl);
+             colorDataBuffer.SetData(gl, 1, colors, false, 3);*/
+
+            pointCloudVertexBufferArray.Unbind(gl);
+        }
+
+        private void createVerticesForFloor(OpenGL gl)
+        {
+
+            float[] vertices = {
+                                    -0.34172125205764f, 0.53836830689914f, 2.85399643991607f,
+                                    -0.416902514984282f, 0.376399677859286f, 2.64154877524325f,
+                                    -0.114916737823797f, 0.353512639083294f, 2.62640796532687f,
+                                    -0.0765370615054481f, 0.482218856037199f, 2.79420990925737f
+                               };
+            float[] texUV = {
+                              0.0f, 0.0f,
+                              1.0f, 0.0f,
+                              1.0f, 1.0f,
+                              0.0f, 1.0f
+                            };
+
+
+
+            floorVertexBufferArray = new VertexBufferArray();
+            floorVertexBufferArray.Create(gl);
+            floorVertexBufferArray.Bind(gl);
+
+            var vertexDataBuffer = new VertexBuffer();
+            vertexDataBuffer.Create(gl);
+            vertexDataBuffer.Bind(gl);
+            vertexDataBuffer.SetData(gl, 0, vertices, false, 3);
+
+            var colorDataBuffer = new VertexBuffer();
+            colorDataBuffer.Create(gl);
+            colorDataBuffer.Bind(gl);
+            colorDataBuffer.SetData(gl, 1, texUV, false, 2);
+
+            pointCloudVertexBufferArray.Unbind(gl);
         }
 
         private List<Point3D> CenterPointCloud(List<Point3D> points)
@@ -117,7 +274,18 @@ namespace KinectDemoSGL.UIElement
 
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
-            Transform();
+            //  Create a perspective projection matrix.
+            const float rads = (45.0f / 360.0f) * (float)Math.PI * 2.0f;
+            projectionMatrix = glm.perspective(rads, (float)ActualWidth / (float)ActualHeight, 0.1f, 100.0f);
+
+            //  Create a view matrix to move us back a bit.
+            //viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -10.0f));
+
+            viewMatrix = glm.lookAt(position, lookat, up);
+
+            //  Create a model matrix to make the model a little bigger.
+            modelMatrix = glm.scale(new mat4(1.0f), new vec3(2.5f));
+            //Transform();
         }
 
         private void Transform()
@@ -145,125 +313,176 @@ namespace KinectDemoSGL.UIElement
         {
             if (IsVisible)
             {
-                if (pointCloudDictionary.Count == 0)
+                if (default(mat4).Equals(projectionMatrix))
                 {
                     return;
                 }
-                if (pointCloudDictionary[activeClient] == null)
-                {
-                    return;
-                }
-                //  Get the OpenGL instance that's been passed to us.
-                OpenGL gl = args.OpenGL;
 
-                gl.PointSize(1.0f);
+                OpenGL gl = OpenGlControl.OpenGL;
+                //  Clear the scene.
+                gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT | OpenGL.GL_STENCIL_BUFFER_BIT);
 
-                //  Clear the color and depth buffers.
-                gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+                //  Bind the shader, set the matrices.
+                shaderProgramPointCloud.Bind(gl);
+                shaderProgramPointCloud.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
+                shaderProgramPointCloud.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
+                shaderProgramPointCloud.SetUniform3(gl, "uColor", 0.0f, 1.0f, 0.0f);
+                shaderProgramPointCloud.SetUniform1(gl, "uSize", 1.0f);
 
-                //  Reset the modelview matrix.
-                gl.LoadIdentity();
 
-                gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1.0f, 0.0f, 0.0f);
-                //  Move the geometry into a fairly central position.
-                foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
-                {
-                    if (point != null)
-                    {
-                        gl.Vertex(point.X, point.Y, point.Z);
-                    }
-                }
+                pointCloudVertexBufferArray.Bind(gl);
+                gl.DrawArrays(OpenGL.GL_POINTS, 0, pointCloudVertices.Length / 3);
+                pointCloudVertexBufferArray.Unbind(gl);
 
-                gl.End();
 
-                if (showMerged)
-                {
-                    gl.Begin(OpenGL.GL_POINTS);
-                    gl.Color(1.0f, 0.0f, 1.0f);
-                    //  Move the geometry into a fairly central position.
-                    foreach (NullablePoint3D point in transformedPointCloud)
-                    {
-                        if (point != null)
-                        {
-                            gl.Vertex(point.X, point.Y, point.Z);
-                        }
-                    }
+                shaderProgramPointCloud.Unbind(gl);
 
-                    gl.End();
-                }
 
-                gl.Begin(OpenGL.GL_TRIANGLES);
-                foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
-                {
-                    if (workspace.Active)
-                    {
-                        gl.Color(0.0f, 0.0f, 1.0f);
-                    }
-                    else
-                    {
-                        gl.Color(0.0f, 1.0f, 1.0f);
-                    }
-                    Point3D[] vertices = workspace.Vertices3D;
-                    Point3D v0 = vertices[0];
-                    Point3D v1 = vertices[1];
-                    Point3D v2 = vertices[2];
-                    Point3D v3 = vertices[3];
-                    gl.Vertex(v0.X, v0.Y, v0.Z);
-                    gl.Vertex(v1.X, v1.Y, v1.Z);
-                    gl.Vertex(v2.X, v2.Y, v2.Z);
+                //floorTexture.Bind(gl);
+                //floorShaderProgram.Bind(gl);
+                //floorShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
+                //floorShaderProgram.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
+                //floorVertexBufferArray.Bind(gl);
+                //gl.DrawArrays(OpenGL.GL_QUADS, 0, 4);
+                //floorVertexBufferArray.Unbind(gl);
+                //floorShaderProgram.Unbind(gl);
 
-                    gl.Vertex(v2.X, v2.Y, v2.Z);
-                    gl.Vertex(v3.X, v3.Y, v3.Z);
-                    gl.Vertex(v0.X, v0.Y, v0.Z);
 
-                }
-                gl.End();
-
-                if (handPositions.Count > 0)
-                {
-                    gl.Color(0.0f, 1.0f, 0.0f);
-                    gl.PointSize(5.0f);
-                    gl.Begin(OpenGL.GL_POINTS);
-                    foreach (CameraSpacePoint hand in handPositions)
-                    {
-                        gl.Vertex(hand.X, hand.Y, hand.Z);
-                    }
-                    gl.End();
-                }
             }
         }
 
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.W)
+            {
+                vec3 forward = lookat - position;
+                forward = glm.normalize(forward);
+                vec3 diff = forward * new vec3(0.1f, 0.1f, 0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
 
-            if (e.Key.Equals(Key.S))
-            {
-                cameraPosSphere.Y -= rotationFactor;
+
             }
-            else if (e.Key.Equals(Key.W))
+            if (e.Key == Key.S)
             {
-                cameraPosSphere.Y += rotationFactor;
+                vec3 forward = lookat - position;
+                forward = glm.normalize(forward);
+                vec3 diff = forward * new vec3(0.1f, 0.1f, 0.1f);
+                position -= diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
-            else if (e.Key.Equals(Key.A))
+            /*if (e.Key == Key.A)
             {
-                cameraPosSphere.Z -= rotationFactor;
+                vec3 diff = new vec3(-0.1f, 0f, 0.0f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
-            else if (e.Key.Equals(Key.D))
+            if (e.Key == Key.D)
             {
-                cameraPosSphere.Z += rotationFactor;
-            }
-            else
+                vec3 diff = new vec3(0.1f, 0f, 0.0f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }*/
+
+            if (e.Key == Key.Space)
             {
-                return;
+                vec3 diff = glm.normalize(up) * new vec3(0.1f, 0.1f, 0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
             }
 
-            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
+            if (e.Key == Key.C)
+            {
+                vec3 diff = glm.normalize(up) * new vec3(-0.1f, -0.1f, -0.1f);
+                position += diff;
+                lookat += diff;
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
 
-            //cameraPos.X += Center.X;
-            //cameraPos.Y += Center.Y;
-            //cameraPos.Z += Center.Z;
-            Transform();
+
+            if (e.Key == Key.Q)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, up);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.E)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, up);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+
+            if (e.Key == Key.R)
+            {
+                vec3 right = glm.cross(up, lookat - position);
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, right);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.T)
+            {
+                vec3 right = glm.cross(up, lookat - position);
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, right);
+                vec4 diff = (rot * new vec4(lookat - position, 1));
+                lookat = position + new vec3(diff);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.F)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), 0.025f, lookat - position);
+                vec4 upNorm = rot * new vec4(up, 1);
+                up = new vec3(upNorm);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            if (e.Key == Key.G)
+            {
+                mat4 rot = glm.rotate(new mat4(1.0f), -0.025f, lookat - position);
+                vec4 upNorm = rot * new vec4(up, 1);
+                up = new vec3(upNorm);
+                viewMatrix = glm.lookAt(position, lookat, up);
+            }
+
+            //if (e.Key.Equals(Key.S))
+            //{
+            //    cameraPosSphere.Y -= rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.W))
+            //{
+            //    cameraPosSphere.Y += rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.A))
+            //{
+            //    cameraPosSphere.Z -= rotationFactor;
+            //}
+            //else if (e.Key.Equals(Key.D))
+            //{
+            //    cameraPosSphere.Z += rotationFactor;
+            //}
+            //else
+            //{
+            //    return;
+            //}
+
+            //cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
+
+            ////cameraPos.X += Center.X;
+            ////cameraPos.Y += Center.Y;
+            ////cameraPos.Z += Center.Z;
+            //Transform();
         }
 
         private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -337,12 +556,16 @@ namespace KinectDemoSGL.UIElement
         {
             if ((bool)e.NewValue == false)
             {
+                messageProcessor.BodyDataArrived -= BodyDataArrived;
+                messageProcessor.PointCloudDataArrived -= PointCloudDataArrived;
             }
             else if ((bool)e.NewValue)
             {
                 try
                 {
                     activeClient = DataStore.Instance.KinectClients[0];
+                    messageProcessor.BodyDataArrived += BodyDataArrived;
+                    messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
                     OpenGlControl.Focus();
                 }
                 catch (Exception)
@@ -365,6 +588,7 @@ namespace KinectDemoSGL.UIElement
             {
                 activeClient = DataStore.Instance.KinectClients[0];
             }
+            LoadPointCloud(pointCloudDictionary[activeClient]);
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
@@ -415,10 +639,10 @@ namespace KinectDemoSGL.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            List<NullablePoint3D[]> pointClouds = GetPointClouds();
+            //List<NullablePoint3D[]> pointClouds = GetPointClouds();
             showMerged = true;
             //fal
-            var kinect1CalPoints = pointClouds[0];
+            //var kinect1CalPoints = pointClouds[0];
             //var kinect1CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
@@ -436,7 +660,7 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1, 1,  0)
             //};
             //ajtó
-            var kinect2CalPoints = pointClouds[1];
+            //var kinect2CalPoints = pointClouds[1];
             //var kinect2CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
@@ -454,7 +678,7 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1.95, -0.05, -1.05)
             //};
 
-            var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
+            //var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
             //Matrix<double> rot = A.R;
             //Vector<double> translate = A.T;
@@ -477,14 +701,12 @@ namespace KinectDemoSGL.UIElement
             });
 
 
-            //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z })  + translate;
+            //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-            List<NullablePoint3D> kinect1PointCloud = new List<NullablePoint3D>(pointCloudDictionary[DataStore.Instance.KinectClients[0]]);
-            List<NullablePoint3D> kinect2PointCloud = new List<NullablePoint3D>(pointCloudDictionary[DataStore.Instance.KinectClients[1]]);
-            
-
-            foreach (NullablePoint3D point in kinect1PointCloud)
+            NullablePoint3D[] pointCloud1 = pointCloudDictionary[DataStore.Instance.KinectClients[0]];
+            NullablePoint3D[] pointCloud2 = pointCloudDictionary[DataStore.Instance.KinectClients[1]];
+            foreach (NullablePoint3D point in pointCloud1)
             //foreach (NullablePoint3D point in kinect1CalPoints)
             {
                 if (point != null)
@@ -496,16 +718,24 @@ namespace KinectDemoSGL.UIElement
             }
 
             transformedPointCloud = transformedPointCloudList.ToArray();
+            var mergedCloud = new NullablePoint3D[pointCloud1.Length+transformedPointCloud.Length];
+            pointCloud2.CopyTo(mergedCloud, 0);
+            transformedPointCloud.CopyTo(mergedCloud, pointCloud2.Length);
+            LoadPointCloud(mergedCloud);
+            createVerticesForPointCloud(OpenGlControl.OpenGL);
+            OpenGlControl.Focus();
 
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect1PointCloud), @"C:\asd\kinect1cloud.txt");
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect2PointCloud), @"C:\asd\kinect2cloud.txt");
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\kinect1to2cloud.txt");
 
-        }
+            transformedPointCloud = transformedPointCloudList.ToArray();
+
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud1)), @"C:\asd\kinect1cloud.pcd");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud2)), @"C:\asd\kinect2cloud.pcd");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(transformedPointCloudList)), @"C:\asd\cloud1to2.pcd");
+
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            this.Focus();
+            OpenGlControl.Focus();
 
         }
     }

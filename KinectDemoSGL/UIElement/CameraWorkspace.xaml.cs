@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 using KinectDemoSGL.Annotations;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
-using System.Net.Sockets;
+using KinectDemoSGL.Annotations;
 
 namespace KinectDemoSGL.UIElement
 {
