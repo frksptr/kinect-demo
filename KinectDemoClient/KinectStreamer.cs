@@ -213,7 +213,6 @@ namespace KinectDemoClient
             colorStreamMessage = null;
             pointCloudStreamMessage = null;
             depthStreamMessage = null;
-            calibrationDataMessage = null;
 
             multiSourceFrame = e.FrameReference.AcquireFrame();
 
