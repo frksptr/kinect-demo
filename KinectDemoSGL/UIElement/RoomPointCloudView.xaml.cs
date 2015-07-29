@@ -365,6 +365,7 @@ namespace KinectDemoCommon.UIElement
             {
                 activeClient = DataStore.Instance.KinectClients[0];
             }
+            OpenGlControl.Focus();
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
@@ -459,16 +460,16 @@ namespace KinectDemoCommon.UIElement
             //Matrix<double> rot = A.R;
             //Vector<double> translate = A.T;
 
-            Matrix<double> rot = DenseMatrix.OfColumnArrays(new[]{
-                 	-0.01868811233840361,
+            Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
+                 	new[]{-0.01868811233840361,
 		            -0.34501377370318648,
-		            -0.93841155705389412,
-		            0.5320510930426815	,
-		            0.79121684933040015	,
-		            -0.30149217523472005,
-		            0.84650598866713045	,
+		            -0.93841155705389412},
+		            new[]{0.5320510930426815,
+		            0.79121684933040015,
+		            -0.30149217523472005},
+		            new[]{0.84650598866713045,
 		            -0.50491721429434455,
-		            0.16877860604923636	
+		            0.16877860604923636	}
             });
             Vector<double> translate = DenseVector.OfArray(new[]{
                 -1.875871904795692,	
