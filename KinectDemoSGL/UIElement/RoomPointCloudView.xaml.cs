@@ -93,44 +93,41 @@ namespace KinectDemoSGL.UIElement
         {
             Dispatcher.Invoke(() =>
             {
-                if (default(mat4).Equals(projectionMatrix))
-                {
-                    createVerticesForPointCloud(OpenGlControl.OpenGL);
-                }
+                createVerticesForPointCloud(OpenGlControl.OpenGL);
                 LoadData();
             });
         }
 
         private void LoadData()
         {
-            string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
-            //string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
+            //string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
+            ////string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
 
-            List<float> cloudVerticiesList = new List<float>();
-            List<float> wsVerticiesList = new List<float>();
+            //List<float> cloudVerticiesList = new List<float>();
+            //List<float> wsVerticiesList = new List<float>();
 
-            foreach (string l in cloudLines)
-            {
-                //string lc = l.Replace('.', ',');
-                string[] coords = l.Split(' ');
-                cloudVerticiesList.Add(Single.Parse(coords[0]));
-                cloudVerticiesList.Add(Single.Parse(coords[1]));
-                cloudVerticiesList.Add(Single.Parse(coords[2]));
-            }
-            pointCloudVertices = cloudVerticiesList.ToArray();
-
-            //NullablePoint3D[] pointCloud = DataStore.Instance.clientPointClouds[activeClient];
-            //List<float> cloudVerticesList = new List<float>();
-            //foreach (NullablePoint3D point in pointCloud)
+            //foreach (string l in cloudLines)
             //{
-            //    if (point != null)
-            //    {
-            //        cloudVerticesList.Add((float)point.X);
-            //        cloudVerticesList.Add((float)point.Y);
-            //        cloudVerticesList.Add((float)point.Z);
-            //    }
+            //    string lc = l.Replace('.', ',');
+            //    string[] coords = lc.Split(' ');
+            //    cloudVerticiesList.Add(Single.Parse(coords[0]));
+            //    cloudVerticiesList.Add(Single.Parse(coords[1]));
+            //    cloudVerticiesList.Add(Single.Parse(coords[2]));
             //}
-            //pointCloudVertices = cloudVerticesList.ToArray();
+            //pointCloudVertices = cloudVerticiesList.ToArray();
+
+            NullablePoint3D[] pointCloud = DataStore.Instance.clientPointClouds[activeClient];
+            List<float> cloudVerticesList = new List<float>();
+            foreach (NullablePoint3D point in pointCloud)
+            {
+                if (point != null)
+                {
+                    cloudVerticesList.Add((float)point.X);
+                    cloudVerticesList.Add((float)point.Y);
+                    cloudVerticesList.Add((float)point.Z);
+                }
+            }
+            pointCloudVertices = cloudVerticesList.ToArray();
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
@@ -276,7 +273,7 @@ namespace KinectDemoSGL.UIElement
         {
             //  Create a perspective projection matrix.
             const float rads = (45.0f / 360.0f) * (float)Math.PI * 2.0f;
-            projectionMatrix = glm.perspective(rads, (float)Width / (float)Height, 0.1f, 100.0f);
+            projectionMatrix = glm.perspective(rads, (float)ActualWidth / (float)ActualWidth, 0.1f, 100.0f);
 
             //  Create a view matrix to move us back a bit.
             //viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -10.0f));
@@ -348,94 +345,6 @@ namespace KinectDemoSGL.UIElement
                 //floorShaderProgram.Unbind(gl);
 
 
-
-
-                //if (pointCloudDictionary.Count == 0)
-                //{
-                //    return;
-                //}
-                //if (pointCloudDictionary[activeClient] == null)
-                //{
-                //    return;
-                //}
-                ////  Get the OpenGL instance that's been passed to us.
-                //OpenGL gl = args.OpenGL;
-
-                //gl.PointSize(1.0f);
-
-                ////  Clear the color and depth buffers.
-                //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-                ////  Reset the modelview matrix.
-                //gl.LoadIdentity();
-
-                //gl.Begin(OpenGL.GL_POINTS);
-                //gl.Color(1.0f, 0.0f, 0.0f);
-                ////  Move the geometry into a fairly central position.
-                //foreach (NullablePoint3D point in pointCloudDictionary[activeClient])
-                //{
-                //    if (point != null)
-                //    {
-                //        gl.Vertex(point.X, point.Y, point.Z);
-                //    }
-                //}
-
-                //gl.End();
-
-                //if (showMerged)
-                //{
-                //    gl.Begin(OpenGL.GL_POINTS);
-                //    gl.Color(1.0f, 0.0f, 1.0f);
-                //    //  Move the geometry into a fairly central position.
-                //    foreach (NullablePoint3D point in transformedPointCloud)
-                //    {
-                //        if (point != null)
-                //        {
-                //            gl.Vertex(point.X, point.Y, point.Z);
-                //        }
-                //    }
-
-                //    gl.End();
-                //}
-
-                //gl.Begin(OpenGL.GL_TRIANGLES);
-                //foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
-                //{
-                //    if (workspace.Active)
-                //    {
-                //        gl.Color(0.0f, 0.0f, 1.0f);
-                //    }
-                //    else
-                //    {
-                //        gl.Color(0.0f, 1.0f, 1.0f);
-                //    }
-                //    Point3D[] vertices = workspace.Vertices3D;
-                //    Point3D v0 = vertices[0];
-                //    Point3D v1 = vertices[1];
-                //    Point3D v2 = vertices[2];
-                //    Point3D v3 = vertices[3];
-                //    gl.Vertex(v0.X, v0.Y, v0.Z);
-                //    gl.Vertex(v1.X, v1.Y, v1.Z);
-                //    gl.Vertex(v2.X, v2.Y, v2.Z);
-
-                //    gl.Vertex(v2.X, v2.Y, v2.Z);
-                //    gl.Vertex(v3.X, v3.Y, v3.Z);
-                //    gl.Vertex(v0.X, v0.Y, v0.Z);
-
-                //}
-                //gl.End();
-
-                //if (handPositions.Count > 0)
-                //{
-                //    gl.Color(0.0f, 1.0f, 0.0f);
-                //    gl.PointSize(5.0f);
-                //    gl.Begin(OpenGL.GL_POINTS);
-                //    foreach (CameraSpacePoint hand in handPositions)
-                //    {
-                //        gl.Vertex(hand.X, hand.Y, hand.Z);
-                //    }
-                //    gl.End();
-                //}
             }
         }
 
