@@ -456,11 +456,28 @@ namespace KinectDemoSGL.UIElement
 
             var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
-            Matrix<double> rot = A.R;
-            Vector<double> translate = A.T;
+            //Matrix<double> rot = A.R;
+            //Vector<double> translate = A.T;
+
+            Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
+                 	new[]{-0.01868811233840361,
+		            -0.34501377370318648,
+		            -0.93841155705389412},
+		            new[]{0.5320510930426815,
+		            0.79121684933040015,
+		            -0.30149217523472005},
+		            new[]{0.84650598866713045,
+		            -0.50491721429434455,
+		            0.16877860604923636	}
+            });
+            Vector<double> translate = DenseVector.OfArray(new[]{
+                -1.875871904795692,	
+		        0.47458577514168565,	
+		        1.1320225857947943
+            });
 
 
-            var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z })  + translate;
+            //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z })  + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
             List<NullablePoint3D> kinect1PointCloud = new List<NullablePoint3D>(pointCloudDictionary[DataStore.Instance.KinectClients[0]]);
@@ -480,9 +497,9 @@ namespace KinectDemoSGL.UIElement
 
             transformedPointCloud = transformedPointCloudList.ToArray();
 
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect1PointCloud), @"C:\asd\kinect1cloud.txt");
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect2PointCloud), @"C:\asd\kinect2cloud.txt");
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\kinect1to2cloud.txt");
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect1PointCloud), @"C:\asd\kinect1cloud.txt");
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(kinect2PointCloud), @"C:\asd\kinect2cloud.txt");
+            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\kinect1to2cloud.txt");
 
         }
 
