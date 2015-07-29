@@ -476,6 +476,8 @@ namespace KinectDemoCommon.UIElement
 
             transformedPointCloud = transformedPointCloudList.ToArray();
 
+
+
         }
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
