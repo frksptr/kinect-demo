@@ -727,9 +727,9 @@ namespace KinectDemoSGL.UIElement
 
             transformedPointCloud = transformedPointCloudList.ToArray();
 
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(pointCloud1), @"C:\asd\kinect1cloud.txt");
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(pointCloud2), @"C:\asd\kinect2cloud.txt");
-            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(transformedPointCloudList), @"C:\asd\mergedcloud.txt");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud1)), @"C:\asd\kinect1cloud.pcd");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud2)), @"C:\asd\kinect2cloud.pcd");
+            FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(transformedPointCloudList)), @"C:\asd\cloud1to2.pcd");
 
         }
 
