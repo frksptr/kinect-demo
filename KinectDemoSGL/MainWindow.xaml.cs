@@ -97,7 +97,7 @@ namespace KinectDemoSGL
         {
             Dispatcher.Invoke(() =>
             {
-                ClientMessageBox.Text += "\nFrom " + client.Name + ":\n" + ((TextMessage)message).Text;
+                //ClientMessageBox.Text += "\nFrom " + client.Name + ":\n" + ((TextMessage)message).Text;
             });
         }
 

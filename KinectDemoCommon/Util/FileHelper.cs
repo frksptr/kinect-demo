@@ -51,7 +51,7 @@ DATA ascii";
                 string coords;
                 while ((coords = sr.ReadLine()) != null)
                 {
-                    string[] coordArray = coords.Split(' ');
+                    string[] coordArray = coords.Replace(".",",").Split(' ');
                     if (coordArray.Length != 3)
                     {
                         Exception ex = new Exception("Invalid format!");
