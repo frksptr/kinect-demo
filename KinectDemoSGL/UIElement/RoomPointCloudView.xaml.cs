@@ -704,10 +704,14 @@ namespace KinectDemoSGL.UIElement
             });
 
 
+
             //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
             NullablePoint3D[] pointCloud1 = pointCloudDictionary[DataStore.Instance.KinectClients[0]];
+            //NullablePoint3D[] pointCloud1 = FileHelper.ParsePCD(@"C:\asd\cloud1.pcd").ToArray();
+
+
             NullablePoint3D[] pointCloud2 = pointCloudDictionary[DataStore.Instance.KinectClients[1]];
             foreach (NullablePoint3D point in pointCloud1)
             //foreach (NullablePoint3D point in kinect1CalPoints)
