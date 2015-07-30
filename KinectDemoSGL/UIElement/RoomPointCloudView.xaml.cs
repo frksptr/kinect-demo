@@ -18,6 +18,7 @@ using GlmNet;
 using SharpGL.VertexBuffers;
 using SharpGL.Shaders;
 using SharpGL.SceneGraph.Assets;
+using System.Diagnostics;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -373,7 +374,7 @@ namespace KinectDemoSGL.UIElement
                 lookat += diff;
                 viewMatrix = glm.lookAt(position, lookat, up);
             }
-            /*if (e.Key == Key.A)
+            if (e.Key == Key.A)
             {
                 vec3 diff = new vec3(-0.1f, 0f, 0.0f);
                 position += diff;
@@ -386,7 +387,7 @@ namespace KinectDemoSGL.UIElement
                 position += diff;
                 lookat += diff;
                 viewMatrix = glm.lookAt(position, lookat, up);
-            }*/
+            }
 
             if (e.Key == Key.Space)
             {
@@ -737,6 +738,11 @@ namespace KinectDemoSGL.UIElement
         {
             OpenGlControl.Focus();
 
+        }
+
+        private void OpenGlControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            
         }
     }
 }

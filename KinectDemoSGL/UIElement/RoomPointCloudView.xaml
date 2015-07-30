@@ -21,7 +21,7 @@
             MouseDoubleClick="OpenGlControl_MouseDoubleClick"
             Focusable="True"
             KeyDown="openGLControl_KeyDown" 
-            MouseWheel="openGLControl_MouseWheel" 
+            MouseWheel="openGLControl_MouseWheel" MouseMove="OpenGlControl_MouseMove" 
             >
         </sharpGl:OpenGLControl>
         
