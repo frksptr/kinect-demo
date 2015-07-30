@@ -9,7 +9,11 @@ namespace KinectDemoSGL
     {
         private static DataStore dataStore;
 
-        public Dictionary<string, Workspace> WorkspaceDictionary = new Dictionary<string, Workspace>();
+        //  TODO:   bind dictionaries to a workspacelist, modify only said list
+        public Dictionary<string, Workspace> WorkspaceDictionary { get;set; }
+
+        public Dictionary<string, KinectClient> WorkspaceClientDictionary { get; set; }
+
 
         private List<KinectClient> kinectClients = new List<KinectClient>();
 
@@ -32,11 +36,18 @@ namespace KinectDemoSGL
             get { return dataStore ?? (dataStore = new DataStore()); }
         }
 
-        public void AddOrUpdateWorkspace(string workspaceId, Workspace workspace)
+        private DataStore()
+        {
+            WorkspaceDictionary = new Dictionary<string, Workspace>();
+            WorkspaceClientDictionary = new Dictionary<string, KinectClient>();
+        }
+
+        public void AddOrUpdateWorkspace(string workspaceId, Workspace workspace, KinectClient client)
         {
             if (!WorkspaceDictionary.Keys.Contains(workspaceId))
             {
                 WorkspaceDictionary.Add(workspaceId, workspace);
+                WorkspaceClientDictionary.Add(workspaceId, client);
             }
             else
             {
@@ -47,6 +58,7 @@ namespace KinectDemoSGL
         public void DeleteWorkspace(Workspace workspace)
         {
             WorkspaceDictionary.Remove(workspace.ID);
+            WorkspaceClientDictionary.Remove(workspace.ID);
         }
 
         public void AddCalibrationBody(KinectClient client, SerializableBody body) {

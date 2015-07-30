@@ -101,7 +101,7 @@
     <Compile Include="MessageProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
-    <Compile Include="UIElement\CameraWorkspace.xaml.cs" />
+    <Compile Include="UIElement\DefineWorkspaceView.xaml.cs" />
     <Compile Include="UIElement\RoomPointCloudView.xaml.cs">
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
     </Compile>
@@ -124,7 +124,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UIElement\CameraWorkspace.xaml">
+    <Page Include="UIElement\DefineWorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

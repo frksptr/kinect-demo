@@ -1,12 +1,11 @@
 ﻿
+using System.Collections.ObjectModel;
+using System.Windows;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
-using System.Collections.ObjectModel;
-using System.Windows;
-using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {

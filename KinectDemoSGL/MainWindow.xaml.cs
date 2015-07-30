@@ -1,14 +1,17 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 using KinectDemoSGL.UIElement;
-using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {
@@ -17,11 +20,12 @@ namespace KinectDemoSGL
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        //  TODO: const strings to resources
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         // Displays color image on which to select workspaces
-        private CameraWorkspace cameraWorkspace;
+        private DefineWorkspaceView defineWorkspaceView;
 
         // Displays point clouds
         private CloudView cloudView;
@@ -111,27 +115,28 @@ namespace KinectDemoSGL
 
         private void AddCameraWorkspace()
         {
-            cameraWorkspace = new CameraWorkspace();
-            cameraWorkspace.MouseLeftButtonDown += cameraWorkspace_MouseLeftButtonDown;
+            defineWorkspaceView = new DefineWorkspaceView();
+            defineWorkspaceView.MouseLeftButtonDown += DefineWorkspaceViewMouseLeftButtonDown;
 
-            CameraHolder.Children.Add(cameraWorkspace);
+            CameraHolder.Children.Add(defineWorkspaceView);
         }
 
 
 
-        private void cameraWorkspace_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DefineWorkspaceViewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (FocusManager.GetFocusedElement(this) is TextBox)
             {
+
                 TextBox focusedTextBox = (TextBox)FocusManager.GetFocusedElement(this);
                 if (focusedTextBox != null)
                 {
                     // Get Depth coordinates from clicked point
-                    double actualWidth = cameraWorkspace.ActualWidth;
-                    double actualHeight = cameraWorkspace.ActualHeight;
+                    double actualWidth = defineWorkspaceView.ActualWidth;
+                    double actualHeight = defineWorkspaceView.ActualHeight;
 
-                    double x = e.GetPosition(cameraWorkspace).X;
-                    double y = e.GetPosition(cameraWorkspace).Y;
+                    double x = e.GetPosition(defineWorkspaceView).X;
+                    double y = e.GetPosition(defineWorkspaceView).Y;
 
                     if (depthFrameSize != null)
                     {
@@ -173,12 +178,14 @@ namespace KinectDemoSGL
 
         private void AddWorkspace(object sender, RoutedEventArgs e)
         {
+            KinectClient activeClient = defineWorkspaceView.ActiveClient;
+
             if (!workspaceList.Contains(activeWorkspace))
             {
                 workspaceList.Add(activeWorkspace);
-                DataStore.Instance.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace);
+                DataStore.Instance.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace, activeClient);
             }
-            kinectServer.AddWorkspace(activeWorkspace, null);
+            kinectServer.AddWorkspace(activeWorkspace, activeClient);
             activeWorkspace = new Workspace();
             EditWorkspace.DataContext = activeWorkspace;
             WorkspaceList.Items.Refresh();
@@ -200,6 +207,12 @@ namespace KinectDemoSGL
             DataStore.Instance.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
             activeWorkspace = new Workspace();
             cloudView.ClearScreen();
+        }
+
+        private void SaveWorkspaceToFile(object sender, RoutedEventArgs e)
+        {
+            Workspace workspace = (Workspace)(((ListBoxItem) WorkspaceList.ContainerFromElement((Button) sender)).Content);
+            FileHelper.WritePCD(new List<Point3D>(workspace.PointCloud), @"C:/asd/" + workspace.Name + "_pointcloud.pcd");
         }
     }
 }

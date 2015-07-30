@@ -1,11 +1,8 @@
-﻿using KinectDemoCommon.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using KinectDemoCommon.Model;
 
 namespace KinectDemoCommon.Util
 {
@@ -31,11 +28,57 @@ DATA ascii";
             using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(fs))
             {
-                sw.Write(header);
-                sw.Write('\n');
+                sw.WriteLine(header);
                 foreach (Point3D point in points)
                 {
-                    sw.WriteLine((point.X + " " + point.Y + " " + point.Z).Replace(",","."));
+                    //  TODO: use locale specific formatting
+                    sw.WriteLine((point.X + " " + point.Y + " " + point.Z).Replace(",", "."));
+                }
+            }
+        }
+
+        public static List<NullablePoint3D> ParsePCD(string path)
+        {
+            List<NullablePoint3D> pointCloud = new List<NullablePoint3D>();
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (StreamReader sr = new StreamReader(fs))
+            {
+                //  TODO: equals last line of header
+                while (sr.ReadLine().Equals("DATA ascii"))
+                {
+
+                }
+                string coords;
+                while ((coords = sr.ReadLine()) != null)
+                {
+                    string[] coordArray = coords.Split(' ');
+                    if (coordArray.Length != 3)
+                    {
+                        Exception ex = new Exception("Invalid format!");
+                    }
+                    else
+                    {
+                        pointCloud.Add(new NullablePoint3D(
+                            double.Parse(coordArray[0]),
+                            double.Parse(coordArray[1]),
+                            double.Parse(coordArray[2])
+                            ));
+                    }
+
+                }
+                return pointCloud;
+            }
+        }
+
+        public static void WritePointCloud(List<Point3D> points, string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (Point3D point in points)
+                {
+                    //  TODO: use locale specific formatting
+                    sw.WriteLine((point.X + " " + point.Y + " " + point.Z).Replace(",", "."));
                 }
             }
         }

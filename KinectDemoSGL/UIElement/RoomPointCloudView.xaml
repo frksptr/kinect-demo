@@ -9,6 +9,7 @@
              
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
+        
         <sharpGl:OpenGLControl
             Name="OpenGlControl"
             OpenGLDraw="OpenGLControl_OpenGLDraw" 

@@ -1,10 +1,6 @@
-﻿using Microsoft.Kinect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using KinectDemoCommon.Util;
+using Microsoft.Kinect;
 
 namespace KinectDemoCommon.Model
 {

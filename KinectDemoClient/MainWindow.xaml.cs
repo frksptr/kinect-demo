@@ -10,9 +10,9 @@ using System.Windows;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using KinectDemoCommon.Messages.KinectServerMessages;
 
 namespace KinectDemoClient
 {

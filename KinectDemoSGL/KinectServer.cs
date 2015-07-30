@@ -25,8 +25,8 @@ namespace KinectDemoSGL
     class KinectServer
     {
 
-        //private readonly string ip = NetworkHelper.LocalIPAddress();
-        private readonly string ip = "192.168.0.107";
+        private readonly string ip = NetworkHelper.LocalIPAddress();
+        //private readonly string ip = "192.168.0.107";
 
         private Socket socket;
         //private byte[] buffer;
@@ -35,7 +35,9 @@ namespace KinectDemoSGL
 
         private FrameSize depthFrameSize;
 
-        private Dictionary<StateObject, KinectClient> clientDictionary = new Dictionary<StateObject, KinectClient>();
+        //  TODO: create two way dictionary
+        private Dictionary<KinectClient, StateObject> clientStateObjectDictionary = new Dictionary<KinectClient, StateObject>();
+        private Dictionary<StateObject, KinectClient> stateObjectClientDictionary = new Dictionary<StateObject, KinectClient>();
         public MessageProcessor MessageProcessor { get; set; }
 
         public static KinectServer Instance
@@ -79,9 +81,10 @@ namespace KinectDemoSGL
             {
                 StateObject state = new StateObject();
                 state.WorkSocket = socket.EndAccept(ar);
-                clientDictionary.Add(state, new KinectClient());
-
-                DataStore.Instance.AddClient(clientDictionary[state]);
+                KinectClient client = new KinectClient();
+                stateObjectClientDictionary.Add(state, client);
+                clientStateObjectDictionary.Add(client, state);
+                DataStore.Instance.AddClient(stateObjectClientDictionary[state]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
@@ -131,7 +134,9 @@ namespace KinectDemoSGL
 
                         watch = Stopwatch.StartNew();
                         watch.Start();
-                        ObjectArrived(obj, clientDictionary[state]);
+
+                        ObjectArrived(obj, stateObjectClientDictionary[state]);
+
                         watch.Stop();
                         Debug.WriteLine("Processed in " + watch.ElapsedMilliseconds + " ms.");
 
@@ -144,7 +149,7 @@ namespace KinectDemoSGL
                     Array.Resize(ref state.Buffer, 9000000);
                 }
 
-                handler.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), state);
+                handler.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
                 SerializeAndSendMessage(new KinectServerReadyMessage { Ready = true }, handler);
             }
@@ -154,11 +159,12 @@ namespace KinectDemoSGL
             }
         }
 
-        public void AddWorkspace(Workspace workspace, StateObject state)
+        public void AddWorkspace(Workspace workspace, KinectClient client)
         {
+            StateObject state = clientStateObjectDictionary[client];
             if (state == null)
             {
-                state = clientDictionary.Keys.First();
+                state = stateObjectClientDictionary.Keys.First();
             }
             WorkspaceMessage message = new WorkspaceMessage()
             {
