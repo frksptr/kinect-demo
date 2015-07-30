@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using KinectDemoCommon.Model;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.Kinect;
-using KinectDemoCommon.Model;
 
 namespace KinectDemoCommon.Util
 {

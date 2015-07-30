@@ -1,10 +1,5 @@
-﻿using KinectDemoCommon.Model;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
 namespace KinectDemoCommon.Util
@@ -35,7 +30,21 @@ DATA ascii";
                 sw.Write('\n');
                 foreach (Point3D point in points)
                 {
+                    //  TODO: use locale specific formatting
                     sw.WriteLine((point.X + " " + point.Y + " " + point.Z).Replace(",","."));
+                }
+            }
+        }
+
+        public static void WritePointCloud(List<Point3D> points, string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (Point3D point in points)
+                {
+                    //  TODO: use locale specific formatting
+                    sw.WriteLine((point.X + " " + point.Y + " " + point.Z).Replace(",", "."));
                 }
             }
         }

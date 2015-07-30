@@ -25,10 +25,12 @@
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" />
                                                 <TextBlock Grid.Column="1" Text="{Binding Path=Vertices}" />
-                                                <Button Grid.Column="2" Content="Delete" Click="RemoveWorkspace"/>
+                                                <Button Grid.Column="2" Content="Save to file" Click="SaveWorkspaceToFile"/>
+                                                <Button Grid.Column="3" Content="Delete" Click="RemoveWorkspace"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>

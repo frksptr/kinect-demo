@@ -2,20 +2,19 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
-using MathNet.Numerics.LinearAlgebra;
-using KinectDemoCommon;
-using MathNet.Numerics.LinearAlgebra.Double;
 using KinectDemoCommon;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace KinectDemoSGL
 {
     public class WorkspaceProcessor
     {
-        
         public static void SetWorkspaceCloudRealVerticesAndCenter(Workspace workspace, FrameSize depthFrameSize)
         {
+            KinectClient client = DataStore.Instance.WorkspaceClientDictionary[workspace.ID];
             double sumX = 0;
             double sumY = 0;
             double sumZ = 0;
@@ -28,11 +27,12 @@ namespace KinectDemoSGL
             };
 
             List<Point3D> pointCloud = new List<Point3D>();
-            for (int i = 0; i < DataStore.Instance.FullPointCloud.Count(); i++)
+            NullablePoint3D[] clientPointCloud = DataStore.Instance.clientPointClouds[client];
+            for (int i = 0; i < clientPointCloud.Count(); i++)
             {
                 if (GeometryHelper.InsidePolygon(workspaceVertices, new Point(i%depthFrameSize.Width, i/depthFrameSize.Width)))
                 {
-                    NullablePoint3D point = DataStore.Instance.FullPointCloud[i];
+                    NullablePoint3D point = clientPointCloud[i];
                     if (point != null)
                     {
                         double x = point.X;

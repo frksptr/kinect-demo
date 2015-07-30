@@ -1,10 +1,10 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using Microsoft.Kinect;
-using System.Windows;
-using KinectDemoCommon.Util;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
+using Microsoft.Kinect;
 
 namespace KinectDemoSGL.UIElement
 {

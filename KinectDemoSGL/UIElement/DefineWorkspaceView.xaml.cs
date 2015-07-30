@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using KinectDemoSGL.Annotations;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoSGL.Annotations;
@@ -12,19 +11,21 @@ using KinectDemoSGL.Annotations;
 namespace KinectDemoSGL.UIElement
 {
     /// <summary>
-    /// Interaction logic for CameraWorkspace.xaml
+    /// Interaction logic for DefineWorkspaceView.xaml
     /// </summary>
-    public partial class CameraWorkspace : INotifyPropertyChanged
+    public partial class DefineWorkspaceView : INotifyPropertyChanged
     {
         //readonly KinectStreamer kinectStreamer;
 
         WriteableBitmap depthBitmap = null;
         public int[] DepthFrameSize { get; set; }
         private byte[] depthPixels;
+        public KinectClient ActiveClient { get; set; }
+
         private MessageProcessor messageProcessor;
         private KinectServer kinectServer;
 
-        public CameraWorkspace()
+        public DefineWorkspaceView()
         {
             DataContext = this;
             //  TODO: set width, height from framedescription data provided by client
@@ -38,6 +39,7 @@ namespace KinectDemoSGL.UIElement
         private void kinectServer_DepthDataReady(KinectDemoMessage message, KinectClient client)
         {
             DepthStreamMessage msg = (DepthStreamMessage)message;
+            ActiveClient = client;
             RefreshBitmap(msg.DepthPixels);
         }
 

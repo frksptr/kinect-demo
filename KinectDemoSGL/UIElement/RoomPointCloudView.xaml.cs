@@ -1,30 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using SharpGL;
-using SharpGL.SceneGraph;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using System;
+using GlmNet;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
-using System.IO;
-using GlmNet;
-using SharpGL.VertexBuffers;
-using SharpGL.Shaders;
+using SharpGL;
+using SharpGL.SceneGraph;
 using SharpGL.SceneGraph.Assets;
+using SharpGL.Shaders;
+using SharpGL.VertexBuffers;
 
 namespace KinectDemoSGL.UIElement
 {
 
+    //  TODO: bind vertex buffer to point cloud changes
+
     /// <summary>
     /// Interaction logic for RoomPointCloudView.xaml
     /// </summary>
+    /// 
     public partial class RoomPointCloudView : UserControl
     {
         public Point3D Center { get; set; }
@@ -166,8 +169,8 @@ namespace KinectDemoSGL.UIElement
             gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             //  Create the shader program for point cloud
-            var vertexShaderSource = System.IO.File.ReadAllText("pointcloud.vert");
-            var fragmentShaderSource = System.IO.File.ReadAllText("pointcloud.frag");
+            var vertexShaderSource = File.ReadAllText("pointcloud.vert");
+            var fragmentShaderSource = File.ReadAllText("pointcloud.frag");
             shaderProgramPointCloud = new ShaderProgram();
             shaderProgramPointCloud.Create(gl, vertexShaderSource, fragmentShaderSource, null);
             shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
@@ -684,20 +687,20 @@ namespace KinectDemoSGL.UIElement
             //Vector<double> translate = A.T;
 
             Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
-                 	new[]{-0.01868811233840361,
-		            -0.34501377370318648,
-		            -0.93841155705389412},
-		            new[]{0.5320510930426815,
-		            0.79121684933040015,
-		            -0.30149217523472005},
-		            new[]{0.84650598866713045,
-		            -0.50491721429434455,
-		            0.16877860604923636	}
+                    new[]{-0.01868811233840361,
+                    -0.34501377370318648,
+                    -0.93841155705389412},
+                    new[]{0.5320510930426815,
+                    0.79121684933040015,
+                    -0.30149217523472005},
+                    new[]{0.84650598866713045,
+                    -0.50491721429434455,
+                    0.16877860604923636	}
             });
             Vector<double> translate = DenseVector.OfArray(new[]{
                 -1.875871904795692,	
-		        0.47458577514168565,	
-		        1.1320225857947943
+                0.47458577514168565,	
+                1.1320225857947943
             });
 
 
