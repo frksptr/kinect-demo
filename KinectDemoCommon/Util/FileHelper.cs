@@ -26,8 +26,7 @@ DATA ascii";
             using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(fs))
             {
-                sw.Write(header);
-                sw.Write('\n');
+                sw.WriteLine(header);
                 foreach (Point3D point in points)
                 {
                     //  TODO: use locale specific formatting
