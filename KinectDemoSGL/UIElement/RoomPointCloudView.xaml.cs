@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,6 +12,7 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using KinectDemoSGL.Annotations;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
@@ -23,12 +26,12 @@ namespace KinectDemoSGL.UIElement
 {
 
     //  TODO: bind vertex buffer to point cloud changes
-
+    //  TODO: major refactoring needed
     /// <summary>
     /// Interaction logic for RoomPointCloudView.xaml
     /// </summary>
     /// 
-    public partial class RoomPointCloudView : UserControl
+    public partial class RoomPointCloudView : UserControl, INotifyPropertyChanged
     {
         public Point3D Center { get; set; }
 
@@ -40,7 +43,7 @@ namespace KinectDemoSGL.UIElement
 
         private Point3D cameraPos;
 
-        public KinectClient activeClient { get; set; }
+        private KinectClient activeClient;
 
         public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
 
@@ -91,17 +94,42 @@ namespace KinectDemoSGL.UIElement
             messageProcessor = kinectServer.MessageProcessor;
 
             pointCloudDictionary = DataStore.Instance.clientPointClouds;
+            DataContext = this;
         }
 
         private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
         {
             Dispatcher.Invoke(() =>
             {
-                LoadPointCloud(DataStore.Instance.clientPointClouds[activeClient]);
+                LoadPointCloud(DataStore.Instance.clientPointClouds[ActiveClient]);
                 //
                 createVerticesForPointCloud(OpenGlControl.OpenGL);
             });
         }
+
+        public KinectClient ActiveClient
+        {
+            get
+            {
+                return activeClient;
+            }
+
+            set
+            {
+                if (activeClient != value)
+                {
+                    activeClient  = value;
+
+                    // notify any bound elements that the text has changed
+                    if (PropertyChanged != null)
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("ActiveClient"));
+                    }
+                }
+            }
+        }
+
+        public object PropertyChanged { get; set; }
 
         private void LoadPointCloud(NullablePoint3D[] pointCloud)
         {
@@ -566,7 +594,7 @@ namespace KinectDemoSGL.UIElement
             {
                 try
                 {
-                    activeClient = DataStore.Instance.KinectClients[0];
+                    ActiveClient = DataStore.Instance.KinectClients[0];
                     messageProcessor.BodyDataArrived += BodyDataArrived;
                     messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
                     OpenGlControl.Focus();
@@ -582,16 +610,16 @@ namespace KinectDemoSGL.UIElement
 
         private void SwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            int activeIndex = DataStore.Instance.KinectClients.IndexOf(activeClient);
+            int activeIndex = DataStore.Instance.KinectClients.IndexOf(ActiveClient);
             try
             {
-                activeClient = DataStore.Instance.KinectClients[activeIndex + 1];
+                ActiveClient = DataStore.Instance.KinectClients[activeIndex + 1];
             }
             catch
             {
-                activeClient = DataStore.Instance.KinectClients[0];
+                ActiveClient = DataStore.Instance.KinectClients[0];
             }
-            LoadPointCloud(pointCloudDictionary[activeClient]);
+            LoadPointCloud(pointCloudDictionary[ActiveClient]);
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
@@ -744,6 +772,14 @@ namespace KinectDemoSGL.UIElement
         {
             OpenGlControl.Focus();
 
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
