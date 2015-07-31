@@ -43,9 +43,7 @@ namespace KinectDemoSGL.UIElement
 
         private Point3D cameraPos;
 
-        private KinectClient activeClient;
-
-        public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
+        public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary;
 
         public double DistanceTolerance = 0.2;
 
@@ -85,27 +83,8 @@ namespace KinectDemoSGL.UIElement
         private ShaderProgram floorShaderProgram;
 
         //
-
-        public RoomPointCloudView()
-        {
-            InitializeComponent();
-
-            kinectServer = KinectServer.Instance;
-            messageProcessor = kinectServer.MessageProcessor;
-
-            pointCloudDictionary = DataStore.Instance.clientPointClouds;
-            DataContext = this;
-        }
-
-        private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                LoadPointCloud(DataStore.Instance.clientPointClouds[ActiveClient]);
-                //
-                createVerticesForPointCloud(OpenGlControl.OpenGL);
-            });
-        }
+        private KinectClient activeClient;
+        private DataStore dataStore = DataStore.Instance;
 
         public KinectClient ActiveClient
         {
@@ -118,7 +97,7 @@ namespace KinectDemoSGL.UIElement
             {
                 if (activeClient != value)
                 {
-                    activeClient  = value;
+                    activeClient = value;
 
                     // notify any bound elements that the text has changed
                     if (PropertyChanged != null)
@@ -129,7 +108,42 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        public object PropertyChanged { get; set; }
+
+        public RoomPointCloudView()
+        {
+            InitializeComponent();
+
+            kinectServer = KinectServer.Instance;
+            messageProcessor = kinectServer.MessageProcessor;
+
+            pointCloudDictionary = dataStore.clientPointClouds;
+            DataContext = this;
+
+            PropertyChanged+=RoomPointCloudView_PropertyChanged;
+        }
+
+        private void RoomPointCloudView_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if ("ActiveClient".Equals(e.PropertyName))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    LoadPointCloud(dataStore.clientPointClouds[ActiveClient]);
+                    createVerticesForPointCloud(OpenGlControl.OpenGL);
+                });
+            }
+        }
+
+        private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LoadPointCloud(dataStore.clientPointClouds[ActiveClient]);
+                //
+                createVerticesForPointCloud(OpenGlControl.OpenGL);
+            });
+        }
+
 
         private void LoadPointCloud(NullablePoint3D[] pointCloud)
         {
@@ -216,22 +230,6 @@ namespace KinectDemoSGL.UIElement
             //floorShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "vertexUV"); //change
             //floorShaderProgram.AssertValid(gl);
             //floorTexture.Create(gl, "cat1.jpg");
-
-            //----------------
-
-            //double radius = -4;
-            //double theta = 0;
-            //double phi = 0;
-
-            //cameraPosSphere = new Point3D(
-            //    radius,
-            //    theta,
-            //    phi
-            //    );
-
-            //cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
-            ////  Enable the OpenGL depth testing functionality.
-            ////args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
         }
 
         private void createVerticesForPointCloud(OpenGL gl)
@@ -288,21 +286,6 @@ namespace KinectDemoSGL.UIElement
             pointCloudVertexBufferArray.Unbind(gl);
         }
 
-        private List<Point3D> CenterPointCloud(List<Point3D> points)
-        {
-            List<Point3D> centeredPoints = new List<Point3D>();
-            foreach (Point3D point in points)
-            {
-                centeredPoints.Add(new Point3D(
-                    point.X - Center.X,
-                    point.Y - Center.Y,
-                    point.Z - Center.Z
-                    ));
-            }
-            return centeredPoints;
-
-        }
-
         private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
         {
             //  Create a perspective projection matrix.
@@ -316,30 +299,7 @@ namespace KinectDemoSGL.UIElement
 
             //  Create a model matrix to make the model a little bigger.
             modelMatrix = glm.scale(new mat4(1.0f), new vec3(2.5f));
-            //Transform();
         }
-
-        private void Transform()
-        {
-            // Get the OpenGL instance.
-            OpenGL gl = OpenGlControl.OpenGL;
-
-            // Load and clear the projection matrix.
-            gl.MatrixMode(OpenGL.GL_PROJECTION);
-            gl.LoadIdentity();
-
-            // Perform a perspective transformation
-            gl.Perspective(60.0f, gl.RenderContextProvider.Width /
-                (float)gl.RenderContextProvider.Height,
-                0.1f, 100.0f);
-
-
-            gl.LookAt(cameraPos.X, cameraPos.Y, cameraPos.Z, Center.X, Center.Y, Center.Z, 0, 1, 0);
-
-            // Load the modelview.
-            gl.MatrixMode(OpenGL.GL_MODELVIEW);
-        }
-
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLEventArgs args)
         {
             if (IsVisible)
@@ -368,7 +328,6 @@ namespace KinectDemoSGL.UIElement
 
                 shaderProgramPointCloud.Unbind(gl);
 
-
                 //floorTexture.Bind(gl);
                 //floorShaderProgram.Bind(gl);
                 //floorShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
@@ -377,8 +336,6 @@ namespace KinectDemoSGL.UIElement
                 //gl.DrawArrays(OpenGL.GL_QUADS, 0, 4);
                 //floorVertexBufferArray.Unbind(gl);
                 //floorShaderProgram.Unbind(gl);
-
-
             }
         }
 
@@ -404,7 +361,8 @@ namespace KinectDemoSGL.UIElement
                 lookat += diff;
                 viewMatrix = glm.lookAt(position, lookat, up);
             }
-            /*if (e.Key == Key.A)
+
+            if (e.Key == Key.A)
             {
                 vec3 diff = new vec3(-0.1f, 0f, 0.0f);
                 position += diff;
@@ -417,7 +375,7 @@ namespace KinectDemoSGL.UIElement
                 position += diff;
                 lookat += diff;
                 viewMatrix = glm.lookAt(position, lookat, up);
-            }*/
+            }
 
             if (e.Key == Key.Space)
             {
@@ -486,55 +444,7 @@ namespace KinectDemoSGL.UIElement
                 up = new vec3(upNorm);
                 viewMatrix = glm.lookAt(position, lookat, up);
             }
-
-            //if (e.Key.Equals(Key.S))
-            //{
-            //    cameraPosSphere.Y -= rotationFactor;
-            //}
-            //else if (e.Key.Equals(Key.W))
-            //{
-            //    cameraPosSphere.Y += rotationFactor;
-            //}
-            //else if (e.Key.Equals(Key.A))
-            //{
-            //    cameraPosSphere.Z -= rotationFactor;
-            //}
-            //else if (e.Key.Equals(Key.D))
-            //{
-            //    cameraPosSphere.Z += rotationFactor;
-            //}
-            //else
-            //{
-            //    return;
-            //}
-
-            //cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
-
-            ////cameraPos.X += Center.X;
-            ////cameraPos.Y += Center.Y;
-            ////cameraPos.Z += Center.Z;
-            //Transform();
         }
-
-        private void openGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta > 0)
-            {
-                OpenGlControl.OpenGL.Rotate(10.0f, 0.0f, 0.0f);
-                cameraPosSphere.X += zoomFactor;
-            }
-            else
-            {
-                cameraPosSphere.X -= zoomFactor;
-            }
-
-            cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
-            //cameraPos.X += Center.X;
-            //cameraPos.Y += Center.Y;
-            //cameraPos.Z += Center.Z;
-            Transform();
-        }
-
         public void CheckActiveWorkspace(CameraSpacePoint[] handPositions)
         {
             if (handPositions.Length > 0)
@@ -549,7 +459,7 @@ namespace KinectDemoSGL.UIElement
             {
                 return;
             }
-            foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
+            foreach (Workspace workspace in dataStore.WorkspaceDictionary.Values)
             {
                 Point3D[] vertices = workspace.FittedVertices;
 
@@ -594,7 +504,7 @@ namespace KinectDemoSGL.UIElement
             {
                 try
                 {
-                    ActiveClient = DataStore.Instance.KinectClients[0];
+                    ActiveClient = dataStore.KinectClients[0];
                     messageProcessor.BodyDataArrived += BodyDataArrived;
                     messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
                     OpenGlControl.Focus();
@@ -610,26 +520,17 @@ namespace KinectDemoSGL.UIElement
 
         private void SwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            int activeIndex = DataStore.Instance.KinectClients.IndexOf(ActiveClient);
-            try
-            {
-                ActiveClient = DataStore.Instance.KinectClients[activeIndex + 1];
-            }
-            catch
-            {
-                ActiveClient = DataStore.Instance.KinectClients[0];
-            }
-            LoadPointCloud(pointCloudDictionary[ActiveClient]);
+            ActiveClient = dataStore.GetNextClient(activeClient);
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
         {
             SerializableBody[] bodies1;
             SerializableBody[] bodies2;
-            KinectClient client1 = DataStore.Instance.KinectClients[0];
-            KinectClient client2 = DataStore.Instance.KinectClients[1];
-            bodies1 = DataStore.Instance.clientCalibrationBodies[client1].ToArray();
-            bodies2 = DataStore.Instance.clientCalibrationBodies[client2].ToArray();
+            KinectClient client1 = dataStore.KinectClients[0];
+            KinectClient client2 = dataStore.KinectClients[1];
+            bodies1 = dataStore.clientCalibrationBodies[client1].ToArray();
+            bodies2 = dataStore.clientCalibrationBodies[client2].ToArray();
 
             List<NullablePoint3D> pointCloud1 = new List<NullablePoint3D>();
             List<NullablePoint3D> pointCloud2 = new List<NullablePoint3D>();
@@ -736,11 +637,11 @@ namespace KinectDemoSGL.UIElement
             //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-            NullablePoint3D[] pointCloud1 = pointCloudDictionary[DataStore.Instance.KinectClients[0]];
+            NullablePoint3D[] pointCloud1 = pointCloudDictionary[dataStore.KinectClients[0]];
             //NullablePoint3D[] pointCloud1 = FileHelper.ParsePCD(@"C:\asd\cloud1.pcd").ToArray();
 
 
-            NullablePoint3D[] pointCloud2 = pointCloudDictionary[DataStore.Instance.KinectClients[1]];
+            NullablePoint3D[] pointCloud2 = pointCloudDictionary[dataStore.KinectClients[1]];
             foreach (NullablePoint3D point in pointCloud1)
             //foreach (NullablePoint3D point in kinect1CalPoints)
             {
