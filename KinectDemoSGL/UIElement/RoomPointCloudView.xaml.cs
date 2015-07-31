@@ -18,7 +18,6 @@ using SharpGL.SceneGraph;
 using SharpGL.SceneGraph.Assets;
 using SharpGL.Shaders;
 using SharpGL.VertexBuffers;
-using System.Diagnostics;
 
 namespace KinectDemoSGL.UIElement
 {
