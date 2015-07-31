@@ -33,6 +33,8 @@ namespace KinectDemoSGL
             workspaceClientDictionary = new Dictionary<string, KinectClient>();
 
             clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
+
+            clientPointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
         }
 
         public void AddClientIfNotExists(KinectClient client)
