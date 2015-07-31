@@ -20,9 +20,7 @@ using Microsoft.Kinect;
 
 namespace KinectDemoSGL.UIElement
 {
-    /// <summary>
-    /// Interaction logic for BodyView.xaml
-    /// </summary>
+    //      !!!--- Workspace checking currenty done in RoomPointCloudView ---!!!
     public partial class BodyView : INotifyPropertyChanged
     {
 
