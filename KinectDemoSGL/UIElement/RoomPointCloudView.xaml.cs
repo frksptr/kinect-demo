@@ -687,6 +687,8 @@ namespace KinectDemoSGL.UIElement
             //Matrix<double> rot = A.R;
             //Vector<double> translate = A.T;
 
+
+            // from skeleton calibration
             Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
                     new[]{-0.01868811233840361,
                     -0.34501377370318648,
@@ -704,6 +706,7 @@ namespace KinectDemoSGL.UIElement
                 1.1320225857947943
             });
 
+            // PCL reregistration from skeletal fitted clouds
             Matrix<double> rot2 = DenseMatrix.OfColumnArrays(new List<double[]>{
                 new[]{0.998954,0.0450756,0.00775811 },
                 new[]{-0.0451261,0.998961,0.00646457 },      
@@ -715,6 +718,7 @@ namespace KinectDemoSGL.UIElement
                  1.57323e-005
             });
 
+            // chessboard calibration
             Matrix<double> rotCB = DenseMatrix.OfColumnArrays(
                 new List<double[]> { 
                     new[]{-1.2316533437904904e-002, 5.2568656248225909e-001,
