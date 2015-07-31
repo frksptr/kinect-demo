@@ -13,7 +13,7 @@ namespace KinectDemoClient
 {
     public delegate void KinectStreamerEventHandler(KinectClientMessage message);
 
-
+    ///
     /* Provides depth, color and body data streamed by the Kinect. Each of the streams only get processed
      * if the corresponding flag in the kinectStremerConfig object is true. When the needed stream datas are
      * ready an event is fired.

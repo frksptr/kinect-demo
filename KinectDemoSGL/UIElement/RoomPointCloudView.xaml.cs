@@ -772,9 +772,5 @@ namespace KinectDemoSGL.UIElement
 
         }
 
-        private void OpenGlControl_MouseMove(object sender, MouseEventArgs e)
-        {
-            
-        }
     }
 }
