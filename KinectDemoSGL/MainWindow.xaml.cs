@@ -47,6 +47,7 @@ namespace KinectDemoSGL
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
         private KinectServer kinectServer;
         private MessageProcessor messageProcessor;
+        private DataStore dataStore = DataStore.Instance;
 
         public MainWindow()
         {
@@ -110,7 +111,7 @@ namespace KinectDemoSGL
         private void kinectServer_WorkspaceUpdated(KinectDemoMessage message, KinectClient client)
         {
             WorkspaceMessage msg = (WorkspaceMessage)message;
-            cloudView.SetWorkspace(DataStore.Instance.WorkspaceDictionary[msg.ID]);
+            cloudView.SetWorkspace(dataStore.GetWorkspace(msg.ID));
         }
 
         private void AddCameraWorkspace()
@@ -183,7 +184,7 @@ namespace KinectDemoSGL
             if (!workspaceList.Contains(activeWorkspace))
             {
                 workspaceList.Add(activeWorkspace);
-                DataStore.Instance.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace, activeClient);
+                dataStore.AddOrUpdateWorkspace(activeWorkspace.ID, activeWorkspace, activeClient);
             }
             kinectServer.AddWorkspace(activeWorkspace, activeClient);
             activeWorkspace = new Workspace();
@@ -204,7 +205,7 @@ namespace KinectDemoSGL
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
             workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
-            DataStore.Instance.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
+            dataStore.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
             activeWorkspace = new Workspace();
             cloudView.ClearScreen();
         }

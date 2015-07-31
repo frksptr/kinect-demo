@@ -43,8 +43,6 @@ namespace KinectDemoSGL.UIElement
 
         public KinectClient activeClient { get; set; }
 
-        public Dictionary<KinectClient, NullablePoint3D[]> pointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
-
         public double DistanceTolerance = 0.2;
 
         private KinectServer kinectServer;
@@ -81,6 +79,8 @@ namespace KinectDemoSGL.UIElement
         Texture floorTexture = new Texture();
         VertexBufferArray floorVertexBufferArray;
         private ShaderProgram floorShaderProgram;
+        private DataStore dataStore = DataStore.Instance;
+        private List<KinectClient> kinectClients;
 
         //
 
@@ -90,15 +90,14 @@ namespace KinectDemoSGL.UIElement
 
             kinectServer = KinectServer.Instance;
             messageProcessor = kinectServer.MessageProcessor;
-
-            pointCloudDictionary = DataStore.Instance.clientPointClouds;
+            kinectClients = dataStore.GetClients();
         }
 
         private void PointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
         {
             Dispatcher.Invoke(() =>
             {
-                LoadPointCloud(DataStore.Instance.clientPointClouds[activeClient]);
+                LoadPointCloud(dataStore.GetPointCloudForClient(activeClient));
                 //
                 createVerticesForPointCloud(OpenGlControl.OpenGL);
             });
@@ -522,7 +521,7 @@ namespace KinectDemoSGL.UIElement
             {
                 return;
             }
-            foreach (Workspace workspace in DataStore.Instance.WorkspaceDictionary.Values)
+            foreach (Workspace workspace in dataStore.GetAllWorkspaces())
             {
                 Point3D[] vertices = workspace.FittedVertices;
 
@@ -567,7 +566,7 @@ namespace KinectDemoSGL.UIElement
             {
                 try
                 {
-                    activeClient = DataStore.Instance.KinectClients[0];
+                    activeClient = kinectClients[0];
                     messageProcessor.BodyDataArrived += BodyDataArrived;
                     messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
                     OpenGlControl.Focus();
@@ -583,26 +582,26 @@ namespace KinectDemoSGL.UIElement
 
         private void SwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            int activeIndex = DataStore.Instance.KinectClients.IndexOf(activeClient);
+            int activeIndex = kinectClients.IndexOf(activeClient);
             try
             {
-                activeClient = DataStore.Instance.KinectClients[activeIndex + 1];
+                activeClient = kinectClients[activeIndex + 1];
             }
             catch
             {
-                activeClient = DataStore.Instance.KinectClients[0];
+                activeClient = kinectClients[0];
             }
-            LoadPointCloud(pointCloudDictionary[activeClient]);
+            LoadPointCloud(dataStore.GetPointCloudForClient(activeClient));
         }
 
         private List<NullablePoint3D[]> GetPointClouds()
         {
             SerializableBody[] bodies1;
             SerializableBody[] bodies2;
-            KinectClient client1 = DataStore.Instance.KinectClients[0];
-            KinectClient client2 = DataStore.Instance.KinectClients[1];
-            bodies1 = DataStore.Instance.clientCalibrationBodies[client1].ToArray();
-            bodies2 = DataStore.Instance.clientCalibrationBodies[client2].ToArray();
+            KinectClient client1 = kinectClients[0];
+            KinectClient client2 = kinectClients[1];
+            bodies2 = dataStore.GetCalibrationBodiesForClient(client2).ToArray();
+            bodies1 = dataStore.GetCalibrationBodiesForClient(client1).ToArray();
 
             List<NullablePoint3D> pointCloud1 = new List<NullablePoint3D>();
             List<NullablePoint3D> pointCloud2 = new List<NullablePoint3D>();
@@ -737,11 +736,11 @@ namespace KinectDemoSGL.UIElement
             //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
 
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-            NullablePoint3D[] pointCloud1 = pointCloudDictionary[DataStore.Instance.KinectClients[0]];
+            NullablePoint3D[] pointCloud1 = dataStore.GetPointCloudForClient(kinectClients[0]);
             //NullablePoint3D[] pointCloud1 = FileHelper.ParsePCD(@"C:\asd\cloud1.pcd").ToArray();
 
 
-            NullablePoint3D[] pointCloud2 = pointCloudDictionary[DataStore.Instance.KinectClients[1]];
+            NullablePoint3D[] pointCloud2 = dataStore.GetPointCloudForClient(kinectClients[1]);
             foreach (NullablePoint3D point in pointCloud1)
             //foreach (NullablePoint3D point in kinect1CalPoints)
             {

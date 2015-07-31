@@ -9,27 +9,15 @@ namespace KinectDemoSGL
     {
         private static DataStore dataStore;
 
-        //  TODO:   bind dictionaries to a workspacelist, modify only said list
-        public Dictionary<string, Workspace> WorkspaceDictionary { get;set; }
+        private Dictionary<string, Workspace> workspaceDictionary;
 
-        public Dictionary<string, KinectClient> WorkspaceClientDictionary { get; set; }
+        private List<KinectClient> kinectClients;
 
+        private Dictionary<string, KinectClient> workspaceClientDictionary;
 
-        private List<KinectClient> kinectClients = new List<KinectClient>();
+        private Dictionary<KinectClient, NullablePoint3D[]> clientPointCloudDictionary;
 
-        public Dictionary<KinectClient, NullablePoint3D[]> clientPointClouds = new Dictionary<KinectClient, NullablePoint3D[]>();
-
-        public Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
-
-        public NullablePoint3D[] FullPointCloud { get; set; }
-
-        public List<KinectClient> KinectClients
-        {
-            get
-            {
-                return kinectClients;
-            }
-        }
+        private Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies;
 
         public static DataStore Instance
         {
@@ -38,47 +26,85 @@ namespace KinectDemoSGL
 
         private DataStore()
         {
-            WorkspaceDictionary = new Dictionary<string, Workspace>();
-            WorkspaceClientDictionary = new Dictionary<string, KinectClient>();
+            kinectClients = new List<KinectClient>();
+
+            workspaceDictionary = new Dictionary<string, Workspace>();
+
+            workspaceClientDictionary = new Dictionary<string, KinectClient>();
+
+            clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
+        }
+
+        public void AddClientIfNotExists(KinectClient client)
+        {
+            if (!kinectClients.Contains(client))
+            {
+                kinectClients.Add(client);
+
+                clientCalibrationBodies[client] = new List<SerializableBody>();
+            }
+        }
+        public List<KinectClient> GetClients()
+        {
+            return kinectClients;
         }
 
         public void AddOrUpdateWorkspace(string workspaceId, Workspace workspace, KinectClient client)
         {
-            if (!WorkspaceDictionary.Keys.Contains(workspaceId))
+            AddClientIfNotExists(client);
+
+            if (!workspaceDictionary.Keys.Contains(workspaceId))
             {
-                WorkspaceDictionary.Add(workspaceId, workspace);
-                WorkspaceClientDictionary.Add(workspaceId, client);
+                workspaceDictionary.Add(workspaceId, workspace);
+                workspaceClientDictionary.Add(workspaceId, client);
             }
             else
             {
-                WorkspaceDictionary[workspace.ID] = workspace;
+                workspaceDictionary[workspace.ID] = workspace;
             }
         }
 
         public void DeleteWorkspace(Workspace workspace)
         {
-            WorkspaceDictionary.Remove(workspace.ID);
-            WorkspaceClientDictionary.Remove(workspace.ID);
+            workspaceDictionary.Remove(workspace.ID);
+            workspaceClientDictionary.Remove(workspace.ID);
         }
 
-        public void AddCalibrationBody(KinectClient client, SerializableBody body) {
+        public Workspace GetWorkspace(string workspaceID)
+        {
+            return workspaceDictionary[workspaceID];
+        }
+
+        public List<Workspace> GetAllWorkspaces()
+        {
+            return workspaceDictionary.Values.ToList();
+        }
+
+        public KinectClient GetClientForWorkspace(string workspaceID)
+        {
+            return workspaceClientDictionary[workspaceID];
+        }
+
+        public void AddCalibrationBody(KinectClient client, SerializableBody body)
+        {
+            AddClientIfNotExists(client);
             clientCalibrationBodies[client].Add(body);
         }
 
-        public void AddClient(KinectClient client)
+        public List<SerializableBody> GetCalibrationBodiesForClient(KinectClient client)
         {
-            if (!kinectClients.Contains(client))
-            {
-                kinectClients.Add(client);
-            }
-            if (!clientPointClouds.Keys.Contains(client))
-            {
-                clientPointClouds.Add(client,new NullablePoint3D[]{});
-            }
-            if (!clientCalibrationBodies.Keys.Contains(client))
-            {
-                clientCalibrationBodies.Add(client, new List<SerializableBody>());
-            }
+            return clientCalibrationBodies[client];
+        }
+
+        public void AddOrUpdatePointCloud(KinectClient client, NullablePoint3D[] pointCloud)
+        {
+            AddClientIfNotExists(client);
+            clientPointCloudDictionary[client] = pointCloud;
+        }
+
+        public NullablePoint3D[] GetPointCloudForClient(KinectClient client)
+        {
+            return clientPointCloudDictionary[client];
         }
     }
 }

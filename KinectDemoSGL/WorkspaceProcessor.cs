@@ -12,9 +12,12 @@ namespace KinectDemoSGL
 {
     public class WorkspaceProcessor
     {
+        private static DataStore dataStore;
+
         public static void SetWorkspaceCloudRealVerticesAndCenter(Workspace workspace, FrameSize depthFrameSize)
         {
-            KinectClient client = DataStore.Instance.WorkspaceClientDictionary[workspace.ID];
+            dataStore = DataStore.Instance;
+            KinectClient client = dataStore.GetClientForWorkspace(workspace.ID);
             double sumX = 0;
             double sumY = 0;
             double sumZ = 0;
@@ -27,7 +30,7 @@ namespace KinectDemoSGL
             };
 
             List<Point3D> pointCloud = new List<Point3D>();
-            NullablePoint3D[] clientPointCloud = DataStore.Instance.clientPointClouds[client];
+            NullablePoint3D[] clientPointCloud = dataStore.GetPointCloudForClient(client);
             for (int i = 0; i < clientPointCloud.Count(); i++)
             {
                 if (GeometryHelper.InsidePolygon(workspaceVertices, new Point(i%depthFrameSize.Width, i/depthFrameSize.Width)))

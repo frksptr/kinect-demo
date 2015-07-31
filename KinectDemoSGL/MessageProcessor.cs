@@ -18,6 +18,7 @@ namespace KinectDemoSGL
         public KinectServerDataArrived TextMessageArrived;
         public KinectServerDataArrived WorkspaceUpdated;
         private FrameSize depthFrameSize;
+        private DataStore dataStore = DataStore.Instance;
 
         public void ProcessStreamMessage(object obj, KinectClient sender)
         {
@@ -81,7 +82,7 @@ namespace KinectDemoSGL
 
         private void ProcessCalibrationData(object obj, KinectClient sender)
         {
-            DataStore.Instance.AddCalibrationBody(sender, ((CalibrationDataMessage)obj).CalibrationBody);
+            dataStore.AddCalibrationBody(sender, ((CalibrationDataMessage)obj).CalibrationBody);
         }
 
         private void ProcessTextMessage(object obj, KinectClient sender)
@@ -96,7 +97,7 @@ namespace KinectDemoSGL
         private void ProcessWorkspaceMessage(object obj, KinectClient sender)
         {
             WorkspaceMessage msg = (WorkspaceMessage)obj;
-            Workspace workspace = DataStore.Instance.WorkspaceDictionary[msg.ID];
+            Workspace workspace = dataStore.GetWorkspace(msg.ID);
             workspace.Name = msg.Name;
             workspace.Vertices = new ObservableCollection<Point>(msg.Vertices);
             workspace.Vertices3D = msg.Vertices3D;
@@ -114,7 +115,7 @@ namespace KinectDemoSGL
             }
         }
 
-        private void ProcessPointCloudStreamMessage(object obj, KinectClient sender)
+        private void ProcessPointCloudStreamMessage(object obj, KinectClient client)
         {
             PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
             double[] doubleArray = msg.PointCloud;
@@ -131,13 +132,11 @@ namespace KinectDemoSGL
                 }
             }
 
-            DataStore.Instance.FullPointCloud = pointArray;
-
-            DataStore.Instance.clientPointClouds[sender] = pointArray;
+            dataStore.AddOrUpdatePointCloud(client, pointArray);
 
             if (PointCloudDataArrived != null)
             {
-                PointCloudDataArrived(msg, sender);
+                PointCloudDataArrived(msg, client);
             }
         }
 

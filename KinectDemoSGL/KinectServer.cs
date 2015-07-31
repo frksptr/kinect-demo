@@ -28,6 +28,8 @@ namespace KinectDemoSGL
         //private readonly string ip = NetworkHelper.LocalIPAddress();
         private readonly string ip = "192.168.0.107";
 
+        //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
+
         private Socket socket;
         //private byte[] buffer;
 
@@ -82,9 +84,11 @@ namespace KinectDemoSGL
                 StateObject state = new StateObject();
                 state.WorkSocket = socket.EndAccept(ar);
                 KinectClient client = new KinectClient();
+
                 stateObjectClientDictionary.Add(state, client);
                 clientStateObjectDictionary.Add(client, state);
-                DataStore.Instance.AddClient(stateObjectClientDictionary[state]);
+
+                DataStore.Instance.AddClientIfNotExists(stateObjectClientDictionary[state]);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
