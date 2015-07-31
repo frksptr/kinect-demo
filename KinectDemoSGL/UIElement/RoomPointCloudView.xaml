@@ -9,8 +9,20 @@
              
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+            <!--TODO: dropdown menu for kinect selection-->
+        <StackPanel  Grid.Row="0" Orientation="Horizontal" Margin="5">
+            <Label Content="Showing pointcloud of: " Margin="5"/>
+            <Label Content="{Binding ActiveClient.Name}" Margin="5"/>
+            <Button Content="Switch KINECT" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" Width="88" Click="SwitchButton_Click"/>
+            <Button Content="Merged Cloud" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" Width="88" Click="MergeButton_Click"/>
+        </StackPanel>
+
         <sharpGl:OpenGLControl
+            Grid.Row="1"
             Name="OpenGlControl"
             OpenGLDraw="OpenGLControl_OpenGLDraw" 
             OpenGLInitialized="OpenGLControl_OpenGLInitialized"
@@ -21,12 +33,10 @@
             IsVisibleChanged="openGLControl_IsVisibleChanged"
             MouseDoubleClick="OpenGlControl_MouseDoubleClick"
             Focusable="True"
-            KeyDown="openGLControl_KeyDown" 
-            MouseWheel="openGLControl_MouseWheel"
+            KeyDown="openGLControl_KeyDown"
             >
         </sharpGl:OpenGLControl>
         
-        <Button Content="Switch KINECT" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="88" Click="SwitchButton_Click"/>
-        <Button Content="Merged Cloud" HorizontalAlignment="Left" Margin="202,10,0,0" VerticalAlignment="Top" Width="88" Click="MergeButton_Click"/>
+        
     </Grid>
 </UserControl>

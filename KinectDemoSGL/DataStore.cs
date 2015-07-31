@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using KinectDemoCommon.Model;
 
@@ -107,6 +108,33 @@ namespace KinectDemoSGL
         public NullablePoint3D[] GetPointCloudForClient(KinectClient client)
         {
             return clientPointCloudDictionary[client];
+        }
+
+        // Returns with the next kinect client to given currentClient in the clients list.
+        // If currentClients is null, returns with first client.
+        public KinectClient GetNextClient(KinectClient currentClient)
+        {
+            KinectClient nextClient = null;
+            if (kinectClients.Count == 0)
+            {
+                return null;
+            }
+            try
+            {
+                if (currentClient == null)
+                {
+                    nextClient = kinectClients[0];
+                }
+                else
+                {
+                    nextClient = kinectClients[kinectClients.IndexOf(currentClient) + 1];    
+                }
+            }
+            catch (Exception)
+            {
+                nextClient = kinectClients[0];
+            }
+            return nextClient;
         }
     }
 }
