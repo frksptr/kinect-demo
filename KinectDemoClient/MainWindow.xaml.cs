@@ -39,6 +39,11 @@ namespace KinectDemoClient
             DataContext = this;
 
             kinectStreamer = KinectStreamer.Instance;
+
+            //Restore permanent settings
+            AutoConnectCheckbox.IsChecked = Properties.Settings.Default.AutoConnect;
+
+
         }
 
         void kinectStreamer_BodyDataReady(KinectClientMessage message)
@@ -301,6 +306,18 @@ namespace KinectDemoClient
             calibrationDataSent = true;
             kinectStreamer.CalibrationDataReady -= kinectStreamer_CalibrationDataReady;
             kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
+        }
+
+        private void AutoConnectCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoConnect = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void AutoConnectCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AutoConnect = false;
+            Properties.Settings.Default.Save();
         }
     }
 }
