@@ -57,6 +57,8 @@ namespace KinectDemoSGL.UIElement
 
         NullablePoint3D[] transformedPointCloud;
 
+        float[] workspaceVertices = { };
+
         //
 
         vec3 position = new vec3(0, 0, -1);
@@ -82,6 +84,10 @@ namespace KinectDemoSGL.UIElement
         VertexBufferArray floorVertexBufferArray;
         private ShaderProgram floorShaderProgram;
         private List<KinectClient> kinectClients;
+
+        VertexBufferArray workspaceVertexBufferArray;
+
+        private ShaderProgram workspaceShaderProgram;
 
         //
         private KinectClient activeClient;
@@ -221,6 +227,14 @@ namespace KinectDemoSGL.UIElement
             createVerticesForPointCloud(gl);
             //createVerticesForFloor(gl);
 
+            var workspaceShaderSource = File.ReadAllText("workspace.vert");
+            var workspaceFragSource = File.ReadAllText("workspace.frag");
+            workspaceShaderProgram = new ShaderProgram();
+            workspaceShaderProgram.Create(gl, vertexShaderSource, fragmentShaderSource, null);
+            workspaceShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
+            workspaceShaderProgram.AssertValid(gl);
+            createVerticesForWorkspaces(gl);
+
 
             //var floorVertSource = System.IO.File.ReadAllText("floor.vert");
             //var floorFragSource = System.IO.File.ReadAllText("floor.frag");
@@ -230,6 +244,25 @@ namespace KinectDemoSGL.UIElement
             //floorShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "vertexUV"); //change
             //floorShaderProgram.AssertValid(gl);
             //floorTexture.Create(gl, "cat1.jpg");
+        }
+
+        private void createVerticesForWorkspaces(OpenGL gl)
+        {
+            workspaceVertexBufferArray = new VertexBufferArray();
+            workspaceVertexBufferArray.Create(gl);
+            workspaceVertexBufferArray.Bind(gl);
+
+            var vertexDataBuffer = new VertexBuffer();
+            vertexDataBuffer.Create(gl);
+            vertexDataBuffer.Bind(gl);
+            vertexDataBuffer.SetData(gl, 0, workspaceVertices, false, 3);
+
+            //var colorDataBuffer = new VertexBuffer();
+            //colorDataBuffer.Create(gl);
+            //colorDataBuffer.Bind(gl);
+            //colorDataBuffer.SetData(gl, 1, texUV, false, 2);
+
+            pointCloudVertexBufferArray.Unbind(gl);
         }
 
         private void createVerticesForPointCloud(OpenGL gl)
@@ -327,6 +360,28 @@ namespace KinectDemoSGL.UIElement
 
 
                 shaderProgramPointCloud.Unbind(gl);
+
+                workspaceShaderProgram.Bind(gl);
+                workspaceShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
+                workspaceShaderProgram.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
+
+                workspaceVertexBufferArray.Bind(gl);
+
+                for (int i = 0; i < dataStore.GetAllWorkspaces().Count*4; i += 4)
+                {
+                    if (dataStore.GetAllWorkspaces()[i % 4].Active)
+                    {
+                        workspaceShaderProgram.SetUniform3(gl, "uColor", 0.0f, 0.0f, 1.0f);
+                    }
+                    else
+                    {
+                        workspaceShaderProgram.SetUniform3(gl, "uColor", 0.0f, 1.0f, 1.0f);
+                    }
+                    gl.DrawArrays(OpenGL.GL_QUADS, i, i + 4);
+                }
+
+                workspaceVertexBufferArray.Unbind(gl);
+                workspaceShaderProgram.Unbind(gl);
 
                 //floorTexture.Bind(gl);
                 //floorShaderProgram.Bind(gl);
@@ -504,6 +559,9 @@ namespace KinectDemoSGL.UIElement
                 try
                 {
                     activeClient = kinectClients[0];
+
+                    LoadWorkspaces();
+
                     messageProcessor.BodyDataArrived += BodyDataArrived;
                     messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
                     OpenGlControl.Focus();
@@ -515,6 +573,22 @@ namespace KinectDemoSGL.UIElement
                 }
 
             }
+        }
+
+        private void LoadWorkspaces()
+        {
+            List<float> workspaceVerticesList = new List<float>();
+            foreach (Workspace workspace in dataStore.GetAllWorkspaces())
+            {
+                foreach (Point3D point in workspace.FittedVertices)
+                {
+                    workspaceVerticesList.Add((float)point.X);
+                    workspaceVerticesList.Add((float)point.Y);
+                    workspaceVerticesList.Add((float)point.Z);
+                }
+            }
+            workspaceVertices = workspaceVerticesList.ToArray();
+            createVerticesForWorkspaces(OpenGlControl.OpenGL);
         }
 
         private void SwitchButton_Click(object sender, RoutedEventArgs e)

@@ -97,10 +97,12 @@ namespace KinectDemoClient
 
         private void SerializeAndSendMessage(KinectDemoMessage msg)
         {
-            if (!serverReady)
+            if (!serverReady || clientSocket == null)
             {
                 return;
             }
+            if (!clientSocket.Connected) return;
+
             serverReady = false;
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
