@@ -72,6 +72,10 @@
                 <DockPanel Name="RoomPointCloudHolder">
                 </DockPanel>
             </TabItem>
+            <TabItem Name="Clients" Header="Clients">
+                <DockPanel Name="ClientSettingsHolder">
+                </DockPanel>
+            </TabItem>
         </TabControl>
         
         <TextBox Name="ClientMessageBox" HorizontalAlignment="Left" Margin="10,490,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="73" Width="881"/>

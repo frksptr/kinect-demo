@@ -224,7 +224,7 @@ namespace KinectDemoClient
             {
                 depthFrame = multiSourceFrame.DepthFrameReference.AcquireFrame();
                 colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
-                Debug.Write(colorFrame.RelativeTime.ToString());
+                //Debug.Write(colorFrame.RelativeTime.ToString());
                 bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame();
 
                 // If any frame has expired by the time we process this event, return.

@@ -25,8 +25,8 @@ namespace KinectDemoSGL
     class KinectServer
     {
 
-        private readonly string ip = NetworkHelper.LocalIPAddress();
-        //private readonly string ip = "192.168.0.107";
+        //private readonly string ip = NetworkHelper.LocalIPAddress();
+        private readonly string ip = "192.168.0.116";
 
         //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
 
