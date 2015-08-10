@@ -75,9 +75,7 @@
             
             <TabItem Name="Clients" Header="Clients">
                 <DockPanel Name="ClientSettingsHolder" IsVisibleChanged="ClientSettingsHolder_IsVisibleChanged">
-                    <StackPanel>
-                        <Label DockPanel.Dock="Left" Content="asd"></Label>
-                    </StackPanel>
+                    <TabControl Name="ClientSettings" ItemsSource="{Binding}"></TabControl>
                 </DockPanel>
             </TabItem>
             

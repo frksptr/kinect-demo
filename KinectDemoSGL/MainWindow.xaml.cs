@@ -221,32 +221,19 @@ namespace KinectDemoSGL
         {
             if ((bool)e.NewValue == true)
             {
-                ClientSettingsHolder.Children.Clear();
-                TabControl clients = new TabControl();
-                clients.Width = 400;
-                clients.Height = 500;
-                
-                
-                List<TabItem> clientTabs = new List<TabItem>();
-                foreach (KinectClient client in DataStore.Instance.GetClients())
-                {
-                    TabItem tabItem = new TabItem();
-                    ClientSettings settings = new ClientSettings();
-                    settings.ClientSettingsChanged += ClientSettingsChanged;
+                //TabControl clients = new TabControl();
+                //List<TabItem> clientTabs = new List<TabItem>();
+                //foreach (KinectClient client in DataStore.Instance.GetClients())
+                //{
+                //    TabItem tabItem = new TabItem();
+                //    ClientSettings settings = new ClientSettings();
+                //    settings.ClientSettingsChanged += ClientSettingsChanged;
 
-                    Label label = new Label();
-                    label.Content = "asd";
-                    tabItem.Name = "Hurka";
-                    tabItem.Header = "asd";
-                    tabItem.Content = label;
-                    tabItem.Width = 300;
-                    tabItem.Width = 400;
-
-                    clientTabs.Add(tabItem);
-                }
-                clients.DataContext = clientTabs;
-                
-                ClientSettingsHolder.Children.Add(clients);
+                //    tabItem.Header = client.Name;
+                //    tabItem.Content = settings;
+                //    clientTabs.Add(tabItem);
+                //}
+                //ClientSettings.DataContext = clientTabs;
             }
         }
 

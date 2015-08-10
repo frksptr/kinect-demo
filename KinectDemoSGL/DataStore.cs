@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KinectDemoCommon.Model;
+using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {
@@ -20,6 +21,8 @@ namespace KinectDemoSGL
 
         private Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies;
 
+        private Dictionary<KinectClient, List<KinectStreamerConfig>> clientConfigDictionary;
+
         public static DataStore Instance
         {
             get { return dataStore ?? (dataStore = new DataStore()); }
@@ -36,6 +39,8 @@ namespace KinectDemoSGL
             clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
 
             clientPointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
+
+            clientConfigDictionary = new Dictionary<KinectClient, List<KinectStreamerConfig>>();
         }
 
         public void AddClientIfNotExists(KinectClient client)

@@ -12,10 +12,11 @@ namespace KinectDemoSGL.UIElement
     {
         public KinectStreamerConfig KinectStreamerConfig { get; set; }
         public ClientSettingsChanged ClientSettingsChanged;
-        public ClientSettings()
+        public ClientSettings(KinectStreamerConfig config)
         {
             InitializeComponent();
             DataContext = this;
+            KinectStreamerConfig = config;
         }
 
         private void SendAsOne_Checked(object sender, System.Windows.RoutedEventArgs e)
