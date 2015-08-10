@@ -125,7 +125,7 @@ namespace KinectDemoSGL.UIElement
             kinectClients = dataStore.GetClients();
             DataContext = this;
 
-            PropertyChanged+=RoomPointCloudView_PropertyChanged;
+            PropertyChanged += RoomPointCloudView_PropertyChanged;
         }
 
         private void RoomPointCloudView_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -169,7 +169,7 @@ namespace KinectDemoSGL.UIElement
             //}
             //pointCloudVertices = cloudVerticiesList.ToArray();
 
-            
+
             List<float> cloudVerticesList = new List<float>();
             foreach (NullablePoint3D point in pointCloud)
             {
@@ -230,7 +230,7 @@ namespace KinectDemoSGL.UIElement
             var workspaceShaderSource = File.ReadAllText("workspace.vert");
             var workspaceFragSource = File.ReadAllText("workspace.frag");
             workspaceShaderProgram = new ShaderProgram();
-            workspaceShaderProgram.Create(gl, vertexShaderSource, fragmentShaderSource, null);
+            workspaceShaderProgram.Create(gl, workspaceShaderSource, workspaceFragSource, null);
             workspaceShaderProgram.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
             workspaceShaderProgram.AssertValid(gl);
             createVerticesForWorkspaces(gl);
@@ -365,9 +365,9 @@ namespace KinectDemoSGL.UIElement
                 workspaceShaderProgram.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
                 workspaceShaderProgram.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
 
-                workspaceVertexBufferArray.Bind(gl);
 
-                for (int i = 0; i < dataStore.GetAllWorkspaces().Count*4; i += 4)
+                workspaceVertexBufferArray.Bind(gl);
+                for (int i = 0; i < dataStore.GetAllWorkspaces().Count * 4; i += 4)
                 {
                     if (dataStore.GetAllWorkspaces()[i % 4].Active)
                     {
@@ -379,9 +379,9 @@ namespace KinectDemoSGL.UIElement
                     }
                     gl.DrawArrays(OpenGL.GL_QUADS, i, i + 4);
                 }
-
                 workspaceVertexBufferArray.Unbind(gl);
                 workspaceShaderProgram.Unbind(gl);
+
 
                 //floorTexture.Bind(gl);
                 //floorShaderProgram.Bind(gl);
@@ -711,9 +711,9 @@ namespace KinectDemoSGL.UIElement
             Matrix<double> rot2 = DenseMatrix.OfColumnArrays(new List<double[]>{
                 new[]{0.998954,0.0450756,0.00775811 },
                 new[]{-0.0451261,0.998961,0.00646457 },      
-                new[]{-0.00745865,-0.0068079,0.999949}});      
+                new[]{-0.00745865,-0.0068079,0.999949}});
 
-            Vector<double> translate2 = DenseVector.OfArray(new []{
+            Vector<double> translate2 = DenseVector.OfArray(new[]{
                 0.000232426,
                  0.000932637,
                  1.57323e-005
