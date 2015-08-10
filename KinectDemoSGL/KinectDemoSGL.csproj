@@ -101,6 +101,9 @@
     <Compile Include="MessageProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
+    <Compile Include="UIElement\ClientSettings.xaml.cs">
+      <DependentUpon>ClientSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIElement\DefineWorkspaceView.xaml.cs" />
     <Compile Include="UIElement\RoomPointCloudView.xaml.cs">
       <DependentUpon>RoomPointCloudView.xaml</DependentUpon>
@@ -123,6 +126,10 @@
     <Page Include="UIElement\BodyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UIElement\ClientSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIElement\DefineWorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>

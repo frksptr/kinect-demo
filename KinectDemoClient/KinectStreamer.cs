@@ -8,7 +8,6 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
-using System.Diagnostics;
 
 namespace KinectDemoClient
 {
@@ -280,7 +279,7 @@ namespace KinectDemoClient
 
         private void SendData()
         {
-            if (KinectStreamerConfig.SendInUnified)
+            if (KinectStreamerConfig.SendAsOne)
             {
                 if (UnifiedDataReady != null)
                 {

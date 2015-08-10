@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
@@ -90,7 +92,6 @@ namespace KinectDemoSGL
             WorkspaceList.ItemsSource = workspaceList;
 
             EditWorkspace.DataContext = activeWorkspace;
-
 
         }
 
@@ -214,6 +215,44 @@ namespace KinectDemoSGL
         {
             Workspace workspace = (Workspace)(((ListBoxItem) WorkspaceList.ContainerFromElement((Button) sender)).Content);
             FileHelper.WritePCD(new List<Point3D>(workspace.PointCloud), @"C:/asd/" + workspace.Name + "_pointcloud.pcd");
+        }
+
+        private void ClientSettingsHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == true)
+            {
+                ClientSettingsHolder.Children.Clear();
+                TabControl clients = new TabControl();
+                clients.Width = 400;
+                clients.Height = 500;
+                
+                
+                List<TabItem> clientTabs = new List<TabItem>();
+                foreach (KinectClient client in DataStore.Instance.GetClients())
+                {
+                    TabItem tabItem = new TabItem();
+                    ClientSettings settings = new ClientSettings();
+                    settings.ClientSettingsChanged += ClientSettingsChanged;
+
+                    Label label = new Label();
+                    label.Content = "asd";
+                    tabItem.Name = "Hurka";
+                    tabItem.Header = "asd";
+                    tabItem.Content = label;
+                    tabItem.Width = 300;
+                    tabItem.Width = 400;
+
+                    clientTabs.Add(tabItem);
+                }
+                clients.DataContext = clientTabs;
+                
+                ClientSettingsHolder.Children.Add(clients);
+            }
+        }
+
+        private void ClientSettingsChanged(KinectStreamerConfig config)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

@@ -290,13 +290,13 @@ namespace KinectDemoClient
         private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.UnifiedDataReady += kinectStreamer_UnifiedDataReady;
-            kinectStreamer.KinectStreamerConfig.SendInUnified = true;
+            kinectStreamer.KinectStreamerConfig.SendAsOne = true;
         }
 
         private void UnifiedCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.UnifiedDataReady -= kinectStreamer_UnifiedDataReady;
-            kinectStreamer.KinectStreamerConfig.SendInUnified = false;
+            kinectStreamer.KinectStreamerConfig.SendAsOne = false;
         }
 
         private void CalibrationCheckBox_Checked(object sender, RoutedEventArgs e)
