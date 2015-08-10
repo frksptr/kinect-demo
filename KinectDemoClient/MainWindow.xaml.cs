@@ -128,6 +128,10 @@ namespace KinectDemoClient
 
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
+
+                Dispatcher.Invoke(() => {
+                    StatusTextBox.Text += "Connected to server.\n";
+                });
             }
             catch (Exception ex)
             {
