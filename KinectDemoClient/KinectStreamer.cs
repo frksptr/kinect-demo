@@ -8,6 +8,7 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using Microsoft.Kinect;
+using System.Diagnostics;
 
 namespace KinectDemoClient
 {
@@ -94,7 +95,7 @@ namespace KinectDemoClient
             SetupBody();
 
             SetupHelpArrays();
-
+            
             kinectSensor.Open();
         }
 
@@ -223,6 +224,7 @@ namespace KinectDemoClient
             {
                 depthFrame = multiSourceFrame.DepthFrameReference.AcquireFrame();
                 colorFrame = multiSourceFrame.ColorFrameReference.AcquireFrame();
+                Debug.Write(colorFrame.RelativeTime.ToString());
                 bodyFrame = multiSourceFrame.BodyFrameReference.AcquireFrame();
 
                 // If any frame has expired by the time we process this event, return.
@@ -335,7 +337,7 @@ namespace KinectDemoClient
                     }
                 }
             }
-
+            
             colorStreamMessage = new ColorStreamMessage(colorPixels,
                 new FrameSize(ColorFrameDescription.Width, ColorFrameDescription.Height));
 
