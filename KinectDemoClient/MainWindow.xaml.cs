@@ -35,6 +35,7 @@ namespace KinectDemoClient
             InitializeComponent();
 
             Ip = NetworkHelper.LocalIPAddress();
+            ServerIpTextBox.Text = Ip;
 
             DataContext = this;
 
@@ -218,7 +219,7 @@ namespace KinectDemoClient
                 }
                 if (!clientSocket.Connected)
                 {
-                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(Ip), 3333), ConnectCallback,
+                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ServerIpTextBox.Text), 3333), ConnectCallback,
                         null);
                 }
             }
