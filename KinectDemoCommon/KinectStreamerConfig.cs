@@ -1,5 +1,8 @@
-﻿namespace KinectDemoCommon
+﻿using System;
+
+namespace KinectDemoCommon
 {
+    [Serializable]
     public class KinectStreamerConfig
     {
         public bool ProvideDepthData { get; set; }

@@ -221,38 +221,28 @@ namespace KinectDemoSGL
         {
             if ((bool)e.NewValue == true)
             {
-                ClientSettingsHolder.Children.Clear();
-                TabControl clients = new TabControl();
-                clients.Width = 400;
-                clients.Height = 500;
-                
-                
                 List<TabItem> clientTabs = new List<TabItem>();
                 foreach (KinectClient client in DataStore.Instance.GetClients())
                 {
                     TabItem tabItem = new TabItem();
+
                     ClientSettings settings = new ClientSettings();
+                    settings.Client = client;
+                    settings.KinectStreamerConfig = dataStore.GetConfigurationForClient(client);
+
                     settings.ClientSettingsChanged += ClientSettingsChanged;
 
-                    Label label = new Label();
-                    label.Content = "asd";
-                    tabItem.Name = "Hurka";
-                    tabItem.Header = "asd";
-                    tabItem.Content = label;
-                    tabItem.Width = 300;
-                    tabItem.Width = 400;
+                    tabItem.Content = settings;
 
                     clientTabs.Add(tabItem);
                 }
-                clients.DataContext = clientTabs;
-                
-                ClientSettingsHolder.Children.Add(clients);
+                ClientSettings.DataContext = clientTabs;
             }
         }
 
-        private void ClientSettingsChanged(KinectStreamerConfig config)
+        private void ClientSettingsChanged(KinectClient client, KinectStreamerConfig config)
         {
-            //throw new NotImplementedException();
+            KinectServer.Instance.ConfigureClient(client, config);
         }
     }
 }

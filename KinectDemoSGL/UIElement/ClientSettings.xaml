@@ -9,11 +9,12 @@
              >
     <Grid>
         <StackPanel>
-            <CheckBox Content="Send as one" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="SendAsOne_Checked" Unchecked="SendAsOne_Unchecked"/>
             <CheckBox Content="Depth Image" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="DepthImage_Checked" Unchecked="DepthImage_Unchecked"/>
-            <CheckBox Content="Color Image" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="ColorImage_Checked" Unchecked="ColorImage_Unchecked"/>
             <CheckBox Content="Point Cloud" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="PointCloud_Checked" Unchecked="PointCloud_Unchecked"/>
+            <CheckBox Content="Color Image" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="ColorImage_Checked" Unchecked="ColorImage_Unchecked"/>
             <CheckBox Content="Skeleton" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="Skeleton_Checked" Unchecked="Skeleton_Unchecked"/>
+            <CheckBox Content="Calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="Calibration_Checked" Unchecked="Calibration_Unchecked"/>
+            <CheckBox Content="Send as one" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="SendAsOne_Checked" Unchecked="SendAsOne_Unchecked"/>
             <Label Content="Blipbop"></Label>
         </StackPanel>
 

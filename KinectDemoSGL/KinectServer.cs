@@ -179,6 +179,16 @@ namespace KinectDemoSGL
             SerializeAndSendMessage(message, state.WorkSocket);
         }
 
+        public void ConfigureClient(KinectClient client, KinectStreamerConfig config)
+        {
+            StateObject state = clientStateObjectDictionary[client];
+            ClientConfigurationMessage msg = new ClientConfigurationMessage()
+            {
+                Configuration = config
+            };
+            SerializeAndSendMessage(msg, state.WorkSocket);
+        }
+
         private void SerializeAndSendMessage(KinectDemoMessage msg, Socket socket)
         {
 

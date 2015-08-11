@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Interop;
+using KinectDemoCommon;
 using KinectDemoCommon.Model;
 
 namespace KinectDemoSGL
@@ -20,6 +22,8 @@ namespace KinectDemoSGL
 
         private Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies;
 
+        private Dictionary<KinectClient, KinectStreamerConfig> clientConfigurationDictionary;
+
         public static DataStore Instance
         {
             get { return dataStore ?? (dataStore = new DataStore()); }
@@ -36,6 +40,8 @@ namespace KinectDemoSGL
             clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
 
             clientPointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
+
+            clientConfigurationDictionary = new Dictionary<KinectClient, KinectStreamerConfig>();
         }
 
         public void AddClientIfNotExists(KinectClient client)
@@ -135,6 +141,17 @@ namespace KinectDemoSGL
                 nextClient = kinectClients[0];
             }
             return nextClient;
+        }
+
+        public void AddOrUpdateConfiguration(KinectClient client, KinectStreamerConfig kinectStreamerConfig)
+        {
+            AddClientIfNotExists(client);
+            clientConfigurationDictionary[client] = kinectStreamerConfig;
+        }
+
+        public KinectStreamerConfig GetConfigurationForClient(KinectClient client)
+        {
+            return clientConfigurationDictionary[client];
         }
     }
 }

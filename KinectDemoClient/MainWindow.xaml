@@ -9,14 +9,14 @@
             </StackPanel>
         </Button>
         <TextBox Name="TextBox" HorizontalAlignment="Left" Height="26" Margin="11,374,0,0" TextWrapping="Wrap" Text="Some important text." VerticalAlignment="Top" Width="425"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="444,157,0,0" VerticalAlignment="Top" Checked="DepthCheckBox_Checked" Unchecked="DepthCheckBox_Unchecked"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="444,182,0,0" VerticalAlignment="Top" Checked="ColorCheckBox_Checked" Unchecked="ColorCheckBox_Unchecked"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="445,210,0,0" VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
+        <CheckBox Name="DepthCheckbox" Content="" HorizontalAlignment="Left" Margin="444,157,0,0" VerticalAlignment="Top" Checked="DepthCheckBox_Checked" Unchecked="DepthCheckBox_Unchecked"/>
+        <CheckBox Name="ColorCheckbox" Content="" HorizontalAlignment="Left" Margin="444,182,0,0" VerticalAlignment="Top" Checked="ColorCheckBox_Checked" Unchecked="ColorCheckBox_Unchecked"/>
+        <CheckBox Name="PointCloudCheckbox" Content="" HorizontalAlignment="Left" Margin="445,210,0,0" VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
         <Button Content="Send" HorizontalAlignment="Left" Margin="453,376,0,0" VerticalAlignment="Top" Width="75" Click="SendMessage"/>
         <TextBox Name="ServerIpTextBox" HorizontalAlignment="Left" Height="28" Margin="182,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" FontSize="16"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="444,237,0,0" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="445,264,0,0" VerticalAlignment="Top" Checked="UnifiedCheckBox_Checked" Unchecked="UnifiedCheckBox_Unchecked"/>
-        <CheckBox x:Name="CalibrationCheckBox" Content="" HorizontalAlignment="Left" Margin="445,288,0,0" VerticalAlignment="Top"  Checked="CalibrationCheckBox_Checked" Unchecked="CalibrationCheckBox_Unchecked"/>
+        <CheckBox Name="SkeletonCheckbox" Content="" HorizontalAlignment="Left" Margin="444,237,0,0" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>
+        <CheckBox Name="UnifiedCheckbox" Content="" HorizontalAlignment="Left" Margin="445,264,0,0" VerticalAlignment="Top" Checked="UnifiedCheckBox_Checked" Unchecked="UnifiedCheckBox_Unchecked"/>
+        <CheckBox Name="CalibrationCheckbox" Content="" HorizontalAlignment="Left" Margin="445,288,0,0" VerticalAlignment="Top"  Checked="CalibrationCheckBox_Checked" Unchecked="CalibrationCheckBox_Unchecked"/>
         <CheckBox Name="AutoConnectCheckbox" Content="Auto Connect" HorizontalAlignment="Left" Margin="383,56,0,0" VerticalAlignment="Top" FontSize="10" RenderTransformOrigin="0.5,0.5" Checked="AutoConnectCheckbox_Checked" Unchecked="AutoConnectCheckbox_Unchecked" >
             <CheckBox.LayoutTransform>
                 <ScaleTransform ScaleX="1.8" ScaleY="1.8" />

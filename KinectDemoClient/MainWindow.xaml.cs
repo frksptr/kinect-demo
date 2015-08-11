@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
@@ -80,7 +81,7 @@ namespace KinectDemoClient
             if (!calibrationDataSent)
             {
                 calibrationDataSent = true;
-                CalibrationCheckBox.IsChecked = false;
+                CalibrationCheckbox.IsChecked = false;
                 SerializeAndSendMessage((CalibrationDataMessage)message);
             }
         }
@@ -101,7 +102,6 @@ namespace KinectDemoClient
             {
                 return;
             }
-            serverReady = false;
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, msg);
@@ -131,6 +131,11 @@ namespace KinectDemoClient
 
                 Dispatcher.Invoke(() => {
                     StatusTextBox.Text += "Connected to server.\n";
+                });
+
+                SerializeAndSendMessage(new ClientConfigurationMessage()
+                {
+                    Configuration = kinectStreamer.KinectStreamerConfig
                 });
             }
             catch (Exception ex)
@@ -184,9 +189,25 @@ namespace KinectDemoClient
                             SerializeAndSendMessage(updatedMessage);
                         });
                     }
-                    if (obj is KinectServerReadyMessage)
+                    else if (obj is KinectServerReadyMessage)
                     {
                         serverReady = ((KinectServerReadyMessage)obj).Ready;
+                    }
+                    else if (obj is ClientConfigurationMessage)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            ClientConfigurationMessage msg = (ClientConfigurationMessage) obj;
+                            //  TODO: bind
+                            KinectStreamerConfig config = msg.Configuration;
+                            kinectStreamer.KinectStreamerConfig = config;
+                            DepthCheckbox.IsChecked = config.ProvideDepthData;
+                            ColorCheckbox.IsChecked = config.ProvideColorData;
+                            SkeletonCheckbox.IsChecked = config.ProvideBodyData;
+                            UnifiedCheckbox.IsChecked = config.SendAsOne;
+                            PointCloudCheckbox.IsChecked = config.ProvidePointCloudData;
+                            CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+                        });
                     }
                 }
 

@@ -78,6 +78,15 @@ namespace KinectDemoSGL
             {
                 ProcessTextMessage(obj, sender);
             }
+            else if (obj is ClientConfigurationMessage)
+            {
+                ProcessConfigurationData(obj, sender);
+            }
+        }
+
+        private void ProcessConfigurationData(object obj, KinectClient sender)
+        {
+            dataStore.AddOrUpdateConfiguration(sender, ((ClientConfigurationMessage) obj).Configuration);
         }
 
         private void ProcessCalibrationData(object obj, KinectClient sender)

@@ -28,7 +28,17 @@ namespace KinectDemoClient
         public event KinectStreamerEventHandler UnifiedDataReady;
         public event KinectStreamerEventHandler CalibrationDataReady;
 
-        public KinectStreamerConfig KinectStreamerConfig { get; set; }
+        private KinectStreamerConfig kinectStreamerConfig;
+
+        public KinectStreamerConfig KinectStreamerConfig
+        {
+            get { return kinectStreamerConfig; }
+            set
+            {
+                kinectStreamerConfig = value;
+                
+            }
+        }
 
         public NullablePoint3D[] FullPointCloud { get; set; }
 
