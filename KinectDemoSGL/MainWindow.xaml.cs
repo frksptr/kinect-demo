@@ -226,9 +226,7 @@ namespace KinectDemoSGL
                 {
                     TabItem tabItem = new TabItem(){Header = client.Name};
 
-                    ClientSettings settings = new ClientSettings();
-                    settings.Client = client;
-                    settings.KinectStreamerConfig = dataStore.GetConfigurationForClient(client);
+                    ClientSettings settings = new ClientSettings(client, dataStore.GetConfigurationForClient(client));
 
                     settings.ClientSettingsChanged += ClientSettingsChanged;
 

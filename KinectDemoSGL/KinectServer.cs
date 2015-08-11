@@ -147,7 +147,8 @@ namespace KinectDemoSGL
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                        
+                        //MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                     }
 
                     Array.Resize(ref state.Buffer, 9000000);

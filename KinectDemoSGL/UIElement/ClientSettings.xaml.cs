@@ -14,84 +14,130 @@ namespace KinectDemoSGL.UIElement
         public KinectClient Client { get; set; }
 
         public ClientSettingsChanged ClientSettingsChanged;
-        public ClientSettings()
+
+        private bool initialized = false;
+        public ClientSettings(KinectClient client, KinectStreamerConfig config)
         {
+            KinectStreamerConfig = config;
+            Client = client;
             InitializeComponent();
             DataContext = this;
+            DepthCheckbox.IsChecked = config.ProvideDepthData;
+            ColorCheckbox.IsChecked = config.ProvideColorData;
+            PointCloudCheckbox.IsChecked = config.ProvidePointCloudData;
+            SkeletonCheckbox.IsChecked = config.ProvideBodyData;
+            CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+            SendAsOneCheckbox.IsChecked = config.SendAsOne;
+            initialized = true;
         }
 
         private void SendAsOne_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.SendAsOne = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.SendAsOne = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void DepthImage_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideDepthData = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideDepthData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void ColorImage_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideColorData = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideColorData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void PointCloud_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvidePointCloudData = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvidePointCloudData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void Skeleton_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideBodyData = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideBodyData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void SendAsOne_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.SendAsOne = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.SendAsOne = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void DepthImage_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideDepthData = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideDepthData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void ColorImage_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideColorData = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideColorData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void PointCloud_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvidePointCloudData = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvidePointCloudData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void Skeleton_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideBodyData = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideBodyData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void Calibration_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideCalibrationData = true;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideCalibrationData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
         private void Calibration_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            KinectStreamerConfig.ProvideCalibrationData = false;
-            ClientSettingsChanged(Client, KinectStreamerConfig);
+            if (initialized)
+            {
+                KinectStreamerConfig.ProvideCalibrationData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
         }
 
     }
 }
-    
