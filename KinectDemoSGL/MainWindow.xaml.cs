@@ -224,7 +224,7 @@ namespace KinectDemoSGL
                 List<TabItem> clientTabs = new List<TabItem>();
                 foreach (KinectClient client in DataStore.Instance.GetClients())
                 {
-                    TabItem tabItem = new TabItem();
+                    TabItem tabItem = new TabItem(){Header = client.Name};
 
                     ClientSettings settings = new ClientSettings();
                     settings.Client = client;
