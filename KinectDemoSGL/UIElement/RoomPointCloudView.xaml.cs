@@ -42,6 +42,8 @@ namespace KinectDemoSGL.UIElement
 
         private List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
 
+        private Point3D projectedHandPoint = new Point3D();
+
         public RoomPointCloudView()
         {
             InitializeComponent();
@@ -159,6 +161,15 @@ namespace KinectDemoSGL.UIElement
                         gl.Vertex(point.X, point.Y, point.Z);
                     }
                 }
+
+                gl.End();
+
+                gl.Begin(OpenGL.GL_POINTS);
+                gl.Color(1.0f, 1.0f, 1.0f);
+                gl.PointSize(5.0f);
+                //  Move the geometry into a fairly central position.
+
+                gl.Vertex(projectedHandPoint.X, projectedHandPoint.Y, projectedHandPoint.Z);
 
                 gl.End();
 
@@ -291,7 +302,9 @@ namespace KinectDemoSGL.UIElement
                         handPosition.Z
                     });
 
-                    if (GeometryHelper.InsidePolygon3D(vertices, GeometryHelper.ProjectPoint3DToPlane(handPosition, workspace.PlaneVector)))
+                    projectedHandPoint = GeometryHelper.ProjectPoint3DToPlane(handPosition, workspace.PlaneVector);
+
+                    if (GeometryHelper.InsidePolygon3D(vertices, projectedHandPoint))
                     {
                         double distance = GeometryHelper.CalculatePointPlaneDistance(handPosition, workspace.PlaneVector);
 
