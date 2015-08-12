@@ -153,7 +153,6 @@ namespace KinectDemoSGL.UIElement
 
                 gl.Begin(OpenGL.GL_POINTS);
                 gl.Color(1.0f, 0.0f, 0.0f);
-                //  Move the geometry into a fairly central position.
                 foreach (NullablePoint3D point in dataStore.GetPointCloudForClient(activeClient))
                 {
                     if (point != null)
@@ -165,10 +164,8 @@ namespace KinectDemoSGL.UIElement
                 gl.End();
 
                 gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1.0f, 1.0f, 1.0f);
-                gl.PointSize(5.0f);
-                //  Move the geometry into a fairly central position.
-
+                gl.Color(1.0f, 1.0f, 0.0f);
+                gl.PointSize(5.0f); 
                 gl.Vertex(projectedHandPoint.X, projectedHandPoint.Y, projectedHandPoint.Z);
 
                 gl.End();
