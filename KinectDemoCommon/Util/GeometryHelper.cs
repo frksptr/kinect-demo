@@ -91,13 +91,13 @@ namespace KinectDemoCommon.Util
 
             Vector<double> pointVector = new DenseVector(new[] { x, y, z });
 
-            pointVector.Subtract(planeNormal.Multiply(distance));
+            Vector<double> projectedPointVector = pointVector.Subtract(planeNormal.Multiply(distance));
 
             return new Point3D
             {
-                X = pointVector[0],
-                Y = pointVector[1],
-                Z = pointVector[2]
+                X = projectedPointVector[0],
+                Y = projectedPointVector[1],
+                Z = projectedPointVector[2]
             };
         }
 

@@ -24,7 +24,7 @@ namespace KinectDemoSGL.UIElement
     {
         public Point3D Center { get; set; }
 
-        double rotationFactor = 0.1;
+        double rotationFactor = 0.05;
 
         double zoomFactor = 0.5;
 
@@ -43,6 +43,8 @@ namespace KinectDemoSGL.UIElement
         private List<CameraSpacePoint> handPositions = new List<CameraSpacePoint>();
 
         private Point3D projectedHandPoint = new Point3D();
+
+        private DataStore dataStore = DataStore.Instance;
 
         public RoomPointCloudView()
         {
@@ -163,12 +165,12 @@ namespace KinectDemoSGL.UIElement
 
                 gl.End();
 
-                gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1.0f, 1.0f, 0.0f);
-                gl.PointSize(5.0f); 
-                gl.Vertex(projectedHandPoint.X, projectedHandPoint.Y, projectedHandPoint.Z);
+                //gl.Begin(OpenGL.GL_POINTS);
+                //gl.Color(1.0f, 1.0f, 0.0f);
+                //gl.PointSize(5.0f); 
+                //gl.Vertex(projectedHandPoint.X, projectedHandPoint.Y, projectedHandPoint.Z);
 
-                gl.End();
+                //gl.End();
 
                 gl.Begin(OpenGL.GL_TRIANGLES);
                 foreach (Workspace workspace in dataStore.GetAllWorkspaces())
@@ -211,9 +213,6 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private float angle = 0.0f;
-        private DataStore dataStore = DataStore.Instance;
-
         private void openGLControl_KeyDown(object sender, KeyEventArgs e)
         {
 
@@ -233,10 +232,20 @@ namespace KinectDemoSGL.UIElement
             {
                 cameraPosSphere.Z += rotationFactor;
             }
+            else  if (e.Key.Equals(Key.Q))
+            {
+                cameraPosSphere.X += zoomFactor;
+            }
+            else if (e.Key.Equals(Key.E))
+            {
+                cameraPosSphere.X -= zoomFactor;
+            }
             else
             {
                 return;
             }
+
+
 
             cameraPos = GeometryHelper.SphericalToCartesian(cameraPosSphere);
 
