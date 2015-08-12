@@ -644,10 +644,10 @@ namespace KinectDemoSGL.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            //List<NullablePoint3D[]> pointClouds = GetPointClouds();
+            List<NullablePoint3D[]> pointClouds = GetPointClouds();
             showMerged = true;
             //fal
-            //var kinect1CalPoints = pointClouds[0];
+            var kinect1CalPoints = pointClouds[0];
             //var kinect1CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
@@ -665,7 +665,7 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1, 1,  0)
             //};
             //ajtó
-            //var kinect2CalPoints = pointClouds[1];
+            var kinect2CalPoints = pointClouds[1];
             //var kinect2CalPoints = new NullablePoint3D[]{
 
             //    new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
@@ -683,29 +683,29 @@ namespace KinectDemoSGL.UIElement
             //    //new NullablePoint3D(1.95, -0.05, -1.05)
             //};
 
-            //var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
+            var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
-            //Matrix<double> rot = A.R;
-            //Vector<double> translate = A.T;
+            Matrix<double> rot = A.R;
+            Vector<double> translate = A.T;
 
 
             // from skeleton calibration
-            Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
-                    new[]{-0.01868811233840361,
-                    -0.34501377370318648,
-                    -0.93841155705389412},
-                    new[]{0.5320510930426815,
-                    0.79121684933040015,
-                    -0.30149217523472005},
-                    new[]{0.84650598866713045,
-                    -0.50491721429434455,
-                    0.16877860604923636	}
-            });
-            Vector<double> translate = DenseVector.OfArray(new[]{
-                -1.875871904795692,	
-                0.47458577514168565,	
-                1.1320225857947943
-            });
+            //Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
+            //        new[]{-0.01868811233840361,
+            //        -0.34501377370318648,
+            //        -0.93841155705389412},
+            //        new[]{0.5320510930426815,
+            //        0.79121684933040015,
+            //        -0.30149217523472005},
+            //        new[]{0.84650598866713045,
+            //        -0.50491721429434455,
+            //        0.16877860604923636	}
+            //});
+            //Vector<double> translate = DenseVector.OfArray(new[]{
+            //    -1.875871904795692,	
+            //    0.47458577514168565,	
+            //    1.1320225857947943
+            //});
 
             // PCL reregistration from skeletal fitted clouds
             Matrix<double> rot2 = DenseMatrix.OfColumnArrays(new List<double[]>{
