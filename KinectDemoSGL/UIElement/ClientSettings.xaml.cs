@@ -22,10 +22,10 @@ namespace KinectDemoSGL.UIElement
             Client = client;
             InitializeComponent();
             DataContext = this;
-            DepthCheckbox.IsChecked = config.ProvideDepthData;
-            ColorCheckbox.IsChecked = config.ProvideColorData;
-            PointCloudCheckbox.IsChecked = config.ProvidePointCloudData;
-            SkeletonCheckbox.IsChecked = config.ProvideBodyData;
+            DepthCheckbox.IsChecked = config.StreamDepthData;
+            ColorCheckbox.IsChecked = config.StreamColorData;
+            PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
+            SkeletonCheckbox.IsChecked = config.StreamBodyData;
             CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
             SendAsOneCheckbox.IsChecked = config.SendAsOne;
             initialized = true;
@@ -44,7 +44,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideDepthData = true;
+                KinectStreamerConfig.StreamDepthData = true;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -53,7 +53,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideColorData = true;
+                KinectStreamerConfig.StreamColorData = true;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -62,7 +62,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvidePointCloudData = true;
+                KinectStreamerConfig.StreamPointCloudData = true;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -71,7 +71,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideBodyData = true;
+                KinectStreamerConfig.StreamBodyData = true;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -89,7 +89,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideDepthData = false;
+                KinectStreamerConfig.StreamDepthData = false;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -98,7 +98,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideColorData = false;
+                KinectStreamerConfig.StreamColorData = false;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -107,7 +107,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvidePointCloudData = false;
+                KinectStreamerConfig.StreamPointCloudData = false;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }
@@ -116,7 +116,7 @@ namespace KinectDemoSGL.UIElement
         {
             if (initialized)
             {
-                KinectStreamerConfig.ProvideBodyData = false;
+                KinectStreamerConfig.StreamBodyData = false;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
             }
         }

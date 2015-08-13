@@ -5,22 +5,22 @@ namespace KinectDemoCommon
     [Serializable]
     public class KinectStreamerConfig
     {
-        public bool ProvideDepthData { get; set; }
-        public bool ProvideBodyData { get; set; }
-        public bool ProvideColorData { get; set; }
-        public bool ProvidePointCloudData { get; set; }
+        public bool StreamDepthData { get; set; }
+        public bool StreamBodyData { get; set; }
+        public bool StreamColorData { get; set; }
+        public bool StreamPointCloudData { get; set; }
         public bool ProvideCalibrationData { get; set; }
         public bool SendAsOne { get; set; }
 
         public KinectStreamerConfig()
         {
-            ProvideDepthData = false;
+            StreamDepthData = false;
 
-            ProvideColorData = false;
+            StreamColorData = false;
 
-            ProvideBodyData = false;
+            StreamBodyData = false;
 
-            ProvidePointCloudData = false;
+            StreamPointCloudData = false;
 
             ProvideCalibrationData = false;
 

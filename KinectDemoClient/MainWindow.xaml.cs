@@ -201,11 +201,11 @@ namespace KinectDemoClient
                             //  TODO: bind
                             KinectStreamerConfig config = msg.Configuration;
                             kinectStreamer.KinectStreamerConfig = config;
-                            DepthCheckbox.IsChecked = config.ProvideDepthData;
-                            ColorCheckbox.IsChecked = config.ProvideColorData;
-                            SkeletonCheckbox.IsChecked = config.ProvideBodyData;
+                            DepthCheckbox.IsChecked = config.StreamDepthData;
+                            ColorCheckbox.IsChecked = config.StreamColorData;
+                            SkeletonCheckbox.IsChecked = config.StreamBodyData;
                             UnifiedCheckbox.IsChecked = config.SendAsOne;
-                            PointCloudCheckbox.IsChecked = config.ProvidePointCloudData;
+                            PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
                             CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
                         });
                     }
@@ -263,49 +263,49 @@ namespace KinectDemoClient
         private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+            kinectStreamer.KinectStreamerConfig.StreamDepthData = true;
         }
 
         private void ColorCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+            kinectStreamer.KinectStreamerConfig.StreamColorData = true;
         }
 
         private void ColorCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.ColorDataReady -= kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideColorData = false;
+            kinectStreamer.KinectStreamerConfig.StreamColorData = false;
         }
 
         private void DepthCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+            kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
         }
 
         private void PointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.PointCloudDataReady += kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = true;
+            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = true;
         }
 
         private void PointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.PointCloudDataReady -= kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = false;
+            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = false;
         }
 
         private void SkeletonCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
+            kinectStreamer.KinectStreamerConfig.StreamBodyData = true;
         }
 
         private void SkeletonCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+            kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
         }
 
         private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)

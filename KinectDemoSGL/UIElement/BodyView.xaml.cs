@@ -375,10 +375,10 @@ namespace KinectDemoSGL.UIElement
             if ((bool)e.NewValue == true)
             {
                 //kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-                //kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+                //kinectStreamer.KinectStreamerConfig.StreamColorData = true;
 
                 //kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
-                //kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
+                //kinectStreamer.KinectStreamerConfig.StreamBodyData = true;
 
                 //WorkspaceActiveMap.Clear();
                 //foreach (Workspace workspace in WorkspaceList)
@@ -389,10 +389,10 @@ namespace KinectDemoSGL.UIElement
             else
             {
                 //kinectStreamer.DepthDataReady -= kinectStreamer_ColorDataReady;
-                //kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+                //kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
 
                 //kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
-                //kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+                //kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
             }
         }
 

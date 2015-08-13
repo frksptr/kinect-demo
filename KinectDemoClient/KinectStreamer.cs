@@ -200,10 +200,10 @@ namespace KinectDemoClient
         private void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
 
-            if (!(KinectStreamerConfig.ProvideBodyData ||
-                KinectStreamerConfig.ProvideColorData || 
-                KinectStreamerConfig.ProvideDepthData || 
-                KinectStreamerConfig.ProvidePointCloudData ||
+            if (!(KinectStreamerConfig.StreamBodyData ||
+                KinectStreamerConfig.StreamColorData || 
+                KinectStreamerConfig.StreamDepthData || 
+                KinectStreamerConfig.StreamPointCloudData ||
                 KinectStreamerConfig.ProvideCalibrationData))
             {
                 return;
@@ -245,25 +245,25 @@ namespace KinectDemoClient
 
                 // Process color stream if needed
 
-                if (KinectStreamerConfig.ProvideColorData)
+                if (KinectStreamerConfig.StreamColorData)
                 {
                     ProcessColorData();
                 }
 
                 // Process depth frame if needed
 
-                if (KinectStreamerConfig.ProvideDepthData || KinectStreamerConfig.ProvidePointCloudData)
+                if (KinectStreamerConfig.StreamDepthData || KinectStreamerConfig.StreamPointCloudData)
                 {
                     ProcessDepthData();
 
-                    if (KinectStreamerConfig.ProvidePointCloudData)
+                    if (KinectStreamerConfig.StreamPointCloudData)
                     {
                         GenerateFullPointCloud();
                     }
                 }
 
                 // Process body data if needed
-                if (KinectStreamerConfig.ProvideBodyData || KinectStreamerConfig.ProvideCalibrationData)
+                if (KinectStreamerConfig.StreamBodyData || KinectStreamerConfig.ProvideCalibrationData)
                 {
                     ProcessBodyData();
                 }
@@ -402,7 +402,6 @@ namespace KinectDemoClient
                 }
             }
             List<SerializableBody> serializableBodies = new List<SerializableBody>();
-            List<SerializableBody> calibrationBody = new List<SerializableBody>();
             foreach (Body body in Bodies)
             {
                 serializableBodies.Add(new SerializableBody(body));
