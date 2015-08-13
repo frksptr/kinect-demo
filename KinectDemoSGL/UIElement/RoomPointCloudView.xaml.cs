@@ -153,12 +153,20 @@ namespace KinectDemoSGL.UIElement
                 //  Reset the modelview matrix.
                 gl.LoadIdentity();
 
+                PointCloud pointCloud = dataStore.GetColoredPointCloudForClient(activeClient);
+                NullablePoint3D[] points = pointCloud.Points;
+                byte[] colors = pointCloud.ColorBytes;
                 gl.Begin(OpenGL.GL_POINTS);
                 gl.Color(1.0f, 0.0f, 0.0f);
-                foreach (NullablePoint3D point in dataStore.GetPointCloudForClient(activeClient))
+                for (int i = 0; i < pointCloud.Points.Length; i++)
                 {
+                    var point = points[i];
                     if (point != null)
                     {
+                        if (colors != null)
+                        {
+                            gl.Color(colors[i * 4], colors[i * 4] + 1, colors[i * 4] + 2, colors[i * 4]+3);
+                        }
                         gl.Vertex(point.X, point.Y, point.Z);
                     }
                 }

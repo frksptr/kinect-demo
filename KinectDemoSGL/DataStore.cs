@@ -116,6 +116,11 @@ namespace KinectDemoSGL
             return clientPointCloudDictionary[client].Points;
         }
 
+        public PointCloud GetColoredPointCloudForClient(KinectClient client)
+        {
+            return clientPointCloudDictionary[client];
+        }
+
         // Returns with the next kinect client to given currentClient in the clients list.
         // If currentClients is null, returns with first client.
         public KinectClient GetNextClient(KinectClient currentClient)

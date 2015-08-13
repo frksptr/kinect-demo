@@ -268,16 +268,19 @@ namespace KinectDemoClient
                 if (KinectStreamerConfig.StreamColoredPointCloudData)
                 {
                     ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
-                    byte[] pointCloudColors = new byte[depthArray.Length];
+                    byte[] pointCloudColors = new byte[depthArray.Length * 4];
                     CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
                     for (int i = 0; i < colorSpacePoints.Length; i++)
                     {
                         var point = colorSpacePoints[i];
                         if (GeometryHelper.IsValidPoint(point))
                         {
-                            int index = ((int)point.X + ColorFrameDescription.Width / 2) +
-                                ((int)point.Y + ColorFrameDescription.Height / 2) * ColorFrameDescription.Width;
-                            pointCloudColors[i] = colorPixels[index];
+                            int index = ((int)point.X + DepthFrameDescription.Width / 2) +
+                                ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
+                            pointCloudColors[i] = colorPixels[index * 4];
+                            pointCloudColors[i + 1] = colorPixels[index * 4 + 1];
+                            pointCloudColors[i + 2] = colorPixels[index * 4 + 2];
+                            pointCloudColors[i + 3] = colorPixels[index * 4 + 3];
                         }
                     }
                     coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
