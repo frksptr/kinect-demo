@@ -69,6 +69,12 @@ namespace KinectDemoClient
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
 
+
+        private void kinectStreamer_ColoredPointCloudDataReady(KinectClientMessage message)
+        {
+            SerializeAndSendMessage((ColoredPointCloudStreamMessage)message);
+        }
+
         private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
         {
             SendFirstPointCloud();
@@ -308,6 +314,19 @@ namespace KinectDemoClient
             kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
         }
 
+        private void ColoredPointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColoredPointCloudDataReady += kinectStreamer_ColoredPointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
+        }
+
+
+        private void ColoredPointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColoredPointCloudDataReady -= kinectStreamer_ColoredPointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
+        }
+
         private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.UnifiedDataReady += kinectStreamer_UnifiedDataReady;
@@ -345,5 +364,6 @@ namespace KinectDemoClient
             Properties.Settings.Default.AutoConnect = false;
             Properties.Settings.Default.Save();
         }
+
     }
 }

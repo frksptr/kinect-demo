@@ -9,6 +9,7 @@ namespace KinectDemoCommon
         public bool StreamBodyData { get; set; }
         public bool StreamColorData { get; set; }
         public bool StreamPointCloudData { get; set; }
+        public bool StreamColoredPointCloudData { get; set; }
         public bool ProvideCalibrationData { get; set; }
         public bool SendAsOne { get; set; }
 
@@ -21,6 +22,8 @@ namespace KinectDemoCommon
             StreamBodyData = false;
 
             StreamPointCloudData = false;
+
+            StreamColoredPointCloudData = false;
 
             ProvideCalibrationData = false;
 

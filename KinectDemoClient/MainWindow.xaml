@@ -12,6 +12,7 @@
         <CheckBox Name="DepthCheckbox" Content="" HorizontalAlignment="Left" Margin="444,157,0,0" VerticalAlignment="Top" Checked="DepthCheckBox_Checked" Unchecked="DepthCheckBox_Unchecked"/>
         <CheckBox Name="ColorCheckbox" Content="" HorizontalAlignment="Left" Margin="444,182,0,0" VerticalAlignment="Top" Checked="ColorCheckBox_Checked" Unchecked="ColorCheckBox_Unchecked"/>
         <CheckBox Name="PointCloudCheckbox" Content="" HorizontalAlignment="Left" Margin="445,210,0,0" VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
+        <CheckBox Name="ColoredPointCloudCheckbox" Content="" HorizontalAlignment="Left" Margin="445,210,0,0" VerticalAlignment="Top" Checked="ColoredPointCloudCheckBox_Checked" Unchecked="ColoredPointCloudCheckBox_Unchecked"/>
         <Button Content="Send" HorizontalAlignment="Left" Margin="453,376,0,0" VerticalAlignment="Top" Width="75" Click="SendMessage"/>
         <TextBox Name="ServerIpTextBox" HorizontalAlignment="Left" Height="28" Margin="182,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" FontSize="16"/>
         <CheckBox Name="SkeletonCheckbox" Content="" HorizontalAlignment="Left" Margin="444,237,0,0" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>

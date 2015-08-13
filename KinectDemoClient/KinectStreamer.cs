@@ -25,6 +25,7 @@ namespace KinectDemoClient
         public event KinectStreamerEventHandler ColorDataReady;
         public event KinectStreamerEventHandler DepthDataReady;
         public event KinectStreamerEventHandler PointCloudDataReady;
+        public event KinectStreamerEventHandler ColoredPointCloudDataReady;
         public event KinectStreamerEventHandler UnifiedDataReady;
         public event KinectStreamerEventHandler CalibrationDataReady;
 
@@ -75,8 +76,6 @@ namespace KinectDemoClient
 
         const int MapDepthToByte = 8000 / 256;
 
-        readonly int bytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel + 7) / 8;
-
         private static KinectStreamer kinectStreamer;
 
         public WorkspaceChecker WorkspaceChecker { get; set; }
@@ -90,6 +89,7 @@ namespace KinectDemoClient
         private BodyStreamMessage bodyStreamMessage;
         private PointCloudStreamMessage pointCloudStreamMessage;
         private CalibrationDataMessage calibrationDataMessage;
+        private ColoredPointCloudStreamMessage coloredPointCloudStreamMessage;
 
         public static KinectStreamer Instance
         {
@@ -204,7 +204,9 @@ namespace KinectDemoClient
                 KinectStreamerConfig.StreamColorData || 
                 KinectStreamerConfig.StreamDepthData || 
                 KinectStreamerConfig.StreamPointCloudData ||
-                KinectStreamerConfig.ProvideCalibrationData))
+                KinectStreamerConfig.ProvideCalibrationData ||
+                KinectStreamerConfig.StreamColoredPointCloudData
+                ))
             {
                 return;
             }
@@ -218,6 +220,7 @@ namespace KinectDemoClient
             pointCloudStreamMessage = null;
             depthStreamMessage = null;
             calibrationDataMessage = null;
+            coloredPointCloudStreamMessage = null;
 
             multiSourceFrame = e.FrameReference.AcquireFrame();
 
@@ -245,21 +248,27 @@ namespace KinectDemoClient
 
                 // Process color stream if needed
 
-                if (KinectStreamerConfig.StreamColorData)
+                if (KinectStreamerConfig.StreamColorData || KinectStreamerConfig.StreamColoredPointCloudData)
                 {
                     ProcessColorData();
                 }
 
                 // Process depth frame if needed
 
-                if (KinectStreamerConfig.StreamDepthData || KinectStreamerConfig.StreamPointCloudData)
+                if (KinectStreamerConfig.StreamDepthData || KinectStreamerConfig.StreamPointCloudData || KinectStreamerConfig.StreamColoredPointCloudData)
                 {
                     ProcessDepthData();
 
-                    if (KinectStreamerConfig.StreamPointCloudData)
+                    if (KinectStreamerConfig.StreamPointCloudData || KinectStreamerConfig.StreamColoredPointCloudData)
                     {
                         GenerateFullPointCloud();
                     }
+                }
+
+                if (KinectStreamerConfig.StreamColoredPointCloudData)
+                {
+                    ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
+                    CoordinateMapper.MapDepthFrameToColorSpace(depthArray,colorSpacePoints);
                 }
 
                 // Process body data if needed
