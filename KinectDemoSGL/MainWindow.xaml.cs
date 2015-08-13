@@ -83,7 +83,7 @@ namespace KinectDemoSGL
 
             bodyView = new BodyView();
 
-            HandCheckBodyViewHolder.Children.Add(bodyView);
+            //HandCheckBodyViewHolder.Children.Add(bodyView);
 
             roomPointCloudView = new RoomPointCloudView();
 
@@ -205,15 +205,16 @@ namespace KinectDemoSGL
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
-            workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
-            dataStore.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
+            Workspace workspace = (Workspace)(((ListBoxItem)WorkspaceList.ContainerFromElement((Button)sender)).Content);
+            workspaceList.Remove(workspace);
+            dataStore.DeleteWorkspace(workspace);
             activeWorkspace = new Workspace();
             cloudView.ClearScreen();
         }
 
         private void SaveWorkspaceToFile(object sender, RoutedEventArgs e)
         {
-            Workspace workspace = (Workspace)(((ListBoxItem) WorkspaceList.ContainerFromElement((Button) sender)).Content);
+            Workspace workspace = (Workspace)(((ListBoxItem)WorkspaceList.ContainerFromElement((Button)sender)).Content);
             FileHelper.WritePCD(new List<Point3D>(workspace.PointCloud), @"C:/asd/" + workspace.Name + "_pointcloud.pcd");
         }
 
@@ -224,7 +225,7 @@ namespace KinectDemoSGL
                 List<TabItem> clientTabs = new List<TabItem>();
                 foreach (KinectClient client in DataStore.Instance.GetClients())
                 {
-                    TabItem tabItem = new TabItem(){Header = client.Name};
+                    TabItem tabItem = new TabItem() { Header = client.Name };
 
                     ClientSettings settings = new ClientSettings(client, dataStore.GetConfigurationForClient(client));
 

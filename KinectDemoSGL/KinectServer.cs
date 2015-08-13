@@ -12,10 +12,6 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using System.Collections.Generic;
-using KinectDemoCommon.Messages.KinectServerMessages;
-using KinectDemoSGL;
-using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {
@@ -26,7 +22,7 @@ namespace KinectDemoSGL
     {
 
         private readonly string ip = NetworkHelper.LocalIPAddress();
-        //private readonly string ip = "192.168.0.116";
+        //private readonly string ip = "192.168.0.119";
 
         //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
 
