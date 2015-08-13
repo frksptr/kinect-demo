@@ -42,7 +42,7 @@ namespace KinectDemoCommon.Util
 
             foreach (CameraSpacePoint point in cameraSpacePoints)
             {
-                if (GeometryHelper.IsValidCameraPoint(point))
+                if (GeometryHelper.IsValidPoint(point))
                 {
                     point3Ds.Add(new Point3D
                     {

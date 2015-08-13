@@ -19,9 +19,14 @@ namespace KinectDemoCommon.Util
             return !float.IsNaN(num) && !float.IsInfinity(num);
         }
 
-        public static bool IsValidCameraPoint(CameraSpacePoint point)
+        public static bool IsValidPoint(CameraSpacePoint point)
         {
             return IsNumber(point.X) && IsNumber(point.Y) && IsNumber(point.Z);
+        }
+
+        public static bool IsValidPoint(ColorSpacePoint point)
+        {
+            return IsNumber(point.X) && IsNumber(point.Y);
         }
 
         public static double[] Normalize(double[] points)

@@ -65,6 +65,7 @@
     <Compile Include="KinectStreamerConfig.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectClientMessage.cs" />
     <Compile Include="Model\NullablePoint3D.cs" />
+    <Compile Include="Model\PointCloud.cs" />
     <Compile Include="Model\SerializableBody.cs" />
     <Compile Include="Model\Workspace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

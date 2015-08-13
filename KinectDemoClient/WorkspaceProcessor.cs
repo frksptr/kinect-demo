@@ -120,7 +120,7 @@ namespace KinectDemoClient
             //List<DepthSpacePoint> dspList = new List<DepthSpacePoint>();
             //foreach (CameraSpacePoint csp in AllCameraSpacePoints)
             //{
-            //    if (GeometryHelper.IsValidCameraPoint(csp))
+            //    if (GeometryHelper.IsValidPoint(csp))
             //    {
 
             //        DepthSpacePoint dsp = KinectStreamer.Instance.CoordinateMapper.MapCameraPointToDepthSpace(csp);

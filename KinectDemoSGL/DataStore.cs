@@ -18,7 +18,7 @@ namespace KinectDemoSGL
 
         private Dictionary<string, KinectClient> workspaceClientDictionary;
 
-        private Dictionary<KinectClient, NullablePoint3D[]> clientPointCloudDictionary;
+        private Dictionary<KinectClient, PointCloud> clientPointCloudDictionary;
 
         private Dictionary<KinectClient, List<SerializableBody>> clientCalibrationBodies;
 
@@ -39,7 +39,7 @@ namespace KinectDemoSGL
 
             clientCalibrationBodies = new Dictionary<KinectClient, List<SerializableBody>>();
 
-            clientPointCloudDictionary = new Dictionary<KinectClient, NullablePoint3D[]>();
+            clientPointCloudDictionary = new Dictionary<KinectClient, PointCloud>();
 
             clientConfigurationDictionary = new Dictionary<KinectClient, KinectStreamerConfig>();
         }
@@ -105,7 +105,7 @@ namespace KinectDemoSGL
             return clientCalibrationBodies[client];
         }
 
-        public void AddOrUpdatePointCloud(KinectClient client, NullablePoint3D[] pointCloud)
+        public void AddOrUpdatePointCloud(KinectClient client, PointCloud pointCloud)
         {
             AddClientIfNotExists(client);
             clientPointCloudDictionary[client] = pointCloud;
@@ -113,7 +113,7 @@ namespace KinectDemoSGL
 
         public NullablePoint3D[] GetPointCloudForClient(KinectClient client)
         {
-            return clientPointCloudDictionary[client];
+            return clientPointCloudDictionary[client].Points;
         }
 
         // Returns with the next kinect client to given currentClient in the clients list.

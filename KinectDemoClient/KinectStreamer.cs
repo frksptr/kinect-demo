@@ -37,7 +37,7 @@ namespace KinectDemoClient
             set
             {
                 kinectStreamerConfig = value;
-                
+
             }
         }
 
@@ -104,7 +104,7 @@ namespace KinectDemoClient
             SetupBody();
 
             SetupHelpArrays();
-            
+
             kinectSensor.Open();
         }
 
@@ -201,8 +201,8 @@ namespace KinectDemoClient
         {
 
             if (!(KinectStreamerConfig.StreamBodyData ||
-                KinectStreamerConfig.StreamColorData || 
-                KinectStreamerConfig.StreamDepthData || 
+                KinectStreamerConfig.StreamColorData ||
+                KinectStreamerConfig.StreamDepthData ||
                 KinectStreamerConfig.StreamPointCloudData ||
                 KinectStreamerConfig.ProvideCalibrationData ||
                 KinectStreamerConfig.StreamColoredPointCloudData
@@ -268,7 +268,19 @@ namespace KinectDemoClient
                 if (KinectStreamerConfig.StreamColoredPointCloudData)
                 {
                     ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
-                    CoordinateMapper.MapDepthFrameToColorSpace(depthArray,colorSpacePoints);
+                    byte[] pointCloudColors = new byte[depthArray.Length];
+                    CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
+                    for (int i = 0; i < colorSpacePoints.Length; i++)
+                    {
+                        var point = colorSpacePoints[i];
+                        if (GeometryHelper.IsValidPoint(point))
+                        {
+                            int index = ((int)point.X + ColorFrameDescription.Width / 2) +
+                                ((int)point.Y + ColorFrameDescription.Height / 2) * ColorFrameDescription.Width;
+                            pointCloudColors[i] = colorPixels[index];
+                        }
+                    }
+                    coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
                 }
 
                 // Process body data if needed
@@ -303,7 +315,7 @@ namespace KinectDemoClient
                 if (UnifiedDataReady != null)
                 {
                     UnifiedDataReady(new UnifiedStreamerMessage(bodyStreamMessage, colorStreamMessage, depthStreamMessage,
-                        pointCloudStreamMessage));
+                        pointCloudStreamMessage, coloredPointCloudStreamMessage));
                 }
             }
             else
@@ -323,6 +335,10 @@ namespace KinectDemoClient
                 if (PointCloudDataReady != null && pointCloudStreamMessage != null)
                 {
                     PointCloudDataReady(pointCloudStreamMessage);
+                }
+                if (ColoredPointCloudDataReady != null && pointCloudStreamMessage != null)
+                {
+                    ColoredPointCloudDataReady(coloredPointCloudStreamMessage);
                 }
                 if (CalibrationDataReady != null && calibrationDataMessage != null)
                 {
@@ -355,7 +371,7 @@ namespace KinectDemoClient
                     }
                 }
             }
-            
+
             colorStreamMessage = new ColorStreamMessage(colorPixels,
                 new FrameSize(ColorFrameDescription.Width, ColorFrameDescription.Height));
 
@@ -451,7 +467,7 @@ namespace KinectDemoClient
             int i = 0;
             foreach (CameraSpacePoint point in pointCloudCandidates)
             {
-                if (GeometryHelper.IsValidCameraPoint(point))
+                if (GeometryHelper.IsValidPoint(point))
                 {
                     //validPointList.Add(GeometryHelper.CameraSpacePointToPoint3D(point));
                     validPointList.Add(new NullablePoint3D(point.X, point.Y, point.Z));

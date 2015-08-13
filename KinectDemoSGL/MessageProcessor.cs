@@ -15,6 +15,7 @@ namespace KinectDemoSGL
         public KinectServerDataArrived ColorDataArrived;
         public KinectServerDataArrived BodyDataArrived;
         public KinectServerDataArrived PointCloudDataArrived;
+        public KinectServerDataArrived ColoredPointCloudDataArrived;
         public KinectServerDataArrived TextMessageArrived;
         public KinectServerDataArrived WorkspaceUpdated;
         private FrameSize depthFrameSize;
@@ -67,7 +68,7 @@ namespace KinectDemoSGL
                 else if (obj is CalibrationDataMessage)
                 {
                     ProcessCalibrationData(obj, sender);
-                }
+                } 
 
             }
             else if (obj is WorkspaceMessage)
@@ -126,7 +127,13 @@ namespace KinectDemoSGL
 
         private void ProcessPointCloudStreamMessage(object obj, KinectClient client)
         {
+            bool coloredPointCloud = false;
             PointCloudStreamMessage msg = (PointCloudStreamMessage)obj;
+            if (obj is ColoredPointCloudStreamMessage)
+            {
+                coloredPointCloud = true;
+            }
+            
             double[] doubleArray = msg.PointCloud;
             NullablePoint3D[] pointArray = new NullablePoint3D[doubleArray.Length / 3];
             for (int i = 0; i < doubleArray.Length; i += 3)
@@ -141,12 +148,23 @@ namespace KinectDemoSGL
                 }
             }
 
-            dataStore.AddOrUpdatePointCloud(client, pointArray);
+            PointCloud pointCloud = new PointCloud() {Points = pointArray};
+            if (coloredPointCloud)
+            {
+                pointCloud.ColorBytes = ((ColoredPointCloudStreamMessage) msg).ColorPixels;
+            }
+
+            dataStore.AddOrUpdatePointCloud(client, pointCloud);
 
             if (PointCloudDataArrived != null)
             {
                 PointCloudDataArrived(msg, client);
             }
+            if (coloredPointCloud && ColoredPointCloudDataArrived != null)
+            {
+                ColoredPointCloudDataArrived(msg, client);
+            }
+            
         }
 
         private void ProcessColorStreamMessage(object obj, KinectClient sender)
