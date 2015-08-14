@@ -165,7 +165,12 @@ namespace KinectDemoSGL.UIElement
                     {
                         if (colors != null)
                         {
-                            gl.Color(colors[i * 4], colors[i * 4+1], colors[i * 4+2] , colors[i * 4+3]);
+                            var b = colors[i*4];
+                            var g = colors[i*4 + 1];
+                            var r = colors[i*4 + 2];
+                            var a = colors[i*4 + 3];
+
+                            gl.Color(r, g, b, a);
                         }
                         gl.Vertex(point.X, point.Y, point.Z);
                     }

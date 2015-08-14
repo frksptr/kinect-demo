@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon;
@@ -270,19 +271,25 @@ namespace KinectDemoClient
                     ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
                     byte[] pointCloudColors = new byte[depthArray.Length * 4];
                     CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
-                    for (int i = 0; i < colorSpacePoints.Length; i++)
+                    int i;
+                    for (i = 0; i < colorSpacePoints.Length; i++)
                     {
+                        if (i > 217000)
+                        {
+                            int a = 42;
+                        }
                         var point = colorSpacePoints[i];
                         if (GeometryHelper.IsValidPoint(point))
                         {
                             int index = ((int)point.X + DepthFrameDescription.Width / 2) +
                                 ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
-                            pointCloudColors[i] = colorPixels[index * 4];
-                            pointCloudColors[i + 1] = colorPixels[index * 4 + 1];
-                            pointCloudColors[i + 2] = colorPixels[index * 4 + 2];
-                            pointCloudColors[i + 3] = colorPixels[index * 4 + 3];
+                            pointCloudColors[i * 4] = colorPixels[index * 4];
+                            pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
+                            pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
+                            pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
                         }
                     }
+                    Debug.WriteLine(i);
                     coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
                 }
 
