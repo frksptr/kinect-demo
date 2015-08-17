@@ -79,12 +79,8 @@ namespace KinectDemoSGL
             {
                 StateObject state = new StateObject();
                 state.WorkSocket = socket.EndAccept(ar);
-                KinectClient client = new KinectClient();
 
-                stateObjectClientDictionary.Add(state, client);
-                clientStateObjectDictionary.Add(client, state);
-
-                DataStore.Instance.AddClientIfNotExists(stateObjectClientDictionary[state]);
+                CreateOrGetClient(state);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
@@ -95,6 +91,15 @@ namespace KinectDemoSGL
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
+
+        private void CreateOrGetClient(StateObject state)
+        {
+            KinectClient client = DataStore.Instance.CreateClientIfNotExists(state.WorkSocket.RemoteEndPoint);
+
+            stateObjectClientDictionary.Add(state, client);
+            clientStateObjectDictionary.Add(client, state);
+        }
+
         private void ObjectArrived(object obj, KinectClient sender)
         {
             if (obj != null)
@@ -156,7 +161,19 @@ namespace KinectDemoSGL
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                StateObject state = (StateObject)ar.AsyncState;
+                Socket handler = state.WorkSocket;
+
+                if (!handler.Connected)
+                {
+                    clientStateObjectDictionary.Remove(stateObjectClientDictionary[state]);
+                    stateObjectClientDictionary.Remove(state);
+                    MessageBox.Show("Client disconnected");
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Windows.Interop;
 using KinectDemoCommon;
 using KinectDemoCommon.Model;
@@ -44,15 +45,32 @@ namespace KinectDemoSGL
             clientConfigurationDictionary = new Dictionary<KinectClient, KinectStreamerConfig>();
         }
 
-        public void AddClientIfNotExists(KinectClient client)
+        public KinectClient CreateClientIfNotExists(EndPoint endPoint)
         {
-            if (!kinectClients.Contains(client))
+            if (kinectClients.Count == 0)
             {
-                kinectClients.Add(client);
-
-                clientCalibrationBodies[client] = new List<SerializableBody>();
+                return CreateClient(endPoint);
             }
+            foreach (KinectClient client in kinectClients)
+            {
+                if (client.IP.Equals(endPoint.ToString().Split(':')[0]))
+                {
+                    return client;
+                }
+            }
+
+            return CreateClient(endPoint);
         }
+
+        private KinectClient CreateClient(EndPoint endPoint)
+        {
+            KinectClient kinectClient;
+            kinectClient = new KinectClient(endPoint);
+            kinectClients.Add(kinectClient);
+            clientCalibrationBodies[kinectClient] = new List<SerializableBody>();
+            return kinectClient;
+        }
+
         public List<KinectClient> GetClients()
         {
             return kinectClients;
@@ -60,8 +78,6 @@ namespace KinectDemoSGL
 
         public void AddOrUpdateWorkspace(string workspaceId, Workspace workspace, KinectClient client)
         {
-            AddClientIfNotExists(client);
-
             if (!workspaceDictionary.Keys.Contains(workspaceId))
             {
                 workspaceDictionary.Add(workspaceId, workspace);
@@ -96,7 +112,6 @@ namespace KinectDemoSGL
 
         public void AddCalibrationBody(KinectClient client, SerializableBody body)
         {
-            AddClientIfNotExists(client);
             clientCalibrationBodies[client].Add(body);
         }
 
@@ -107,7 +122,6 @@ namespace KinectDemoSGL
 
         public void AddOrUpdatePointCloud(KinectClient client, PointCloud pointCloud)
         {
-            AddClientIfNotExists(client);
             clientPointCloudDictionary[client] = pointCloud;
         }
 
@@ -138,7 +152,7 @@ namespace KinectDemoSGL
                 }
                 else
                 {
-                    nextClient = kinectClients[kinectClients.IndexOf(currentClient) + 1];    
+                    nextClient = kinectClients[kinectClients.IndexOf(currentClient) + 1];
                 }
             }
             catch (Exception)
@@ -150,7 +164,6 @@ namespace KinectDemoSGL
 
         public void AddOrUpdateConfiguration(KinectClient client, KinectStreamerConfig kinectStreamerConfig)
         {
-            AddClientIfNotExists(client);
             clientConfigurationDictionary[client] = kinectStreamerConfig;
         }
 
