@@ -223,7 +223,15 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                if (!clientSocket.Connected)
+                {
+                    clientSocket = null;
+                    StatusTextBox.Text += "\n Server disconnected.";
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 
