@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon;
@@ -268,29 +269,7 @@ namespace KinectDemoClient
 
                 if (KinectStreamerConfig.StreamColoredPointCloudData)
                 {
-                    ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
-                    byte[] pointCloudColors = new byte[depthArray.Length * 4];
-                    CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
-                    int i;
-                    for (i = 0; i < colorSpacePoints.Length; i++)
-                    {
-                        if (i > 217000)
-                        {
-                            int a = 42;
-                        }
-                        var point = colorSpacePoints[i];
-                        if (GeometryHelper.IsValidPoint(point))
-                        {
-                            int index = ((int)point.X + DepthFrameDescription.Width / 2) +
-                                ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
-                            pointCloudColors[i * 4] = colorPixels[index * 4];
-                            pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
-                            pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
-                            pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
-                        }
-                    }
-                    Debug.WriteLine(i);
-                    coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
+                    ProcessPointCloudColors();
                 }
 
                 // Process body data if needed
@@ -316,6 +295,57 @@ namespace KinectDemoClient
                     bodyFrame.Dispose();
                 }
             }
+        }
+
+        private void ProcessPointCloudColors()
+        {
+            byte[] pointCloudColors = new byte[depthArray.Length * 4];
+            //ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
+            //CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
+            //int stride = (int)ColorFrameDescription.BytesPerPixel * ColorFrameDescription.Width;
+            //for (int i = 0; i < colorSpacePoints.Length; i++)
+            //{
+            //    var point = colorSpacePoints[i];
+            //    if (GeometryHelper.IsValidPoint(point))
+            //    {
+            //        int index = ((int)point.X + DepthFrameDescription.Width / 2) +
+            //                    ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
+
+            //        //int index = (int)((point.X + DepthFrameDescription.Width / 2) * ColorFrameDescription.BytesPerPixel +
+            //        //    (point.Y+ DepthFrameDescription.Height/2) * stride);
+
+            //        pointCloudColors[i * 4] = colorPixels[index * 4];
+            //        pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
+            //        pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
+            //        pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
+            //    }
+            //}
+            //coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
+
+
+            for (int i = 0; i < FullPointCloud.Length; i++)
+            {
+                if (FullPointCloud[i] == null)
+                {
+                    continue; 
+                }
+                CameraSpacePoint csp = new CameraSpacePoint()
+                {
+                    X = (float)FullPointCloud[i].X,
+                    Y = (float)FullPointCloud[i].Y, 
+                    Z = (float)FullPointCloud[i].Z
+                };
+                ColorSpacePoint colorSpacePoint = CoordinateMapper.MapCameraPointToColorSpace(csp);
+                int colorWidth = ColorFrameDescription.Width;
+                int index = (int)((colorSpacePoint.X + DepthFrameDescription.Width / 2) +
+                            (colorSpacePoint.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width);
+                pointCloudColors[i * 4] = colorPixels[index * 4];
+                pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
+                pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
+                pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
+            }
+
+            coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
         }
 
         private void SendData()
@@ -346,7 +376,7 @@ namespace KinectDemoClient
                 {
                     PointCloudDataReady(pointCloudStreamMessage);
                 }
-                if (ColoredPointCloudDataReady != null && pointCloudStreamMessage != null)
+                if (ColoredPointCloudDataReady != null && coloredPointCloudStreamMessage != null)
                 {
                     ColoredPointCloudDataReady(coloredPointCloudStreamMessage);
                 }

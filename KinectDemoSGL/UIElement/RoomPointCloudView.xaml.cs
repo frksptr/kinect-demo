@@ -170,7 +170,7 @@ namespace KinectDemoSGL.UIElement
                             var r = colors[i*4 + 2];
                             var a = colors[i*4 + 3];
 
-                            gl.Color(r, g, b, a);
+                            gl.Color(r,g,b,a);
                         }
                         gl.Vertex(point.X, point.Y, point.Z);
                     }
