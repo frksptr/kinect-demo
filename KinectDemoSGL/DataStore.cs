@@ -127,7 +127,14 @@ namespace KinectDemoSGL
 
         public NullablePoint3D[] GetPointCloudForClient(KinectClient client)
         {
-            return clientPointCloudDictionary[client].Points;
+            try
+            {
+                return clientPointCloudDictionary[client].Points;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public PointCloud GetColoredPointCloudForClient(KinectClient client)

@@ -95,6 +95,7 @@ namespace KinectDemoSGL
         private void CreateOrGetClient(StateObject state)
         {
             KinectClient client = DataStore.Instance.CreateClientIfNotExists(state.WorkSocket.RemoteEndPoint);
+            client.Connected = true;
 
             stateObjectClientDictionary.Add(state, client);
             clientStateObjectDictionary.Add(client, state);
@@ -166,8 +167,10 @@ namespace KinectDemoSGL
 
                 if (!handler.Connected)
                 {
+                    stateObjectClientDictionary[state].Connected = false;
                     clientStateObjectDictionary.Remove(stateObjectClientDictionary[state]);
                     stateObjectClientDictionary.Remove(state);
+                    
                     MessageBox.Show("Client disconnected");
                 }
                 else

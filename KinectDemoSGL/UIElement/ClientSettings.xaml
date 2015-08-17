@@ -8,7 +8,7 @@
              Width="Auto"
              >
     <Grid>
-        <StackPanel>
+        <StackPanel Name="CheckboxContainer">
             <CheckBox Name="DepthCheckbox" Content="Depth Image" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="DepthImage_Checked" Unchecked="DepthImage_Unchecked"/>
             <CheckBox Name="ColorCheckbox" Content="Color Image" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="ColorImage_Checked" Unchecked="ColorImage_Unchecked"/>
             <CheckBox Name="PointCloudCheckbox" Content="Point Cloud" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="PointCloud_Checked" Unchecked="PointCloud_Unchecked"/>

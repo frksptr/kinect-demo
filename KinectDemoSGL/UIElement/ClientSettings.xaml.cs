@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using KinectDemoCommon;
+using System.Windows;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -28,6 +29,15 @@ namespace KinectDemoSGL.UIElement
             SkeletonCheckbox.IsChecked = config.StreamBodyData;
             CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
             SendAsOneCheckbox.IsChecked = config.SendAsOne;
+
+            foreach (FrameworkElement item in CheckboxContainer.Children)
+            {
+                if (item is CheckBox)
+                {
+                    item.IsEnabled = client.Connected;
+                }
+            }
+
             initialized = true;
         }
 
