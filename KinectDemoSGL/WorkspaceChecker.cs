@@ -14,25 +14,29 @@ using Microsoft.Kinect;
 
 namespace KinectDemoSGL
 {
-
-    public delegate void WorkspaceActivatedEventHandler(WorkspaceMessage message);
-
-    class WorkspaceChecker
+    public class WorkspaceChecker
     {
-        public List<Workspace> WorkspaceList { get; set; }
-
         private const double DistanceTolerance = 0.5;
 
-        public event WorkspaceActivatedEventHandler WorkspaceActivated;
-
-        public void CheckActiveWorkspace(CameraSpacePoint[] handPositions)
+        public static void CheckActiveWorkspace(CameraSpacePoint[] handPositions)
         {
-            foreach (Workspace workspace in WorkspaceList)
+            if (handPositions.Length > 0)
+            {
+                CheckActiveWorkspace(Converter.CameraSpacePointsToPoint3Ds(handPositions).ToArray());
+            }
+        }
+
+        public static void CheckActiveWorkspace(Point3D[] handPositions)
+        {
+            if (handPositions.Length == 0)
+            {
+                return;
+            }
+            foreach (Workspace workspace in DataStore.Instance.GetAllWorkspaces())
             {
                 Point3D[] vertices = workspace.FittedVertices;
 
-                Polygon poly = new Polygon();
-                poly.Points = new PointCollection
+                Point[] vertices2d = new[]
                 { 
                     new Point(vertices[0].X, vertices[0].Y),
                     new Point(vertices[1].X, vertices[1].Y),
@@ -40,7 +44,7 @@ namespace KinectDemoSGL
                     new Point(vertices[3].X, vertices[3].Y) };
 
                 bool isActive = false;
-                foreach (CameraSpacePoint handPosition in handPositions)
+                foreach (Point3D handPosition in handPositions)
                 {
                     Vector<double> handVector = new DenseVector(new double[] {
                         handPosition.X,
@@ -48,77 +52,18 @@ namespace KinectDemoSGL
                         handPosition.Z
                     });
 
-                    if (GeometryHelper.InsidePolygon3D(vertices.ToArray(), GeometryHelper.ProjectPoint3DToPlane(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector)))
+                    if (GeometryHelper.InsidePolygon3D(vertices, GeometryHelper.ProjectPoint3DToPlane(handPosition, workspace.PlaneVector)))
                     {
-                        double distance = GeometryHelper.CalculatePointPlaneDistance(Converter.CameraSpacePointToPoint3D(handPosition), workspace.PlaneVector);
+                        double distance = GeometryHelper.CalculatePointPlaneDistance(handPosition, workspace.PlaneVector);
 
                         if (Math.Abs(distance) <= DistanceTolerance)
                         {
                             isActive = true;
-                            if (WorkspaceActivated != null)
-                            {
-                                WorkspaceActivated(new WorkspaceMessage()
-                                {
-                                    Vertices = workspace.Vertices.ToArray()
-                                });
-                            }
                         }
                     }
                 }
                 workspace.Active = isActive;
             }
         }
-
-        //void kinectStreamer_BodyDataReady(object sender, KinectStreamerEventArgs e)
-        //{
-        //Bodies = e.Bodies;
-
-        //using (DrawingContext dc = drawingGroup.Open())
-        //{
-        //    dc.DrawImage(ColorImageSource, new Rect(0.0, 0.0, displayWidth, displayHeight));
-
-
-        //    int penIndex = 0;
-        //    foreach (Body body in Bodies)
-        //    {
-        //        Pen drawPen = bodyColors[penIndex++];
-
-        //        if (body.IsTracked)
-        //        {
-        //            IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-
-        //            // convert the joint points to depth (display) space
-        //            Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
-
-        //            foreach (JointType jointType in joints.Keys)
-        //            {
-        //                // sometimes the depth(Z) of an inferred joint may show as negative
-        //                // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
-        //                CameraSpacePoint position = joints[jointType].Position;
-        //                if (position.Z < 0)
-        //                {
-        //                    position.Z = InferredZPositionClamp;
-        //                }
-        //                ColorSpacePoint colorSpacePoint = kinectStreamer.CoordinateMapper.MapCameraPointToColorSpace(position);
-        //                jointPoints[jointType] = new Point(colorSpacePoint.X, colorSpacePoint.Y);
-        //            }
-
-        //            DrawBody(joints, jointPoints, dc, drawPen);
-
-        //            DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
-        //            DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
-
-        //            CheckActiveWorkspace(new CameraSpacePoint[]{
-        //                body.Joints[JointType.HandRight].Position,
-        //                body.Joints[JointType.HandLeft].Position});
-        //        }
-        //    }
-        //    // prevent drawing outside of our render area
-        //    drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, displayWidth, displayHeight));
-        //    DrawWorksapces(dc);
-        //    OnPropertyChanged("ColorImageSource");
-        //    OnPropertyChanged("ImageSource");
-        //}
-        //}
     }
 }
