@@ -157,7 +157,7 @@ namespace KinectDemoSGL.UIElement
                 NullablePoint3D[] points = pointCloud.Points;
                 byte[] colors = pointCloud.ColorBytes;
                 gl.Begin(OpenGL.GL_POINTS);
-                gl.Color(1.0f, 0.0f, 0.0f);
+                //gl.Color(1.0f, 0.0f, 0.0f);
                 for (int i = 0; i < pointCloud.Points.Length; i++)
                 {
                     var point = points[i];

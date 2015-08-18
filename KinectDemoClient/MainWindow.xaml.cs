@@ -226,7 +226,10 @@ namespace KinectDemoClient
                 if (!clientSocket.Connected)
                 {
                     clientSocket = null;
-                    StatusTextBox.Text += "\n Server disconnected.";
+                    Dispatcher.Invoke(() =>
+                    {
+                        StatusTextBox.Text += "\n Server disconnected.";
+                    });
                 }
                 else
                 {

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KinectDemoCommon;
@@ -300,51 +298,44 @@ namespace KinectDemoClient
         private void ProcessPointCloudColors()
         {
             byte[] pointCloudColors = new byte[depthArray.Length * 4];
-            //ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
-            //CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
-            //int stride = (int)ColorFrameDescription.BytesPerPixel * ColorFrameDescription.Width;
-            //for (int i = 0; i < colorSpacePoints.Length; i++)
-            //{
-            //    var point = colorSpacePoints[i];
-            //    if (GeometryHelper.IsValidPoint(point))
-            //    {
-            //        int index = ((int)point.X + DepthFrameDescription.Width / 2) +
-            //                    ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
+            ColorSpacePoint[] colorSpacePoints = new ColorSpacePoint[depthArray.Length];
+            var colorWidth = ColorFrameDescription.Width;
+            var colorHeight = ColorFrameDescription.Height;
 
-            //        //int index = (int)((point.X + DepthFrameDescription.Width / 2) * ColorFrameDescription.BytesPerPixel +
-            //        //    (point.Y+ DepthFrameDescription.Height/2) * stride);
+            CoordinateMapper.MapDepthFrameToColorSpace(depthArray, colorSpacePoints);
+            float maxX = 0;
+            float maxY = 0;
 
-            //        pointCloudColors[i * 4] = colorPixels[index * 4];
-            //        pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
-            //        pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
-            //        pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
-            //    }
-            //}
-            //coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
-
-
-            for (int i = 0; i < FullPointCloud.Length; i++)
+            for (int i = 0; i < depthArray.Length; i++)
             {
-                if (FullPointCloud[i] == null)
+                var point = colorSpacePoints[i];
+                if (GeometryHelper.IsValidPoint(point))
                 {
-                    continue; 
-                }
-                CameraSpacePoint csp = new CameraSpacePoint()
-                {
-                    X = (float)FullPointCloud[i].X,
-                    Y = (float)FullPointCloud[i].Y, 
-                    Z = (float)FullPointCloud[i].Z
-                };
-                ColorSpacePoint colorSpacePoint = CoordinateMapper.MapCameraPointToColorSpace(csp);
-                int colorWidth = ColorFrameDescription.Width;
-                int index = (int)((colorSpacePoint.X + DepthFrameDescription.Width / 2) +
-                            (colorSpacePoint.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width);
-                pointCloudColors[i * 4] = colorPixels[index * 4];
-                pointCloudColors[i * 4 + 1] = colorPixels[index * 4 + 1];
-                pointCloudColors[i * 4 + 2] = colorPixels[index * 4 + 2];
-                pointCloudColors[i * 4 + 3] = colorPixels[index * 4 + 3];
-            }
+                    maxX = point.X > maxX ? point.X : maxX;
+                    maxY = point.Y > maxY ? point.Y : maxY;
 
+                    int colorX = (int) Math.Floor(point.X + 0.5);
+                    int colorY = (int)Math.Floor(point.Y + 0.5);
+
+                    if ((colorX > 0 && colorX < colorWidth) && (colorY > 0 && colorY < colorHeight))
+                    {
+                        
+                        int index = (int)(((colorWidth*colorY)+colorX) * 4);
+                        pointCloudColors[i * 4] = colorPixels[index];
+                        pointCloudColors[i * 4 + 1] = colorPixels[index + 1];
+                        pointCloudColors[i * 4 + 2] = colorPixels[index + 2];
+                        pointCloudColors[i * 4 + 3] = colorPixels[index + 3];
+                    }
+
+
+                    //int index = ((int)point.X + DepthFrameDescription.Width / 2) +
+                    //            ((int)point.Y + DepthFrameDescription.Height / 2) * DepthFrameDescription.Width;
+
+                    //int index = (int)((point.X + DepthFrameDescription.Width / 2) * ColorFrameDescription.BytesPerPixel +
+                    //    (point.Y+ DepthFrameDescription.Height/2) * stride);
+
+                }
+            }
             coloredPointCloudStreamMessage = new ColoredPointCloudStreamMessage(FullPointCloud, pointCloudColors);
         }
 
