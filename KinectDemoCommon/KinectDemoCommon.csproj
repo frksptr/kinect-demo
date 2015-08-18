@@ -49,8 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameSize.cs" />
-    <Compile Include="Messages\KinectStreamerConfigMessage.cs" />
+    <Compile Include="Messages\ClientConfigurationMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\CalibrationDataMessage.cs" />
+    <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\ColoredPointCloudStreamMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\PointCloudStreamMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\UnifiedStreamerMessage.cs" />
     <Compile Include="Messages\KinectDemoMessage.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="KinectStreamerConfig.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectClientMessage.cs" />
     <Compile Include="Model\NullablePoint3D.cs" />
+    <Compile Include="Model\PointCloud.cs" />
     <Compile Include="Model\SerializableBody.cs" />
     <Compile Include="Model\Workspace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
@@ -83,7 +80,7 @@ namespace KinectDemoSGL
 
             bodyView = new BodyView();
 
-            HandCheckBodyViewHolder.Children.Add(bodyView);
+            //HandCheckBodyViewHolder.Children.Add(bodyView);
 
             roomPointCloudView = new RoomPointCloudView();
 
@@ -99,7 +96,7 @@ namespace KinectDemoSGL
         {
             Dispatcher.Invoke(() =>
             {
-                ClientMessageBox.Text += "\nFrom " + client.Name + ":\n" + ((TextMessage)message).Text;
+                //ClientMessageBox.Text += "\nFrom " + client.Name + ":\n" + ((TextMessage)message).Text;
             });
         }
 
@@ -205,41 +202,46 @@ namespace KinectDemoSGL
         }
         private void RemoveWorkspace(object sender, RoutedEventArgs e)
         {
-            workspaceList.Remove((Workspace)WorkspaceList.SelectedItem);
-            dataStore.DeleteWorkspace((Workspace)WorkspaceList.SelectedItem);
+            Workspace workspace = (Workspace)(((ListBoxItem)WorkspaceList.ContainerFromElement((Button)sender)).Content);
+            workspaceList.Remove(workspace);
+            dataStore.DeleteWorkspace(workspace);
             activeWorkspace = new Workspace();
             cloudView.ClearScreen();
         }
 
         private void SaveWorkspaceToFile(object sender, RoutedEventArgs e)
         {
-            Workspace workspace = (Workspace)(((ListBoxItem) WorkspaceList.ContainerFromElement((Button) sender)).Content);
+            Workspace workspace = (Workspace)(((ListBoxItem)WorkspaceList.ContainerFromElement((Button)sender)).Content);
             FileHelper.WritePCD(new List<Point3D>(workspace.PointCloud), @"C:/asd/" + workspace.Name + "_pointcloud.pcd");
         }
 
         private void ClientSettingsHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue == true)
+if ((bool)e.NewValue == true)
             {
-                //TabControl clients = new TabControl();
-                //List<TabItem> clientTabs = new List<TabItem>();
-                //foreach (KinectClient client in DataStore.Instance.GetClients())
-                //{
-                //    TabItem tabItem = new TabItem();
-                //    ClientSettings settings = new ClientSettings();
-                //    settings.ClientSettingsChanged += ClientSettingsChanged;
+                List<TabItem> clientTabs = new List<TabItem>();
+                foreach (KinectClient client in DataStore.Instance.GetClients())
+                {
+                    TabItem tabItem = new TabItem() { Header = client.Name };
 
-                //    tabItem.Header = client.Name;
-                //    tabItem.Content = settings;
-                //    clientTabs.Add(tabItem);
-                //}
-                //ClientSettings.DataContext = clientTabs;
+                    ClientSettings settings = new ClientSettings(client, dataStore.GetConfigurationForClient(client));
+
+                    settings.ClientSettingsChanged += ClientSettingsChanged;
+
+                    tabItem.Content = settings;
+
+                    clientTabs.Add(tabItem);
+                }
+                ClientSettings.DataContext = clientTabs;
+            }
+
+
             }
         }
 
-        private void ClientSettingsChanged(KinectStreamerConfig config)
+        private void ClientSettingsChanged(KinectClient client, KinectStreamerConfig config)
         {
-            //throw new NotImplementedException();
+            KinectServer.Instance.ConfigureClient(client, config);
         }
     }
 }

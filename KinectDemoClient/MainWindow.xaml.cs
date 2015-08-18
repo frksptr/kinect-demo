@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
@@ -68,6 +69,12 @@ namespace KinectDemoClient
             SerializeAndSendMessage((DepthStreamMessage)message);
         }
 
+
+        private void kinectStreamer_ColoredPointCloudDataReady(KinectClientMessage message)
+        {
+            SerializeAndSendMessage((ColoredPointCloudStreamMessage)message);
+        }
+
         private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
         {
             SendFirstPointCloud();
@@ -80,7 +87,7 @@ namespace KinectDemoClient
             if (!calibrationDataSent)
             {
                 calibrationDataSent = true;
-                CalibrationCheckBox.IsChecked = false;
+                CalibrationCheckbox.IsChecked = false;
                 SerializeAndSendMessage((CalibrationDataMessage)message);
             }
         }
@@ -134,6 +141,11 @@ namespace KinectDemoClient
                 Dispatcher.Invoke(() => {
                     StatusTextBox.Text += "Connected to server.\n";
                 });
+
+                SerializeAndSendMessage(new ClientConfigurationMessage()
+                {
+                    Configuration = kinectStreamer.KinectStreamerConfig
+                });
             }
             catch (Exception ex)
             {
@@ -186,9 +198,25 @@ namespace KinectDemoClient
                             SerializeAndSendMessage(updatedMessage);
                         });
                     }
-                    if (obj is KinectServerReadyMessage)
+                    else if (obj is KinectServerReadyMessage)
                     {
                         serverReady = ((KinectServerReadyMessage)obj).Ready;
+                    }
+                    else if (obj is ClientConfigurationMessage)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            ClientConfigurationMessage msg = (ClientConfigurationMessage) obj;
+                            //  TODO: bind
+                            KinectStreamerConfig config = msg.Configuration;
+                            kinectStreamer.KinectStreamerConfig = config;
+                            DepthCheckbox.IsChecked = config.StreamDepthData;
+                            ColorCheckbox.IsChecked = config.StreamColorData;
+                            SkeletonCheckbox.IsChecked = config.StreamBodyData;
+                            UnifiedCheckbox.IsChecked = config.SendAsOne;
+                            PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
+                            CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+                        });
                     }
                 }
 
@@ -198,7 +226,18 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                if (!clientSocket.Connected)
+                {
+                    clientSocket = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        StatusTextBox.Text += "\n Server disconnected.";
+                    });
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 
@@ -244,49 +283,62 @@ namespace KinectDemoClient
         private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideDepthData = true;
+            kinectStreamer.KinectStreamerConfig.StreamDepthData = true;
         }
 
         private void ColorCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideColorData = true;
+            kinectStreamer.KinectStreamerConfig.StreamColorData = true;
         }
 
         private void ColorCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.ColorDataReady -= kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideColorData = false;
+            kinectStreamer.KinectStreamerConfig.StreamColorData = false;
         }
 
         private void DepthCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideDepthData = false;
+            kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
         }
 
         private void PointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.PointCloudDataReady += kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = true;
+            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = true;
         }
 
         private void PointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.PointCloudDataReady -= kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvidePointCloudData = false;
+            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = false;
         }
 
         private void SkeletonCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideBodyData = true;
+            kinectStreamer.KinectStreamerConfig.StreamBodyData = true;
         }
 
         private void SkeletonCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideBodyData = false;
+            kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
+        }
+
+        private void ColoredPointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColoredPointCloudDataReady += kinectStreamer_ColoredPointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
+        }
+
+
+        private void ColoredPointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            kinectStreamer.ColoredPointCloudDataReady -= kinectStreamer_ColoredPointCloudDataReady;
+            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
         }
 
         private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -326,5 +378,6 @@ namespace KinectDemoClient
             Properties.Settings.Default.AutoConnect = false;
             Properties.Settings.Default.Save();
         }
+
     }
 }

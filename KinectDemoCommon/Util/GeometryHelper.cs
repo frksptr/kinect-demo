@@ -19,9 +19,14 @@ namespace KinectDemoCommon.Util
             return !float.IsNaN(num) && !float.IsInfinity(num);
         }
 
-        public static bool IsValidCameraPoint(CameraSpacePoint point)
+        public static bool IsValidPoint(CameraSpacePoint point)
         {
             return IsNumber(point.X) && IsNumber(point.Y) && IsNumber(point.Z);
+        }
+
+        public static bool IsValidPoint(ColorSpacePoint point)
+        {
+            return IsNumber(point.X) && IsNumber(point.Y);
         }
 
         public static double[] Normalize(double[] points)
@@ -91,13 +96,13 @@ namespace KinectDemoCommon.Util
 
             Vector<double> pointVector = new DenseVector(new[] { x, y, z });
 
-            pointVector.Subtract(planeNormal.Multiply(distance));
+            Vector<double> projectedPointVector = pointVector.Subtract(planeNormal.Multiply(distance));
 
             return new Point3D
             {
-                X = pointVector[0],
-                Y = pointVector[1],
-                Z = pointVector[2]
+                X = projectedPointVector[0],
+                Y = projectedPointVector[1],
+                Z = projectedPointVector[2]
             };
         }
 

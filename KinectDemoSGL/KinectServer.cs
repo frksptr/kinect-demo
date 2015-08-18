@@ -12,10 +12,6 @@ using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using System.Collections.Generic;
-using KinectDemoCommon.Messages.KinectServerMessages;
-using KinectDemoSGL;
-using KinectDemoCommon;
 
 namespace KinectDemoSGL
 {
@@ -26,11 +22,11 @@ namespace KinectDemoSGL
     {
 
         private readonly string ip = NetworkHelper.LocalIPAddress();
-        //private readonly string ip = "192.168.0.116";
+        //private readonly string ip = "192.168.0.119";
 
         //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
 
-        private Socket socket;
+        private Socket streamerSocket;
         //private byte[] buffer;
 
         private static KinectServer kinectServer;
@@ -66,10 +62,10 @@ namespace KinectDemoSGL
         {
             try
             {
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
-                socket.Listen(10);
-                socket.BeginAccept(AcceptCallback, null);
+                streamerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                streamerSocket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
+                streamerSocket.Listen(10);
+                streamerSocket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
@@ -82,23 +78,29 @@ namespace KinectDemoSGL
             try
             {
                 StateObject state = new StateObject();
-                state.WorkSocket = socket.EndAccept(ar);
-                KinectClient client = new KinectClient();
+                state.WorkSocket = streamerSocket.EndAccept(ar);
 
-                stateObjectClientDictionary.Add(state, client);
-                clientStateObjectDictionary.Add(client, state);
-
-                DataStore.Instance.AddClientIfNotExists(stateObjectClientDictionary[state]);
+                CreateOrGetClient(state);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
-                socket.BeginAccept(AcceptCallback, null);
+                streamerSocket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
+
+        private void CreateOrGetClient(StateObject state)
+        {
+            KinectClient client = DataStore.Instance.CreateClientIfNotExists(state.WorkSocket.RemoteEndPoint);
+            client.Connected = true;
+
+            stateObjectClientDictionary.Add(state, client);
+            clientStateObjectDictionary.Add(client, state);
+        }
+
         private void ObjectArrived(object obj, KinectClient sender)
         {
             if (obj != null)
@@ -147,7 +149,8 @@ namespace KinectDemoSGL
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                        
+                        //MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                     }
 
                     Array.Resize(ref state.Buffer, 9000000);
@@ -159,7 +162,21 @@ namespace KinectDemoSGL
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                StateObject state = (StateObject)ar.AsyncState;
+                Socket handler = state.WorkSocket;
+
+                if (!handler.Connected)
+                {
+                    stateObjectClientDictionary[state].Connected = false;
+                    clientStateObjectDictionary.Remove(stateObjectClientDictionary[state]);
+                    stateObjectClientDictionary.Remove(state);
+                    
+                    MessageBox.Show("Client disconnected");
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 
@@ -177,6 +194,16 @@ namespace KinectDemoSGL
                 Vertices = workspace.Vertices.ToArray()
             };
             SerializeAndSendMessage(message, state.WorkSocket);
+        }
+
+        public void ConfigureClient(KinectClient client, KinectStreamerConfig config)
+        {
+            StateObject state = clientStateObjectDictionary[client];
+            ClientConfigurationMessage msg = new ClientConfigurationMessage()
+            {
+                Configuration = config
+            };
+            SerializeAndSendMessage(msg, state.WorkSocket);
         }
 
         private void SerializeAndSendMessage(KinectDemoMessage msg, Socket socket)
