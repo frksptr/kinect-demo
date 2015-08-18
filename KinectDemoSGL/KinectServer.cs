@@ -26,7 +26,7 @@ namespace KinectDemoSGL
 
         //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
 
-        private Socket socket;
+        private Socket streamerSocket;
         //private byte[] buffer;
 
         private static KinectServer kinectServer;
@@ -62,10 +62,10 @@ namespace KinectDemoSGL
         {
             try
             {
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
-                socket.Listen(10);
-                socket.BeginAccept(AcceptCallback, null);
+                streamerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                streamerSocket.Bind(new IPEndPoint(IPAddress.Parse(ip), 3333));
+                streamerSocket.Listen(10);
+                streamerSocket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
@@ -78,13 +78,13 @@ namespace KinectDemoSGL
             try
             {
                 StateObject state = new StateObject();
-                state.WorkSocket = socket.EndAccept(ar);
+                state.WorkSocket = streamerSocket.EndAccept(ar);
 
                 CreateOrGetClient(state);
 
                 state.WorkSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ReceiveCallback, state);
 
-                socket.BeginAccept(AcceptCallback, null);
+                streamerSocket.BeginAccept(AcceptCallback, null);
             }
             catch (Exception ex)
             {
