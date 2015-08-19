@@ -44,8 +44,6 @@ namespace KinectDemoSGL
             clientPointCloudDictionary = new Dictionary<KinectClient, PointCloud>();
 
             clientConfigurationDictionary = new Dictionary<KinectClient, KinectStreamerConfig>();
-
-            clientConfigDictionary = new Dictionary<KinectClient, List<KinectStreamerConfig>>();
         }
 
         public KinectClient CreateClientIfNotExists(EndPoint endPoint)

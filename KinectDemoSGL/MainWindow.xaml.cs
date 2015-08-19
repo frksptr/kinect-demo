@@ -217,7 +217,7 @@ namespace KinectDemoSGL
 
         private void ClientSettingsHolder_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-if ((bool)e.NewValue == true)
+            if ((bool)e.NewValue == true)
             {
                 List<TabItem> clientTabs = new List<TabItem>();
                 foreach (KinectClient client in DataStore.Instance.GetClients())
@@ -236,7 +236,6 @@ if ((bool)e.NewValue == true)
             }
 
 
-            }
         }
 
         private void ClientSettingsChanged(KinectClient client, KinectStreamerConfig config)

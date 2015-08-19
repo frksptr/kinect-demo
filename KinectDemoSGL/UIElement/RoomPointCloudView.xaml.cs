@@ -74,6 +74,7 @@ namespace KinectDemoSGL.UIElement
         const uint pointCloudAttributeIndexPosition = 0;
         const uint pointCloudAttributeIndexColor = 1;
         float[] pointCloudVertices = { };
+        float[] pointCloudColors = { };
         VertexBufferArray pointCloudVertexBufferArray;
         private ShaderProgram shaderProgramPointCloud; //irregular name
 
@@ -134,8 +135,10 @@ namespace KinectDemoSGL.UIElement
             {
                 Dispatcher.Invoke(() =>
                 {
-                    LoadPointCloud(dataStore.GetPointCloudForClient(ActiveClient));
-                    createVerticesForPointCloud(OpenGlControl.OpenGL);
+                    PointCloud cloud = dataStore.GetColoredPointCloudForClient(ActiveClient);
+
+                    LoadPointCloud(cloud.Points, cloud.ColorBytes);
+                    CreateVerticesForPointCloud(OpenGlControl.OpenGL);
                 });
             }
         }
@@ -144,14 +147,18 @@ namespace KinectDemoSGL.UIElement
         {
             Dispatcher.Invoke(() =>
             {
-                LoadPointCloud(dataStore.GetPointCloudForClient(activeClient));
+                PointCloud cloud = dataStore.GetColoredPointCloudForClient(ActiveClient);
+
+                LoadPointCloud(cloud.Points, cloud.ColorBytes);
                 //
-                createVerticesForPointCloud(OpenGlControl.OpenGL);
+                CreateVerticesForPointCloud(OpenGlControl.OpenGL);
+
             });
         }
 
 
-        private void LoadPointCloud(NullablePoint3D[] pointCloud)
+
+        private void LoadPointCloud(NullablePoint3D[] pointCloud, byte[] colors)
         {
             //string[] cloudLines = System.IO.File.ReadAllLines("cloud.txt");
             ////string[] wsLines = System.IO.File.ReadAllLines("ws.txt");
@@ -181,7 +188,14 @@ namespace KinectDemoSGL.UIElement
                 }
             }
             pointCloudVertices = cloudVerticesList.ToArray();
-            createVerticesForPointCloud(OpenGlControl.OpenGL);
+
+            List<float> cloudColorsList = new List<float>();
+            foreach (byte color in colors)
+            {
+                cloudColorsList.Add(color);
+            }
+            pointCloudColors = cloudColorsList.ToArray();
+            CreateVerticesForPointCloud(OpenGlControl.OpenGL);
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)
@@ -224,7 +238,7 @@ namespace KinectDemoSGL.UIElement
             shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexPosition, "in_Position");
             shaderProgramPointCloud.BindAttributeLocation(gl, pointCloudAttributeIndexColor, "in_Color");
             shaderProgramPointCloud.AssertValid(gl);
-            createVerticesForPointCloud(gl);
+            CreateVerticesForPointCloud(gl);
             //createVerticesForFloor(gl);
 
             var workspaceShaderSource = File.ReadAllText("workspace.vert");
@@ -265,7 +279,7 @@ namespace KinectDemoSGL.UIElement
             pointCloudVertexBufferArray.Unbind(gl);
         }
 
-        private void createVerticesForPointCloud(OpenGL gl)
+        private void CreateVerticesForPointCloud(OpenGL gl)
         {
             pointCloudVertexBufferArray = new VertexBufferArray();
             pointCloudVertexBufferArray.Create(gl);
@@ -276,10 +290,10 @@ namespace KinectDemoSGL.UIElement
             vertexDataBuffer.Bind(gl);
             vertexDataBuffer.SetData(gl, 0, pointCloudVertices, false, 3);
 
-            /* var colorDataBuffer = new VertexBuffer();
-             colorDataBuffer.Create(gl);
-             colorDataBuffer.Bind(gl);
-             colorDataBuffer.SetData(gl, 1, colors, false, 3);*/
+            var colorDataBuffer = new VertexBuffer();
+            colorDataBuffer.Create(gl);
+            colorDataBuffer.Bind(gl);
+            colorDataBuffer.SetData(gl, 1, pointCloudColors, false, 4);
 
             pointCloudVertexBufferArray.Unbind(gl);
         }
@@ -350,7 +364,6 @@ namespace KinectDemoSGL.UIElement
                 shaderProgramPointCloud.Bind(gl);
                 shaderProgramPointCloud.SetUniformMatrix4(gl, "projectionMatrix", projectionMatrix.to_array());
                 shaderProgramPointCloud.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
-                shaderProgramPointCloud.SetUniform3(gl, "uColor", 0.0f, 1.0f, 0.0f);
                 shaderProgramPointCloud.SetUniform1(gl, "uSize", 1.0f);
 
 
@@ -553,6 +566,7 @@ namespace KinectDemoSGL.UIElement
             {
                 messageProcessor.BodyDataArrived -= BodyDataArrived;
                 messageProcessor.PointCloudDataArrived -= PointCloudDataArrived;
+                messageProcessor.ColoredPointCloudDataArrived -= ColoredPointCloudDataArrived;
             }
             else if ((bool)e.NewValue)
             {
@@ -564,6 +578,7 @@ namespace KinectDemoSGL.UIElement
 
                     messageProcessor.BodyDataArrived += BodyDataArrived;
                     messageProcessor.PointCloudDataArrived += PointCloudDataArrived;
+                    messageProcessor.ColoredPointCloudDataArrived += ColoredPointCloudDataArrived;
                     OpenGlControl.Focus();
                 }
                 catch (Exception)
@@ -573,6 +588,19 @@ namespace KinectDemoSGL.UIElement
                 }
 
             }
+        }
+
+        private void ColoredPointCloudDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                PointCloud cloud = dataStore.GetColoredPointCloudForClient(ActiveClient);
+
+                LoadPointCloud(cloud.Points, cloud.ColorBytes);
+                //
+                CreateVerticesForPointCloud(OpenGlControl.OpenGL);
+
+            });
         }
 
         private void LoadWorkspaces()
@@ -644,130 +672,130 @@ namespace KinectDemoSGL.UIElement
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            List<NullablePoint3D[]> pointClouds = GetPointClouds();
-            showMerged = true;
-            //fal
-            var kinect1CalPoints = pointClouds[0];
-            //var kinect1CalPoints = new NullablePoint3D[]{
+       //     List<NullablePoint3D[]> pointClouds = GetPointClouds();
+       //     showMerged = true;
+       //     //fal
+       //     var kinect1CalPoints = pointClouds[0];
+       //     //var kinect1CalPoints = new NullablePoint3D[]{
 
-            //    new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
-            //    new NullablePoint3D(-0.5510268, -0.3471858,  2.119 ),
-            //    new NullablePoint3D(-0.4770563, -0.09818071, 2.456), 
-            //    new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
-            //    new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
-            //    new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
+       //     //    new NullablePoint3D(-0.2141886, -0.3827868,  2.077 ),
+       //     //    new NullablePoint3D(-0.5510268, -0.3471858,  2.119 ),
+       //     //    new NullablePoint3D(-0.4770563, -0.09818071, 2.456), 
+       //     //    new NullablePoint3D(-0.5368629, -0.3702611,  2.065 ),
+       //     //    new NullablePoint3D(-0.08871523, -0.3175019, 2.163), 
+       //     //    new NullablePoint3D(-0.3015684, -0.3948682,  2.046 )
 
-            //    //new NullablePoint3D(0, 0, 0),
-            //    //new NullablePoint3D(1, 0, 0),
-            //    //new NullablePoint3D(1, 0, 1), 
-            //    //new NullablePoint3D(0, 0,  1),
-            //    //new NullablePoint3D(0, 1, 0), 
-            //    //new NullablePoint3D(1, 1,  0)
-            //};
-            //ajtó
-            var kinect2CalPoints = pointClouds[1];
-            //var kinect2CalPoints = new NullablePoint3D[]{
+       //     //    //new NullablePoint3D(0, 0, 0),
+       //     //    //new NullablePoint3D(1, 0, 0),
+       //     //    //new NullablePoint3D(1, 0, 1), 
+       //     //    //new NullablePoint3D(0, 0,  1),
+       //     //    //new NullablePoint3D(0, 1, 0), 
+       //     //    //new NullablePoint3D(1, 1,  0)
+       //     //};
+       //     //ajtó
+       //     var kinect2CalPoints = pointClouds[1];
+       //     //var kinect2CalPoints = new NullablePoint3D[]{
 
-            //    new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
-            //    new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
-            //    new NullablePoint3D(0.1402809,  -0.3342402,  2.077),
-            //    new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
-            //    new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
-            //    new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
+       //     //    new NullablePoint3D(-0.3635642, -0.4667397, 1.891),
+       //     //    new NullablePoint3D(-0.2965499, -0.2976018, 2.139),
+       //     //    new NullablePoint3D(0.1402809,  -0.3342402,  2.077),
+       //     //    new NullablePoint3D(-0.3312522, -0.2975046, 2.139),
+       //     //    new NullablePoint3D(-0.2726442, -0.5310401, 1.798),
+       //     //    new NullablePoint3D(-0.3915003, -0.4241526, 1.953)
 
-            //    //new NullablePoint3D(1.05, -0.05, -0.05),
-            //    //new NullablePoint3D(2.05, 0.05, -0.05),
-            //    //new NullablePoint3D(2.05, -1.05, -0.05),
-            //    //new NullablePoint3D(1.05, -1.05, -0.05),
-            //    //new NullablePoint3D(1.05, 0.05, -0.95),
-            //    //new NullablePoint3D(1.95, -0.05, -1.05)
-            //};
+       //     //    //new NullablePoint3D(1.05, -0.05, -0.05),
+       //     //    //new NullablePoint3D(2.05, 0.05, -0.05),
+       //     //    //new NullablePoint3D(2.05, -1.05, -0.05),
+       //     //    //new NullablePoint3D(1.05, -1.05, -0.05),
+       //     //    //new NullablePoint3D(1.05, 0.05, -0.95),
+       //     //    //new NullablePoint3D(1.95, -0.05, -1.05)
+       //     //};
 
-            var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
+       //     var A = GeometryHelper.GetTransformationAndRotation(kinect1CalPoints, kinect2CalPoints);
 
-            Matrix<double> rot = A.R;
-            Vector<double> translate = A.T;
-
-
-            // from skeleton calibration
-            //Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
-            //        new[]{-0.01868811233840361,
-            //        -0.34501377370318648,
-            //        -0.93841155705389412},
-            //        new[]{0.5320510930426815,
-            //        0.79121684933040015,
-            //        -0.30149217523472005},
-            //        new[]{0.84650598866713045,
-            //        -0.50491721429434455,
-            //        0.16877860604923636	}
-            //});
-            //Vector<double> translate = DenseVector.OfArray(new[]{
-            //    -1.875871904795692,	
-            //    0.47458577514168565,	
-            //    1.1320225857947943
-            //});
-
-            // PCL reregistration from skeletal fitted clouds
-            Matrix<double> rot2 = DenseMatrix.OfColumnArrays(new List<double[]>{
-                new[]{0.998954,0.0450756,0.00775811 },
-                new[]{-0.0451261,0.998961,0.00646457 },      
-                new[]{-0.00745865,-0.0068079,0.999949}});
-
-            Vector<double> translate2 = DenseVector.OfArray(new[]{
-                0.000232426,
-                 0.000932637,
-                 1.57323e-005
-            });
-
-            // chessboard calibration
-            Matrix<double> rotCB = DenseMatrix.OfColumnArrays(
-                new List<double[]> { 
-                    new[]{-1.2316533437904904e-002, 5.2568656248225909e-001,
-       -8.5058917288527658e-001},
-       new[]{ -5.7551867406562152e-001,
-       6.9190195114274877e-001, 4.3594718235883412e-001},
-       new[]{       8.1769588405826155e-001, 4.9489931100219109e-001,
-       2.9402059989690299e-001}
-                }
-                );
-
-            Vector<double> translateCB = DenseVector.OfArray(new[]{
-                1.2315362401819163e+000, -9.6293867563953039e-001,
-       1.5791089847312716e+000
-            });
-            //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
-
-            List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
-            NullablePoint3D[] pointCloud1 = dataStore.GetPointCloudForClient(kinectClients[0]);
-            //NullablePoint3D[] pointCloud1 = FileHelper.ParsePCD(@"C:\asd\cloud1.pcd").ToArray();
+       //     Matrix<double> rot = A.R;
+       //     Vector<double> translate = A.T;
 
 
-            NullablePoint3D[] pointCloud2 = dataStore.GetPointCloudForClient(kinectClients[1]);
-            foreach (NullablePoint3D point in pointCloud1)
-            //foreach (NullablePoint3D point in kinect1CalPoints)
-            {
-                if (point != null)
-                {
-                    var pointVector = DenseVector.OfArray(new[] { point.X, point.Y, point.Z });
-                    var rottranv = (rotCB * pointVector) + translateCB;
-                    //rottranv = rot2 * rottranv + translate2;
-                    transformedPointCloudList.Add(new NullablePoint3D(rottranv[0], rottranv[1], rottranv[2]));
-                }
-            }
+       //     // from skeleton calibration
+       //     //Matrix<double> rot = DenseMatrix.OfColumnArrays(new List<double[]>{
+       //     //        new[]{-0.01868811233840361,
+       //     //        -0.34501377370318648,
+       //     //        -0.93841155705389412},
+       //     //        new[]{0.5320510930426815,
+       //     //        0.79121684933040015,
+       //     //        -0.30149217523472005},
+       //     //        new[]{0.84650598866713045,
+       //     //        -0.50491721429434455,
+       //     //        0.16877860604923636	}
+       //     //});
+       //     //Vector<double> translate = DenseVector.OfArray(new[]{
+       //     //    -1.875871904795692,	
+       //     //    0.47458577514168565,	
+       //     //    1.1320225857947943
+       //     //});
 
-            transformedPointCloud = transformedPointCloudList.ToArray();
-            var mergedCloud = new NullablePoint3D[pointCloud1.Length + transformedPointCloud.Length];
-            pointCloud2.CopyTo(mergedCloud, 0);
-            transformedPointCloud.CopyTo(mergedCloud, pointCloud2.Length);
-            LoadPointCloud(mergedCloud);
-            createVerticesForPointCloud(OpenGlControl.OpenGL);
-            OpenGlControl.Focus();
+       //     // PCL reregistration from skeletal fitted clouds
+       //     Matrix<double> rot2 = DenseMatrix.OfColumnArrays(new List<double[]>{
+       //         new[]{0.998954,0.0450756,0.00775811 },
+       //         new[]{-0.0451261,0.998961,0.00646457 },      
+       //         new[]{-0.00745865,-0.0068079,0.999949}});
 
-            transformedPointCloud = transformedPointCloudList.ToArray();
+       //     Vector<double> translate2 = DenseVector.OfArray(new[]{
+       //         0.000232426,
+       //          0.000932637,
+       //          1.57323e-005
+       //     });
 
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud1)), @"C:\asd\kinect1cloud.pcd");
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud2)), @"C:\asd\kinect2cloud.pcd");
-            //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(transformedPointCloudList)), @"C:\asd\cloud1to2.pcd");
+       //     // chessboard calibration
+       //     Matrix<double> rotCB = DenseMatrix.OfColumnArrays(
+       //         new List<double[]> { 
+       //             new[]{-1.2316533437904904e-002, 5.2568656248225909e-001,
+       //-8.5058917288527658e-001},
+       //new[]{ -5.7551867406562152e-001,
+       //6.9190195114274877e-001, 4.3594718235883412e-001},
+       //new[]{       8.1769588405826155e-001, 4.9489931100219109e-001,
+       //2.9402059989690299e-001}
+       //         }
+       //         );
+
+       //     Vector<double> translateCB = DenseVector.OfArray(new[]{
+       //         1.2315362401819163e+000, -9.6293867563953039e-001,
+       //1.5791089847312716e+000
+       //     });
+       //     //var a = rot * DenseVector.OfArray(new[] { kinect1CalPoints[0].X, kinect1CalPoints[0].Y, kinect1CalPoints[0].Z }) + translate;
+
+       //     List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
+       //     NullablePoint3D[] pointCloud1 = dataStore.GetPointCloudForClient(kinectClients[0]);
+       //     //NullablePoint3D[] pointCloud1 = FileHelper.ParsePCD(@"C:\asd\cloud1.pcd").ToArray();
+
+
+       //     NullablePoint3D[] pointCloud2 = dataStore.GetPointCloudForClient(kinectClients[1]);
+       //     foreach (NullablePoint3D point in pointCloud1)
+       //     //foreach (NullablePoint3D point in kinect1CalPoints)
+       //     {
+       //         if (point != null)
+       //         {
+       //             var pointVector = DenseVector.OfArray(new[] { point.X, point.Y, point.Z });
+       //             var rottranv = (rotCB * pointVector) + translateCB;
+       //             //rottranv = rot2 * rottranv + translate2;
+       //             transformedPointCloudList.Add(new NullablePoint3D(rottranv[0], rottranv[1], rottranv[2]));
+       //         }
+       //     }
+
+       //     transformedPointCloud = transformedPointCloudList.ToArray();
+       //     var mergedCloud = new NullablePoint3D[pointCloud1.Length + transformedPointCloud.Length];
+       //     pointCloud2.CopyTo(mergedCloud, 0);
+       //     transformedPointCloud.CopyTo(mergedCloud, pointCloud2.Length);
+       //     LoadPointCloud(mergedCloud);
+       //     CreateVerticesForPointCloud(OpenGlControl.OpenGL);
+       //     OpenGlControl.Focus();
+
+       //     transformedPointCloud = transformedPointCloudList.ToArray();
+
+       //     //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud1)), @"C:\asd\kinect1cloud.pcd");
+       //     //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(pointCloud2)), @"C:\asd\kinect2cloud.pcd");
+       //     //FileHelper.WritePCD(Converter.NullablePoint3DsToPoint3Ds(new List<NullablePoint3D>(transformedPointCloudList)), @"C:\asd\cloud1to2.pcd");
         }
 
 

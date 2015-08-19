@@ -11,6 +11,6 @@ uniform float uSize;
 void main(void) {
 
 	gl_Position = projectionMatrix * viewMatrix * vec4(in_Position, 1.0);
-	pass_Color = uColor;
+	pass_Color = in_Color;
 	gl_PointSize = uSize;
 }
