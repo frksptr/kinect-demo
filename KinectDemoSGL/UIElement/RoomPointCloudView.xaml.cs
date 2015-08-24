@@ -366,7 +366,7 @@ namespace KinectDemoSGL.UIElement
                 shaderProgramPointCloud.SetUniformMatrix4(gl, "viewMatrix", viewMatrix.to_array());
                 shaderProgramPointCloud.SetUniform1(gl, "uSize", 1.0f);
 
-
+                
                 pointCloudVertexBufferArray.Bind(gl);
                 gl.DrawArrays(OpenGL.GL_POINTS, 0, pointCloudVertices.Length / 3);
                 pointCloudVertexBufferArray.Unbind(gl);

@@ -149,5 +149,22 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
+        private void ColoredPointCloudCheckbox_OnCheckedPointCloud_Checked(object sender, RoutedEventArgs e)
+        {
+            if (initialized)
+            {
+                KinectStreamerConfig.StreamColoredPointCloudData = true;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
+        }
+
+        private void ColoredPointCloud_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (initialized)
+            {
+                KinectStreamerConfig.StreamColoredPointCloudData = false;
+                ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
+        }
     }
 }
