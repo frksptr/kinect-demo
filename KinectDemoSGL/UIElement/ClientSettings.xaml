@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              Height="Auto"
-             Width="Auto"
+             Width="Auto" IsVisibleChanged="UserControl_IsVisibleChanged"
              >
     <Grid>
         <StackPanel Name="CheckboxContainer">
@@ -14,8 +14,8 @@
             <CheckBox Name="PointCloudCheckbox" Content="Point Cloud" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="PointCloud_Checked" Unchecked="PointCloud_Unchecked"/>
             <CheckBox Name="ColoredPointCloudCheckbox" Content="Colored Point Cloud" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="ColoredPointCloudCheckbox_OnCheckedPointCloud_Checked" Unchecked="ColoredPointCloud_Unchecked"/>
             <CheckBox Name="SkeletonCheckbox" Content="Skeleton" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="Skeleton_Checked" Unchecked="Skeleton_Unchecked"/>
-            <CheckBox Name="CalibrationCheckbox" Content="Calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="Calibration_Checked" Unchecked="Calibration_Unchecked"/>
             <CheckBox Name="SendAsOneCheckbox" Content="Send as one" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="SendAsOne_Checked" Unchecked="SendAsOne_Unchecked"/>
+            <CheckBox Name="CalibrationCheckbox" Content="Calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="Calibration_Checked" Unchecked="Calibration_Unchecked"/>
         </StackPanel>
 
     </Grid>

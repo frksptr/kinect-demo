@@ -36,16 +36,16 @@ namespace KinectDemoSGL
         //  TODO: create two way dictionary
         private Dictionary<KinectClient, StateObject> clientStateObjectDictionary = new Dictionary<KinectClient, StateObject>();
         private Dictionary<StateObject, KinectClient> stateObjectClientDictionary = new Dictionary<StateObject, KinectClient>();
-        public MessageProcessor MessageProcessor { get; set; }
-
         public static KinectServer Instance
         {
             get { return kinectServer ?? (kinectServer = new KinectServer()); }
         }
 
+        private MessageProcessor messageProcessor;
+
         private KinectServer()
         {
-            MessageProcessor = new MessageProcessor();
+            messageProcessor = MessageProcessor.Instance;
             StartServer();
         }
 
@@ -107,7 +107,7 @@ namespace KinectDemoSGL
             {
                 Debug.WriteLine("Object from " + sender.Name + " deserialized: " + obj.GetType());
             }
-            MessageProcessor.ProcessStreamMessage(obj, sender);
+            messageProcessor.ProcessStreamMessage(obj, sender);
         }
 
         private void ReceiveCallback(IAsyncResult ar)

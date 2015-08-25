@@ -44,12 +44,12 @@
                         </Style>
                     </StackPanel.Resources>
                     <CheckBox Name="DepthCheckbox" Content="Depth stream" HorizontalAlignment="Left" VerticalAlignment="Top" Click="DepthCheckbox_Click"/>
-                    <CheckBox Name="ColorCheckbox" Content="Color stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="ColorCheckBox_Checked" Unchecked="ColorCheckBox_Unchecked"/>
-                    <CheckBox Name="PointCloudCheckbox" Content="Point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
-                    <CheckBox Name="ColoredPointCloudCheckbox" Content="Colored point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="ColoredPointCloudCheckBox_Checked" Unchecked="ColoredPointCloudCheckBox_Unchecked"/>
-                    <CheckBox Name="SkeletonCheckbox" Content="Skeleton stream" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="SkeletonCheckBox_Checked" Unchecked="SkeletonCheckBox_Unchecked"/>
-                    <CheckBox Name="UnifiedCheckbox" Content="Send as one" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UnifiedCheckBox_Checked" Unchecked="UnifiedCheckBox_Unchecked"/>
-                    <CheckBox Name="CalibrationCheckbox" Content="Calibration" HorizontalAlignment="Left" VerticalAlignment="Top"  Checked="CalibrationCheckBox_Checked" Unchecked="CalibrationCheckBox_Unchecked"/>
+                    <CheckBox Name="ColorCheckbox" Content="Color stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="ColorCheckbox_Click" />
+                    <CheckBox Name="PointCloudCheckbox" Content="Point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="PointCloudCheckbox_Click" />
+                    <CheckBox Name="ColoredPointCloudCheckbox" Content="Colored point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="ColoredPointCloudCheckbox_Click" />
+                    <CheckBox Name="SkeletonCheckbox" Content="Skeleton stream" HorizontalAlignment="Left" VerticalAlignment="Top" Click="SkeletonCheckbox_Click" />
+                    <CheckBox Name="UnifiedCheckbox" Content="Send as one" HorizontalAlignment="Left" VerticalAlignment="Top" Click="UnifiedCheckbox_Click" />
+                    <CheckBox Name="CalibrationCheckbox" Content="Calibration" HorizontalAlignment="Left" VerticalAlignment="Top" Click="CalibrationCheckbox_Click"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Name="FooterContainer" Orientation="Horizontal">

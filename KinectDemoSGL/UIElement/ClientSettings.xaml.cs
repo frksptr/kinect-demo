@@ -1,6 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using KinectDemoCommon;
 using System.Windows;
+using KinectDemoCommon.Messages;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -41,7 +43,24 @@ namespace KinectDemoSGL.UIElement
             initialized = true;
         }
 
-        private void SendAsOne_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void ConfigurationDataArrived(KinectDemoMessage message, KinectClient kinectClient)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ClientConfigurationMessage msg = (ClientConfigurationMessage)message;
+                //  TODO: bind
+                KinectStreamerConfig config = msg.Configuration;
+                DepthCheckbox.IsChecked = config.StreamDepthData;
+                ColorCheckbox.IsChecked = config.StreamColorData;
+                SkeletonCheckbox.IsChecked = config.StreamBodyData;
+                SendAsOneCheckbox.IsChecked = config.SendAsOne;
+                PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
+                ColoredPointCloudCheckbox.IsChecked = config.StreamColoredPointCloudData;
+                CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+            });
+        }
+
+        private void SendAsOne_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -50,7 +69,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void DepthImage_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void DepthImage_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -59,7 +78,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void ColorImage_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void ColorImage_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -68,7 +87,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void PointCloud_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void PointCloud_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -77,7 +96,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void Skeleton_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void Skeleton_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -86,7 +105,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void SendAsOne_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void SendAsOne_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -95,7 +114,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void DepthImage_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void DepthImage_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -104,7 +123,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void ColorImage_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void ColorImage_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -113,7 +132,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void PointCloud_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void PointCloud_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -122,7 +141,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void Skeleton_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void Skeleton_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -131,7 +150,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void Calibration_Checked(object sender, System.Windows.RoutedEventArgs e)
+        private void Calibration_Checked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -140,7 +159,7 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
-        private void Calibration_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void Calibration_Unchecked(object sender, RoutedEventArgs e)
         {
             if (initialized)
             {
@@ -164,6 +183,18 @@ namespace KinectDemoSGL.UIElement
             {
                 KinectStreamerConfig.StreamColoredPointCloudData = false;
                 ClientSettingsChanged(Client, KinectStreamerConfig);
+            }
+        }
+
+        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool) e.NewValue)
+            {
+                MessageProcessor.Instance.ConfigurationDataArrived += ConfigurationDataArrived;
+            }
+            else
+            {
+                MessageProcessor.Instance.ConfigurationDataArrived -= ConfigurationDataArrived;
             }
         }
     }

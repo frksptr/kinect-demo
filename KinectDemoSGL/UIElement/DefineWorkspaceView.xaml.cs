@@ -31,7 +31,7 @@ namespace KinectDemoSGL.UIElement
             //  TODO: set width, height from framedescription data provided by client
             depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
             kinectServer = KinectServer.Instance;
-            messageProcessor = kinectServer.MessageProcessor;
+            messageProcessor = MessageProcessor.Instance;
 
             InitializeComponent();
         }

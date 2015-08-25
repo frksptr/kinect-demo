@@ -51,7 +51,7 @@ namespace KinectDemoSGL.UIElement
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
-            messageProcessor = kinectServer.MessageProcessor;
+            messageProcessor = MessageProcessor.Instance;
             messageProcessor.BodyDataArrived += BodyDataArrived;
         }
 

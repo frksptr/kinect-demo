@@ -122,10 +122,7 @@ namespace KinectDemoSGL.UIElement
 
         public BodyView()
         {
-
-            KinectServer kinectServer = KinectServer.Instance;
-
-            messageProcessor = kinectServer.MessageProcessor;
+            messageProcessor = MessageProcessor.Instance;
             //  TODO: only bind when visible
             messageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
             //messageProcessor.BodyDataArrived += kinectServer_BodyDataArrived;

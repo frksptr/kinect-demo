@@ -139,7 +139,8 @@ namespace KinectDemoClient
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
 
-                Dispatcher.Invoke(() => {
+                Dispatcher.Invoke(() =>
+                {
                     StatusTextBox.Text += "Connected to server.\n";
                 });
 
@@ -207,7 +208,7 @@ namespace KinectDemoClient
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            ClientConfigurationMessage msg = (ClientConfigurationMessage) obj;
+                            ClientConfigurationMessage msg = (ClientConfigurationMessage)obj;
                             //  TODO: bind
                             KinectStreamerConfig config = msg.Configuration;
                             kinectStreamer.KinectStreamerConfig = config;
@@ -216,6 +217,7 @@ namespace KinectDemoClient
                             SkeletonCheckbox.IsChecked = config.StreamBodyData;
                             UnifiedCheckbox.IsChecked = config.SendAsOne;
                             PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
+                            ColoredPointCloudCheckbox.IsChecked = config.StreamColoredPointCloudData;
                             CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
                         });
                     }
@@ -281,91 +283,6 @@ namespace KinectDemoClient
             TextBox.Text = "";
         }
 
-        private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-           
-        }
-
-        private void ColorCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamColorData = true;
-        }
-
-        private void ColorCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.ColorDataReady -= kinectStreamer_ColorDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamColorData = false;
-        }
-
-        private void DepthCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void PointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.PointCloudDataReady += kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = true;
-        }
-
-        private void PointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.PointCloudDataReady -= kinectStreamer_PointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamPointCloudData = false;
-        }
-
-        private void SkeletonCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamBodyData = true;
-        }
-
-        private void SkeletonCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
-        }
-
-        private void ColoredPointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.ColoredPointCloudDataReady += kinectStreamer_ColoredPointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
-        }
-
-
-        private void ColoredPointCloudCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.ColoredPointCloudDataReady -= kinectStreamer_ColoredPointCloudDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
-        }
-
-        private void UnifiedCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.UnifiedDataReady += kinectStreamer_UnifiedDataReady;
-            kinectStreamer.KinectStreamerConfig.SendAsOne = true;
-        }
-
-        private void UnifiedCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            kinectStreamer.UnifiedDataReady -= kinectStreamer_UnifiedDataReady;
-            kinectStreamer.KinectStreamerConfig.SendAsOne = false;
-        }
-
-        private void CalibrationCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            calibrationDataSent = false;
-            kinectStreamer.CalibrationDataReady += kinectStreamer_CalibrationDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = true;
-        }
-
-        private void CalibrationCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            calibrationDataSent = true;
-            kinectStreamer.CalibrationDataReady -= kinectStreamer_CalibrationDataReady;
-            kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
-        }
-
         private void AutoConnectCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.AutoConnect = true;
@@ -390,37 +307,127 @@ namespace KinectDemoClient
                 kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
                 kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
             }
+
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void ColorCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.ColorDataReady += kinectStreamer_ColorDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamColorData = true;
+            }
+            else
+            {
+                kinectStreamer.ColorDataReady -= kinectStreamer_ColorDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamColorData = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void PointCloudCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.PointCloudDataReady += kinectStreamer_PointCloudDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamPointCloudData = true;
+            }
+            else
+            {
+                kinectStreamer.PointCloudDataReady -= kinectStreamer_PointCloudDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamPointCloudData = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void ColoredPointCloudCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.ColoredPointCloudDataReady += kinectStreamer_ColoredPointCloudDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = true;
+            }
+            else
+            {
+                kinectStreamer.ColoredPointCloudDataReady -= kinectStreamer_ColoredPointCloudDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void SkeletonCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.BodyDataReady += kinectStreamer_BodyDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamBodyData = true;
+            }
+            else
+            {
+                kinectStreamer.BodyDataReady -= kinectStreamer_BodyDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void UnifiedCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.UnifiedDataReady += kinectStreamer_UnifiedDataReady;
+                kinectStreamer.KinectStreamerConfig.SendAsOne = true;
+            }
+            else
+            {
+                kinectStreamer.UnifiedDataReady -= kinectStreamer_UnifiedDataReady;
+                kinectStreamer.KinectStreamerConfig.SendAsOne = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
 
         private void CalibrationCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                calibrationDataSent = false;
+                kinectStreamer.CalibrationDataReady += kinectStreamer_CalibrationDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = true;
+            }
+            else
+            {
+                calibrationDataSent = true;
+                kinectStreamer.ColorDataReady -= kinectStreamer_CalibrationDataReady;
+                kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
+            }
 
+            SerializeAndSendMessage(new ClientConfigurationMessage()
+            {
+                Configuration = kinectStreamer.KinectStreamerConfig
+            });
         }
-
     }
 }

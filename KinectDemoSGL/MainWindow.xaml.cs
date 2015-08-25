@@ -54,7 +54,7 @@ namespace KinectDemoSGL
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
-            messageProcessor = kinectServer.MessageProcessor;
+            messageProcessor = MessageProcessor.Instance;
 
             messageProcessor.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
             messageProcessor.DepthDataArrived += kinectServer_DepthDataArrived;

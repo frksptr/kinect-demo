@@ -1,5 +1,4 @@
-﻿
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
@@ -9,7 +8,8 @@ using KinectDemoCommon.Model;
 
 namespace KinectDemoSGL
 {
-    public class MessageProcessor
+    // Singleton
+    class MessageProcessor
     {
         public KinectServerDataArrived DepthDataArrived;
         public KinectServerDataArrived ColorDataArrived;
@@ -18,8 +18,18 @@ namespace KinectDemoSGL
         public KinectServerDataArrived ColoredPointCloudDataArrived;
         public KinectServerDataArrived TextMessageArrived;
         public KinectServerDataArrived WorkspaceUpdated;
+        public KinectServerDataArrived ConfigurationDataArrived;
         private FrameSize depthFrameSize;
         private DataStore dataStore = DataStore.Instance;
+
+        private static MessageProcessor messageProcessor;
+
+        public static MessageProcessor Instance
+        {
+            get { return messageProcessor ?? (messageProcessor = new MessageProcessor()); }
+        }
+
+        private MessageProcessor() { }
 
         public void ProcessStreamMessage(object obj, KinectClient sender)
         {
@@ -88,11 +98,18 @@ namespace KinectDemoSGL
         private void ProcessConfigurationData(object obj, KinectClient sender)
         {
             dataStore.AddOrUpdateConfiguration(sender, ((ClientConfigurationMessage) obj).Configuration);
+
+            ClientConfigurationMessage msg = (ClientConfigurationMessage) obj;
+            if (ConfigurationDataArrived != null)
+            {
+                ConfigurationDataArrived(msg, sender);
+            }
         }
 
         private void ProcessCalibrationData(object obj, KinectClient sender)
         {
             dataStore.AddCalibrationBody(sender, ((CalibrationDataMessage)obj).CalibrationBody);
+
         }
 
         private void ProcessTextMessage(object obj, KinectClient sender)
