@@ -43,7 +43,7 @@
                             <Setter Property="Margin" Value="4"></Setter>
                         </Style>
                     </StackPanel.Resources>
-                    <CheckBox Name="DepthCheckbox" Content="Depth stream" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="DepthCheckBox_Checked" Unchecked="DepthCheckBox_Unchecked"/>
+                    <CheckBox Name="DepthCheckbox" Content="Depth stream" HorizontalAlignment="Left" VerticalAlignment="Top" Click="DepthCheckbox_Click"/>
                     <CheckBox Name="ColorCheckbox" Content="Color stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="ColorCheckBox_Checked" Unchecked="ColorCheckBox_Unchecked"/>
                     <CheckBox Name="PointCloudCheckbox" Content="Point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="PointCloudCheckBox_Checked" Unchecked="PointCloudCheckBox_Unchecked"/>
                     <CheckBox Name="ColoredPointCloudCheckbox" Content="Colored point cloud stream" HorizontalAlignment="Left"  VerticalAlignment="Top" Checked="ColoredPointCloudCheckBox_Checked" Unchecked="ColoredPointCloudCheckBox_Unchecked"/>

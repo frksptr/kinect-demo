@@ -14,6 +14,7 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using System.Windows.Controls;
 
 namespace KinectDemoClient
 {
@@ -282,8 +283,7 @@ namespace KinectDemoClient
 
         private void DepthCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamDepthData = true;
+           
         }
 
         private void ColorCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -300,8 +300,7 @@ namespace KinectDemoClient
 
         private void DepthCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
-            kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
+            
         }
 
         private void PointCloudCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -377,6 +376,50 @@ namespace KinectDemoClient
         {
             Properties.Settings.Default.AutoConnect = false;
             Properties.Settings.Default.Save();
+        }
+
+        private void DepthCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+            if (((CheckBox)sender).IsChecked.Value)
+            {
+                kinectStreamer.DepthDataReady += kinectStreamer_DepthDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamDepthData = true;
+            }
+            else
+            {
+                kinectStreamer.DepthDataReady -= kinectStreamer_DepthDataReady;
+                kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
+            }
+        }
+
+        private void ColorCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PointCloudCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ColoredPointCloudCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SkeletonCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UnifiedCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CalibrationCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }
