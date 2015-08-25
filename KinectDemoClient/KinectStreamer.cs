@@ -294,7 +294,7 @@ namespace KinectDemoClient
                 }
             }
         }
-
+        //  TODO: don't sent alpha
         private void ProcessPointCloudColors()
         {
             byte[] pointCloudColors = new byte[depthArray.Length * 4];
