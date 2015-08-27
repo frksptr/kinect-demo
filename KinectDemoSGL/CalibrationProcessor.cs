@@ -14,9 +14,9 @@ namespace KinectDemoSGL
         private Vector<double> translation;
         public GeometryHelper.Transformation Transformation { get; set; }
 
-        private CalibrationProcessor calibrationProcessor;
+        private static CalibrationProcessor calibrationProcessor;
 
-        public CalibrationProcessor Instance
+        public static CalibrationProcessor Instance
         {
             get { return calibrationProcessor ?? (calibrationProcessor = new CalibrationProcessor()); }
         }

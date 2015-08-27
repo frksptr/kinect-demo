@@ -73,7 +73,7 @@ namespace KinectDemoSGL.UIElement
                 throw new Exception("Function requires 2 active clients");
             }
             var clients = dataStore.GetClients();
-
+             
             CalibrationProcessor.Instance.CalculateTransformationFromAtoB(
                 dataStore.GetCalibrationBodiesForClient(clients[0]),
                 dataStore.GetCalibrationBodiesForClient(clients[1])
@@ -117,6 +117,10 @@ namespace KinectDemoSGL.UIElement
             if (clientCalibrationStates.Any(keyValuePair => keyValuePair.Value != CalibrationState.Ready))
             {
                 return;
+            }
+            foreach (var keyValuePair in clientCalibrationStates)
+            {
+                keyValuePair.Value = CalibrationState.Calibrating;
             }
             KinectServer.Instance.StartCalibration();
         }
