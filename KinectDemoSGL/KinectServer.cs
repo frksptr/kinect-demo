@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Remoting;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using KinectDemoCommon;

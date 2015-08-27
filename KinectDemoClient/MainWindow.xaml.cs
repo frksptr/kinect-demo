@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using System.Windows.Controls;
+using KinectDemoClient.Properties;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
@@ -14,7 +16,6 @@ using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
-using System.Windows.Controls;
 
 namespace KinectDemoClient
 {
@@ -46,7 +47,7 @@ namespace KinectDemoClient
             kinectStreamer = KinectStreamer.Instance;
 
             //Restore permanent settings
-            AutoConnectCheckbox.IsChecked = Properties.Settings.Default.AutoConnect;
+            AutoConnectCheckbox.IsChecked = Settings.Default.AutoConnect;
 
 
         }
@@ -302,14 +303,14 @@ namespace KinectDemoClient
 
         private void AutoConnectCheckbox_Checked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.AutoConnect = true;
-            Properties.Settings.Default.Save();
+            Settings.Default.AutoConnect = true;
+            Settings.Default.Save();
         }
 
         private void AutoConnectCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.AutoConnect = false;
-            Properties.Settings.Default.Save();
+            Settings.Default.AutoConnect = false;
+            Settings.Default.Save();
         }
 
         private void DepthCheckbox_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Windows;
 using System.Windows.Controls;
 using KinectDemoCommon;
-using System.Windows;
 using KinectDemoCommon.Messages;
 
 namespace KinectDemoSGL.UIElement

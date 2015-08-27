@@ -12,7 +12,7 @@ namespace KinectDemoSGL
     {
         private Matrix<double> rotation;
         private Vector<double> translation;
-        public GeometryHelper.Transformation Transformation { get; set; }
+        public Transformation Transformation { get; set; }
 
         private static CalibrationProcessor calibrationProcessor;
 
@@ -22,7 +22,7 @@ namespace KinectDemoSGL
         }
         private CalibrationProcessor() { }
 
-        public GeometryHelper.Transformation CalculateTransformationFromAtoB(List<SerializableBody> datasetA, List<SerializableBody> datasetB)
+        public Transformation CalculateTransformationFromAtoB(List<SerializableBody> datasetA, List<SerializableBody> datasetB)
         {
             var setA = GetPointsFromBodies(datasetA);
             var setB = GetPointsFromBodies(datasetB);

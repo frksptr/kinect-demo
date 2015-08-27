@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
-using KinectDemoCommon.Messages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;

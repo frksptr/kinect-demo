@@ -78,6 +78,7 @@
     <Compile Include="Util\ObservableKeyValuePair.cs" />
     <Compile Include="Util\SerializableDictionary.cs" />
     <Compile Include="Util\SerializableDictionaryBuilder.cs" />
+    <Compile Include="Util\Transformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

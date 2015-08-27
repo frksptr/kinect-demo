@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using KinectDemoCommon.Model;
-using KinectDemoCommon.Util;
-using SharpGL;
-using SharpGL.SceneGraph;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using System;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
+using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Microsoft.Kinect;
+using SharpGL;
+using SharpGL.SceneGraph;
 
 namespace KinectDemoSGL.UIElement
 {

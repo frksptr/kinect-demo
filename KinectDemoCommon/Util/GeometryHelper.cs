@@ -252,17 +252,5 @@ namespace KinectDemoCommon.Util
             return new Transformation(t, R);
 
         }
-
-        public class Transformation
-        {
-            public Vector<double> T {get;set;}
-            public Matrix<double> R { get; set; }
-            public Transformation(Vector<double> t, Matrix<double> r)
-            {
-                T = t;
-                R = r;
-            }
-        }
-
     }
 }

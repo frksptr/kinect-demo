@@ -1,6 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Interop;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
@@ -103,7 +103,7 @@ namespace KinectDemoSGL
 
         private void ProcessCalibrationMessage(object obj, KinectClient sender)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         private void ProcessConfigurationData(object obj, KinectClient sender)

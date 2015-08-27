@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using KinectDemoCommon.Util;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Model;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoSGL.UIElement
 {
