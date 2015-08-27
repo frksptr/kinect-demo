@@ -6,20 +6,20 @@ namespace KinectDemoCommon.Util
     [Serializable]
     public class SerializableDictionary<K,V>
     {
-        public List<DictionaryItem<K, V>> items { get; set; }
+        public List<DictionaryItem<K, V>> Items { get; set; }
 
         public SerializableDictionary() {
-            items = new List<DictionaryItem<K,V>>();
+            Items = new List<DictionaryItem<K,V>>();
         }
 
         public void Add(DictionaryItem<K, V> item)
         {
-            items.Add(item);
+            Items.Add(item);
         }
 
         public void CopyToDictionary(IDictionary<K,V> dictionary)
         {
-            foreach (DictionaryItem<K, V> item in items)
+            foreach (DictionaryItem<K, V> item in Items)
             {
                 dictionary.Add(item.Key, item.Value);
             }

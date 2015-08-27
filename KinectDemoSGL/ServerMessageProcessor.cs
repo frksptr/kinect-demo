@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Interop;
 using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
@@ -9,7 +10,7 @@ using KinectDemoCommon.Model;
 namespace KinectDemoSGL
 {
     // Singleton
-    class MessageProcessor
+    class ServerMessageProcessor
     {
         public KinectServerDataArrived DepthDataArrived;
         public KinectServerDataArrived ColorDataArrived;
@@ -19,17 +20,18 @@ namespace KinectDemoSGL
         public KinectServerDataArrived TextMessageArrived;
         public KinectServerDataArrived WorkspaceUpdated;
         public KinectServerDataArrived ConfigurationDataArrived;
+        public KinectServerDataArrived CalibrationDataArrived;
         private FrameSize depthFrameSize;
         private DataStore dataStore = DataStore.Instance;
 
-        private static MessageProcessor messageProcessor;
+        private static ServerMessageProcessor serverMessageProcessor;
 
-        public static MessageProcessor Instance
+        public static ServerMessageProcessor Instance
         {
-            get { return messageProcessor ?? (messageProcessor = new MessageProcessor()); }
+            get { return serverMessageProcessor ?? (serverMessageProcessor = new ServerMessageProcessor()); }
         }
 
-        private MessageProcessor() { }
+        private ServerMessageProcessor() { }
 
         public void ProcessStreamMessage(object obj, KinectClient sender)
         {
@@ -77,8 +79,8 @@ namespace KinectDemoSGL
                 }
                 else if (obj is CalibrationDataMessage)
                 {
-                    ProcessCalibrationData(obj, sender);
-                } 
+                    ProcessCalibrationDataMessage(obj, sender);
+                }
 
             }
             else if (obj is WorkspaceMessage)
@@ -93,6 +95,15 @@ namespace KinectDemoSGL
             {
                 ProcessConfigurationData(obj, sender);
             }
+            else if (obj is CalibrationMessage)
+            {
+                ProcessCalibrationMessage(obj, sender);
+            }
+        }
+
+        private void ProcessCalibrationMessage(object obj, KinectClient sender)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void ProcessConfigurationData(object obj, KinectClient sender)
@@ -106,10 +117,14 @@ namespace KinectDemoSGL
             }
         }
 
-        private void ProcessCalibrationData(object obj, KinectClient sender)
+        private void ProcessCalibrationDataMessage(object obj, KinectClient sender)
         {
-            dataStore.AddCalibrationBody(sender, ((CalibrationDataMessage)obj).CalibrationBody);
-
+            CalibrationDataMessage msg = (CalibrationDataMessage) obj;
+            dataStore.AddCalibrationBody(sender, msg.CalibrationBody);
+            if (ConfigurationDataArrived != null)
+            {
+                ConfigurationDataArrived(msg, sender);
+            }
         }
 
         private void ProcessTextMessage(object obj, KinectClient sender)

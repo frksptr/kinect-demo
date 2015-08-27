@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Windows.Interop;
@@ -16,7 +17,7 @@ namespace KinectDemoSGL
 
         private Dictionary<string, Workspace> workspaceDictionary;
 
-        private List<KinectClient> kinectClients;
+        private ObservableCollection<KinectClient> kinectClients;
 
         private Dictionary<string, KinectClient> workspaceClientDictionary;
 
@@ -33,7 +34,7 @@ namespace KinectDemoSGL
 
         private DataStore()
         {
-            kinectClients = new List<KinectClient>();
+            kinectClients = new ObservableCollection<KinectClient>();
 
             workspaceDictionary = new Dictionary<string, Workspace>();
 
@@ -72,7 +73,7 @@ namespace KinectDemoSGL
             return kinectClient;
         }
 
-        public List<KinectClient> GetClients()
+        public ObservableCollection<KinectClient> GetClients()
         {
             return kinectClients;
         }
@@ -119,6 +120,16 @@ namespace KinectDemoSGL
         public List<SerializableBody> GetCalibrationBodiesForClient(KinectClient client)
         {
             return clientCalibrationBodies[client];
+        }
+
+        public Dictionary<KinectClient, List<SerializableBody>> GetAllCalibrationBodies()
+        {
+            Dictionary<KinectClient,List<SerializableBody>> dataDict = new Dictionary<KinectClient, List<SerializableBody>>();
+            foreach (KinectClient client in kinectClients)
+            {
+                dataDict.Add(client, clientCalibrationBodies[client]);
+            }
+            return dataDict;
         }
 
         public void AddOrUpdatePointCloud(KinectClient client, PointCloud pointCloud)

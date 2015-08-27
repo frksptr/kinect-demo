@@ -118,14 +118,14 @@ namespace KinectDemoSGL.UIElement
         // Distance tolerance in meters
         private const double DistanceTolerance = 0.1;
 
-        private MessageProcessor messageProcessor;
+        private ServerMessageProcessor serverMessageProcessor;
 
         public BodyView()
         {
-            messageProcessor = MessageProcessor.Instance;
+            serverMessageProcessor = ServerMessageProcessor.Instance;
             //  TODO: only bind when visible
-            messageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
-            //messageProcessor.BodyDataArrived += kinectServer_BodyDataArrived;
+            serverMessageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
+            //ServerMessageProcessor.BodyDataArrived += kinectServer_BodyDataArrived;
 
             imageSource = new DrawingImage(drawingGroup);
 

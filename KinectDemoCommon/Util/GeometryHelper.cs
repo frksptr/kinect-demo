@@ -178,7 +178,7 @@ namespace KinectDemoCommon.Util
             return Vector3D.CrossProduct(v0, v1);
         }
 
-        public static Point3D CalculateCenterPoint(NullablePoint3D[] pointCloud)
+        public static Point3D CalculateCenterPoint(List<NullablePoint3D> pointCloud)
         {
             List<Point3D> points = new List<Point3D>();
             foreach (NullablePoint3D point in pointCloud)
@@ -219,7 +219,7 @@ namespace KinectDemoCommon.Util
                 );
         }
 
-        public static TransformationAndRotation GetTransformationAndRotation(NullablePoint3D[] pointCloud1, NullablePoint3D[] pointCloud2)
+        public static Transformation GetTransformation(List<NullablePoint3D> pointCloud1, List<NullablePoint3D> pointCloud2)
         {
             var center1 = CalculateCenterPoint(pointCloud1);
             var center2 = CalculateCenterPoint(pointCloud2);
@@ -227,7 +227,7 @@ namespace KinectDemoCommon.Util
             Vector<double> centerV2 = DenseVector.OfArray(new[] { center2.X, center2.Y, center2.Z });
 
             Matrix<double> H = Matrix<double>.Build.Dense(3, 3, 0);
-            for (int i = 0; i < pointCloud1.Length; i++)
+            for (int i = 0; i < pointCloud1.Count; i++)
             {
                 var p1 = pointCloud1[i];
                 var p2 = pointCloud2[i];
@@ -249,15 +249,15 @@ namespace KinectDemoCommon.Util
             }
 
             var t = -R * centerV1 + centerV2;
-            return new TransformationAndRotation(t, R);
+            return new Transformation(t, R);
 
         }
 
-        public class TransformationAndRotation
+        public class Transformation
         {
             public Vector<double> T {get;set;}
             public Matrix<double> R { get; set; }
-            public TransformationAndRotation(Vector<double> t, Matrix<double> r)
+            public Transformation(Vector<double> t, Matrix<double> r)
             {
                 T = t;
                 R = r;

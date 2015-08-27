@@ -22,7 +22,7 @@ namespace KinectDemoSGL.UIElement
         private byte[] depthPixels;
         public KinectClient ActiveClient { get; set; }
 
-        private MessageProcessor messageProcessor;
+        private ServerMessageProcessor serverMessageProcessor;
         private KinectServer kinectServer;
 
         public DefineWorkspaceView()
@@ -31,7 +31,7 @@ namespace KinectDemoSGL.UIElement
             //  TODO: set width, height from framedescription data provided by client
             depthBitmap = new WriteableBitmap(512, 424, 96.0, 96.0, PixelFormats.Gray8, null);
             kinectServer = KinectServer.Instance;
-            messageProcessor = MessageProcessor.Instance;
+            serverMessageProcessor = ServerMessageProcessor.Instance;
 
             InitializeComponent();
         }
@@ -90,11 +90,11 @@ namespace KinectDemoSGL.UIElement
         {
             if ((bool)e.NewValue == true)
             {
-                messageProcessor.DepthDataArrived += kinectServer_DepthDataReady;
+                serverMessageProcessor.DepthDataArrived += kinectServer_DepthDataReady;
             }
             else
             {
-                messageProcessor.DepthDataArrived -= kinectServer_DepthDataReady;
+                serverMessageProcessor.DepthDataArrived -= kinectServer_DepthDataReady;
             }
         }
     }

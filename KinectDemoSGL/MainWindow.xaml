@@ -78,7 +78,13 @@
                     <TabControl Name="ClientSettings" ItemsSource="{Binding}"></TabControl>
                 </DockPanel>
             </TabItem>
-            
+
+            <TabItem Name="Calibration" Header="Calibration">
+                <DockPanel Name="CalibrationViewHolder">
+                    
+                </DockPanel>
+            </TabItem>
+
         </TabControl>
         
         <!--<TextBox Name="ClientMessageBox" HorizontalAlignment="Left" Margin="10,490,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="73" Width="881"/>-->

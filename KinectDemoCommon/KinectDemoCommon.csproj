@@ -56,7 +56,8 @@
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\UnifiedStreamerMessage.cs" />
     <Compile Include="Messages\KinectDemoMessage.cs" />
     <Compile Include="Messages\KinectServerMessages\KinectServerMessage.cs" />
-    <Compile Include="Messages\KinectServerMessages\KinectServerReadyMessage.cs" />
+    <Compile Include="Messages\KinectServerReadyMessage.cs" />
+    <Compile Include="Messages\CalibrationMessage.cs" />
     <Compile Include="Messages\TextMessage.cs" />
     <Compile Include="Messages\WorkspaceMessage.cs" />
     <Compile Include="Messages\KinectClientMessages\KinectStreamerMessages\BodyStreamMessage.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Util\GeometryHelper.cs" />
     <Compile Include="Util\DictionaryItem.cs" />
     <Compile Include="Util\NetworkHelper.cs" />
+    <Compile Include="Util\ObservableKeyValuePair.cs" />
     <Compile Include="Util\SerializableDictionary.cs" />
     <Compile Include="Util\SerializableDictionaryBuilder.cs" />
   </ItemGroup>

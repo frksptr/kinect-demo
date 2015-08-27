@@ -3,12 +3,12 @@
 namespace KinectDemoCommon.Util
 {
     [Serializable]
-    public class DictionaryItem<K,V>
+    public class DictionaryItem<TKey,TValue> 
     {
-        public K Key { get; set; }
-        public V Value { get; set; }
+        public TKey Key { get; set; }
+        public TValue Value { get; set; }
 
-        public DictionaryItem(K key, V value)
+        public DictionaryItem(TKey key, TValue value)
         {
             Key = key;
             Value = value;

@@ -45,8 +45,9 @@ namespace KinectDemoSGL
 
         private ObservableCollection<Workspace> workspaceList = new ObservableCollection<Workspace>();
         private KinectServer kinectServer;
-        private MessageProcessor messageProcessor;
+        private ServerMessageProcessor serverMessageProcessor;
         private DataStore dataStore = DataStore.Instance;
+        private CalibrationView calibrationView;
 
         public MainWindow()
         {
@@ -54,11 +55,11 @@ namespace KinectDemoSGL
             InitializeComponent();
 
             kinectServer = KinectServer.Instance;
-            messageProcessor = MessageProcessor.Instance;
+            serverMessageProcessor = ServerMessageProcessor.Instance;
 
-            messageProcessor.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
-            messageProcessor.DepthDataArrived += kinectServer_DepthDataArrived;
-            messageProcessor.TextMessageArrived += kinectServer_TextMessageArrived;
+            serverMessageProcessor.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
+            serverMessageProcessor.DepthDataArrived += kinectServer_DepthDataArrived;
+            serverMessageProcessor.TextMessageArrived += kinectServer_TextMessageArrived;
 
             activeWorkspace = new Workspace()
             {
@@ -86,6 +87,10 @@ namespace KinectDemoSGL
 
             RoomPointCloudHolder.Children.Add(roomPointCloudView);
 
+            calibrationView = new CalibrationView();
+
+            CalibrationViewHolder.Children.Add(calibrationView);
+
             WorkspaceList.ItemsSource = workspaceList;
 
             EditWorkspace.DataContext = activeWorkspace;
@@ -103,7 +108,7 @@ namespace KinectDemoSGL
         private void kinectServer_DepthDataArrived(KinectDemoMessage message, KinectClient client)
         {
             depthFrameSize = ((DepthStreamMessage)message).DepthFrameSize;
-            messageProcessor.DepthDataArrived -= kinectServer_DepthDataArrived;
+            serverMessageProcessor.DepthDataArrived -= kinectServer_DepthDataArrived;
         }
 
         private void kinectServer_WorkspaceUpdated(KinectDemoMessage message, KinectClient client)

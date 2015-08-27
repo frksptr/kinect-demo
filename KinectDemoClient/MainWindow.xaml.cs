@@ -21,6 +21,8 @@ namespace KinectDemoClient
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    ///     TODO: refactor to client + messageprocessor
     public partial class MainWindow : Window
     {
         private Socket clientSocket;
@@ -219,6 +221,21 @@ namespace KinectDemoClient
                             PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
                             ColoredPointCloudCheckbox.IsChecked = config.StreamColoredPointCloudData;
                             CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+                        });
+                    }
+                    else if (obj is CalibrationMessage)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            CalibrationMessage msg = (CalibrationMessage) obj;
+                            if (msg.Message.Equals(CalibrationMessage.CalibrationMessageEnum.Start))
+                            {
+                                CalibrationCheckbox.IsChecked = true;
+                            }
+                            else
+                            {
+                                CalibrationCheckbox.IsChecked = false;
+                            }
                         });
                     }
                 }

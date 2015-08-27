@@ -95,12 +95,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CalibrationProcessor.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="KinectClient.cs" />
     <Compile Include="KinectServer.cs" />
-    <Compile Include="MessageProcessor.cs" />
+    <Compile Include="ServerMessageProcessor.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UIElement\BodyView.xaml.cs" />
+    <Compile Include="UIElement\CalibrationView.xaml.cs">
+      <DependentUpon>CalibrationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIElement\ClientSettings.xaml.cs">
       <DependentUpon>ClientSettings.xaml</DependentUpon>
     </Compile>
@@ -126,6 +130,10 @@
     <Page Include="UIElement\BodyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UIElement\CalibrationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIElement\ClientSettings.xaml">
       <SubType>Designer</SubType>

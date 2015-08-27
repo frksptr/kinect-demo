@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Remoting;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using KinectDemoCommon;
@@ -41,11 +42,11 @@ namespace KinectDemoSGL
             get { return kinectServer ?? (kinectServer = new KinectServer()); }
         }
 
-        private MessageProcessor messageProcessor;
+        private ServerMessageProcessor serverMessageProcessor;
 
         private KinectServer()
         {
-            messageProcessor = MessageProcessor.Instance;
+            serverMessageProcessor = ServerMessageProcessor.Instance;
             StartServer();
         }
 
@@ -107,7 +108,7 @@ namespace KinectDemoSGL
             {
                 Debug.WriteLine("Object from " + sender.Name + " deserialized: " + obj.GetType());
             }
-            messageProcessor.ProcessStreamMessage(obj, sender);
+            serverMessageProcessor.ProcessStreamMessage(obj, sender);
         }
 
         private void ReceiveCallback(IAsyncResult ar)
@@ -204,6 +205,19 @@ namespace KinectDemoSGL
                 Configuration = config
             };
             SerializeAndSendMessage(msg, state.WorkSocket);
+        }
+
+        private void StartCalibration(IEnumerable<KinectClient> clients)
+        {
+            foreach (KinectClient client in clients)
+            {
+                SerializeAndSendMessage(new CalibrationMessage(){Message = CalibrationMessage.CalibrationMessageEnum.Start}, clientStateObjectDictionary[client].WorkSocket);
+            }
+        }
+
+        public void StartCalibration()
+        {
+            StartCalibration(DataStore.Instance.GetClients());
         }
 
         private void SerializeAndSendMessage(KinectDemoMessage msg, Socket socket)

@@ -190,11 +190,11 @@ namespace KinectDemoSGL.UIElement
         {
             if ((bool) e.NewValue)
             {
-                MessageProcessor.Instance.ConfigurationDataArrived += ConfigurationDataArrived;
+                ServerMessageProcessor.Instance.ConfigurationDataArrived += ConfigurationDataArrived;
             }
             else
             {
-                MessageProcessor.Instance.ConfigurationDataArrived -= ConfigurationDataArrived;
+                ServerMessageProcessor.Instance.ConfigurationDataArrived -= ConfigurationDataArrived;
             }
         }
     }
