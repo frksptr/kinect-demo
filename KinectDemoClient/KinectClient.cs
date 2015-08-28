@@ -20,16 +20,15 @@ namespace KinectDemoClient
         public ClientEvent DisconnectedEvent;
 
         private Socket clientSocket;
-
-        private int[] DepthFrameSize { get; set; }
         public string IP { get; set; }
-        readonly KinectStreamer kinectStreamer;
         private byte[] buffer;
         private bool pointCloudSent = false;
         private bool serverReady = true;
         private bool calibrationDataSent = false;
+        private bool autoReconnect = true;
 
-        private ClientMessageProcessor clientMessageProcessor = ClientMessageProcessor.Instance;
+        private readonly ClientMessageProcessor clientMessageProcessor = ClientMessageProcessor.Instance;
+        private readonly KinectStreamer kinectStreamer = KinectStreamer.Instance;
 
         private static KinectClient kinectClient;
 
@@ -100,7 +99,14 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                if (autoReconnect)
+                {
+                    ConnectToServer();
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 
@@ -138,24 +144,15 @@ namespace KinectDemoClient
                 {
                     clientSocket = null;
                     DisconnectedEvent(null);
+                    if (autoReconnect)
+                    {
+                        ConnectToServer();
+                    }
                 }
                 else
                 {
                     MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
                 }
-            }
-        }
-
-        private void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                clientSocket.EndSend(ar);
-                Debug.WriteLine("Message sent.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
         }
 
