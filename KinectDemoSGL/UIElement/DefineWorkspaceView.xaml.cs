@@ -90,11 +90,11 @@ namespace KinectDemoSGL.UIElement
         {
             if ((bool)e.NewValue == true)
             {
-                serverMessageProcessor.DepthDataArrived += kinectServer_DepthDataReady;
+                serverMessageProcessor.DepthMessageArrived += kinectServer_DepthDataReady;
             }
             else
             {
-                serverMessageProcessor.DepthDataArrived -= kinectServer_DepthDataReady;
+                serverMessageProcessor.DepthMessageArrived -= kinectServer_DepthDataReady;
             }
         }
     }

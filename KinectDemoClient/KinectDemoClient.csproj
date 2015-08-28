@@ -59,6 +59,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClientMessageProcessor.cs" />
+    <Compile Include="KinectClient.cs" />
     <Compile Include="WorkspaceChecker.cs" />
     <Compile Include="WorkspaceProcessor.cs" />
     <Page Include="MainWindow.xaml">

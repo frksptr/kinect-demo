@@ -58,7 +58,7 @@ namespace KinectDemoSGL
             serverMessageProcessor = ServerMessageProcessor.Instance;
 
             serverMessageProcessor.WorkspaceUpdated += kinectServer_WorkspaceUpdated;
-            serverMessageProcessor.DepthDataArrived += kinectServer_DepthDataArrived;
+            serverMessageProcessor.DepthMessageArrived += kinectServer_DepthDataArrived;
             serverMessageProcessor.TextMessageArrived += kinectServer_TextMessageArrived;
 
             activeWorkspace = new Workspace()
@@ -108,7 +108,7 @@ namespace KinectDemoSGL
         private void kinectServer_DepthDataArrived(KinectDemoMessage message, KinectClient client)
         {
             depthFrameSize = ((DepthStreamMessage)message).DepthFrameSize;
-            serverMessageProcessor.DepthDataArrived -= kinectServer_DepthDataArrived;
+            serverMessageProcessor.DepthMessageArrived -= kinectServer_DepthDataArrived;
         }
 
         private void kinectServer_WorkspaceUpdated(KinectDemoMessage message, KinectClient client)

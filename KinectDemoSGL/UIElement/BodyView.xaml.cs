@@ -124,8 +124,8 @@ namespace KinectDemoSGL.UIElement
         {
             serverMessageProcessor = ServerMessageProcessor.Instance;
             //  TODO: only bind when visible
-            serverMessageProcessor.ColorDataArrived += kinectServer_ColorDataArrived;
-            //ServerMessageProcessor.BodyDataArrived += kinectServer_BodyDataArrived;
+            serverMessageProcessor.ColorMessageArrived += kinectServer_ColorDataArrived;
+            //ServerMessageProcessor.BodyMessageArrived += kinectServer_BodyDataArrived;
 
             imageSource = new DrawingImage(drawingGroup);
 

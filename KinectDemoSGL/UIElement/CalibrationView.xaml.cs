@@ -45,7 +45,7 @@ namespace KinectDemoSGL.UIElement
 
             ClientList.ItemsSource = clientCalibrationStates;
 
-            ServerMessageProcessor.Instance.CalibrationDataArrived += CalibrationDataArrived;
+            ServerMessageProcessor.Instance.CalibrationMessageArrived += CalibrationDataArrived;
 
         }
 

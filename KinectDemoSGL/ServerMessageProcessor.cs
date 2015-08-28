@@ -9,18 +9,19 @@ using KinectDemoCommon.Model;
 
 namespace KinectDemoSGL
 {
+    public delegate void KinectMessageArrived(KinectDemoMessage message, KinectClient kinectClient);
     // Singleton
     class ServerMessageProcessor
     {
-        public KinectServerDataArrived DepthDataArrived;
-        public KinectServerDataArrived ColorDataArrived;
-        public KinectServerDataArrived BodyDataArrived;
-        public KinectServerDataArrived PointCloudDataArrived;
-        public KinectServerDataArrived ColoredPointCloudDataArrived;
-        public KinectServerDataArrived TextMessageArrived;
-        public KinectServerDataArrived WorkspaceUpdated;
-        public KinectServerDataArrived ConfigurationDataArrived;
-        public KinectServerDataArrived CalibrationDataArrived;
+        public KinectMessageArrived DepthMessageArrived;
+        public KinectMessageArrived ColorMessageArrived;
+        public KinectMessageArrived BodyMessageArrived;
+        public KinectMessageArrived PointCloudMessageArrived;
+        public KinectMessageArrived ColoredPointCloudMessageArrived;
+        public KinectMessageArrived TextMessageArrived;
+        public KinectMessageArrived WorkspaceUpdated;
+        public KinectMessageArrived ConfigurationMessageArrived;
+        public KinectMessageArrived CalibrationMessageArrived;
         private FrameSize depthFrameSize;
         private DataStore dataStore = DataStore.Instance;
 
@@ -111,9 +112,9 @@ namespace KinectDemoSGL
             dataStore.AddOrUpdateConfiguration(sender, ((ClientConfigurationMessage) obj).Configuration);
 
             ClientConfigurationMessage msg = (ClientConfigurationMessage) obj;
-            if (ConfigurationDataArrived != null)
+            if (ConfigurationMessageArrived != null)
             {
-                ConfigurationDataArrived(msg, sender);
+                ConfigurationMessageArrived(msg, sender);
             }
         }
 
@@ -121,9 +122,9 @@ namespace KinectDemoSGL
         {
             CalibrationDataMessage msg = (CalibrationDataMessage) obj;
             dataStore.AddCalibrationBody(sender, msg.CalibrationBody);
-            if (ConfigurationDataArrived != null)
+            if (ConfigurationMessageArrived != null)
             {
-                ConfigurationDataArrived(msg, sender);
+                ConfigurationMessageArrived(msg, sender);
             }
         }
 
@@ -151,9 +152,9 @@ namespace KinectDemoSGL
         private void ProcessBodyStreamMessage(object obj, KinectClient sender)
         {
             BodyStreamMessage msg = (BodyStreamMessage)obj;
-            if (BodyDataArrived != null)
+            if (BodyMessageArrived != null)
             {
-                BodyDataArrived(msg, sender);
+                BodyMessageArrived(msg, sender);
             }
         }
 
@@ -188,30 +189,30 @@ namespace KinectDemoSGL
 
             dataStore.AddOrUpdatePointCloud(client, pointCloud);
 
-            if (PointCloudDataArrived != null)
+            if (PointCloudMessageArrived != null)
             {
-                PointCloudDataArrived(msg, client);
+                PointCloudMessageArrived(msg, client);
             }
-            if (coloredPointCloud && ColoredPointCloudDataArrived != null)
+            if (coloredPointCloud && ColoredPointCloudMessageArrived != null)
             {
-                ColoredPointCloudDataArrived(msg, client);
+                ColoredPointCloudMessageArrived(msg, client);
             }
             
         }
 
         private void ProcessColorStreamMessage(object obj, KinectClient sender)
         {
-            if (ColorDataArrived != null)
+            if (ColorMessageArrived != null)
             {
-                ColorDataArrived((ColorStreamMessage)obj, sender);
+                ColorMessageArrived((ColorStreamMessage)obj, sender);
             }
         }
 
         private void ProcessDepthStreamMessage(object obj, KinectClient sender)
         {
-            if (DepthDataArrived != null)
+            if (DepthMessageArrived != null)
             {
-                DepthDataArrived((DepthStreamMessage)obj, sender);
+                DepthMessageArrived((DepthStreamMessage)obj, sender);
                 if (depthFrameSize == null)
                 {
                     depthFrameSize = ((DepthStreamMessage)obj).DepthFrameSize;

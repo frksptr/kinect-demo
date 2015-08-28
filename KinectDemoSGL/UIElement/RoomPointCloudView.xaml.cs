@@ -53,7 +53,7 @@ private  bool showMerged;
 
             kinectServer = KinectServer.Instance;
             serverMessageProcessor = ServerMessageProcessor.Instance;
-            serverMessageProcessor.BodyDataArrived += BodyDataArrived;
+            serverMessageProcessor.BodyMessageArrived += BodyDataArrived;
         }
 
         private void BodyDataArrived(KinectDemoMessage message, KinectClient kinectClient)

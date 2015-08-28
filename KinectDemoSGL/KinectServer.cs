@@ -15,8 +15,6 @@ using KinectDemoCommon.Util;
 
 namespace KinectDemoSGL
 {
-    public delegate void KinectServerDataArrived(KinectDemoMessage message, KinectClient kinectClient);
-
     // Singleton
     class KinectServer
     {
