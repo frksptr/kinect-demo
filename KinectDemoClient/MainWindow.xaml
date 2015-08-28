@@ -54,7 +54,6 @@
             </StackPanel>
             <StackPanel Name="FooterContainer" Orientation="Horizontal">
                 <TextBox Name="TextBox" HorizontalAlignment="Left" Height="26" TextWrapping="Wrap" Text="Some important text." VerticalAlignment="Top" Width="420"/>
-                <Button Content="Send" HorizontalAlignment="Left" Width="75" Click="SendMessage"/>
             </StackPanel>
         </StackPanel>
     </Grid>

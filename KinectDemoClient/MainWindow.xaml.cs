@@ -4,10 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using KinectDemoClient.Properties;
+using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectClientMessages;
 using KinectDemoCommon.Messages.KinectClientMessages.KinectStreamerMessages;
-using KinectDemoCommon.Util;
 
 namespace KinectDemoClient
 {
@@ -18,7 +18,12 @@ namespace KinectDemoClient
     ///     TODO: refactor to client + messageprocessor
     public partial class MainWindow : Window
     {
-        private KinectClient client = KinectClient.Instance;
+        private readonly KinectClient client = KinectClient.Instance;
+        private readonly ClientMessageProcessor clientMessageProcessor = ClientMessageProcessor.Instance;
+        private readonly KinectStreamer kinectStreamer = KinectStreamer.Instance;
+        private bool calibrationDataSent;
+        private bool pointCloudSent;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -26,21 +31,57 @@ namespace KinectDemoClient
             client.ConnectedEvent += ConnectedEvent;
             client.DisconnectedEvent += DisconnectedEvent;
 
+            clientMessageProcessor.ConfigurationMessageArrived += ConfigurationMessageArrived;
+            clientMessageProcessor.CalibrationMessageArrived += CalibrationMessageArrived;
+
             ServerIpTextBox.SetBinding(TextBox.TextProperty, new Binding()
             {
                 Path = new PropertyPath("IP"),
                 Source = client
             });
-            ServerIpTextBox.Text = client.IP;
+
+            //ServerIpTextBox.Text = client.IP;
 
             DataContext = this;
-
-            kinectStreamer = KinectStreamer.Instance;
 
             //Restore permanent settings
             AutoConnectCheckbox.IsChecked = Settings.Default.AutoConnect;
 
 
+        }
+
+        private void CalibrationMessageArrived(KinectDemoMessage message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                CalibrationMessage msg = (CalibrationMessage)message;
+                if (msg.Message.Equals(CalibrationMessage.CalibrationMessageEnum.Start))
+                {
+                    CalibrationCheckbox.IsChecked = true;
+                }
+                else
+                {
+                    CalibrationCheckbox.IsChecked = false;
+                }
+            });
+        }
+
+        private void ConfigurationMessageArrived(KinectDemoMessage message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ClientConfigurationMessage msg = (ClientConfigurationMessage)message;
+                //  TODO: bind
+                KinectStreamerConfig config = msg.Configuration;
+                kinectStreamer.KinectStreamerConfig = config;
+                DepthCheckbox.IsChecked = config.StreamDepthData;
+                ColorCheckbox.IsChecked = config.StreamColorData;
+                SkeletonCheckbox.IsChecked = config.StreamBodyData;
+                UnifiedCheckbox.IsChecked = config.SendAsOne;
+                PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
+                ColoredPointCloudCheckbox.IsChecked = config.StreamColoredPointCloudData;
+                CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
+            });
         }
 
         private void DisconnectedEvent(object o)
@@ -61,35 +102,35 @@ namespace KinectDemoClient
 
         void kinectStreamer_BodyDataReady(KinectClientMessage message)
         {
-            SerializeAndSendMessage((BodyStreamMessage)message);
+            client.SerializeAndSendMessage((BodyStreamMessage)message);
         }
 
         private void kinectStreamer_ColorDataReady(KinectClientMessage message)
         {
-            SerializeAndSendMessage((ColorStreamMessage)message);
+            client.SerializeAndSendMessage((ColorStreamMessage)message);
         }
 
         private void kinectStreamer_PointCloudDataReady(KinectClientMessage message)
         {
-            SerializeAndSendMessage((PointCloudStreamMessage)message);
+            client.SerializeAndSendMessage((PointCloudStreamMessage)message);
         }
 
         private void kinectStreamer_DepthDataReady(KinectClientMessage message)
         {
             SendFirstPointCloud();
-            SerializeAndSendMessage((DepthStreamMessage)message);
+            client.SerializeAndSendMessage((DepthStreamMessage)message);
         }
 
 
         private void kinectStreamer_ColoredPointCloudDataReady(KinectClientMessage message)
         {
-            SerializeAndSendMessage((ColoredPointCloudStreamMessage)message);
+            client.SerializeAndSendMessage((ColoredPointCloudStreamMessage)message);
         }
 
         private void kinectStreamer_UnifiedDataReady(KinectClientMessage message)
         {
             SendFirstPointCloud();
-            SerializeAndSendMessage((UnifiedStreamerMessage)message);
+            client.SerializeAndSendMessage((UnifiedStreamerMessage)message);
         }
 
 
@@ -99,7 +140,7 @@ namespace KinectDemoClient
             {
                 calibrationDataSent = true;
                 CalibrationCheckbox.IsChecked = false;
-                SerializeAndSendMessage((CalibrationDataMessage)message);
+                client.SerializeAndSendMessage((CalibrationDataMessage)message);
             }
         }
 
@@ -109,7 +150,7 @@ namespace KinectDemoClient
             {
                 pointCloudSent = true;
                 kinectStreamer.GenerateFullPointCloud();
-                SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
+                client.SerializeAndSendMessage(new PointCloudStreamMessage(kinectStreamer.FullPointCloud));
             }
         }
 
@@ -140,7 +181,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.StreamDepthData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -159,7 +200,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.StreamColorData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -178,7 +219,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.StreamPointCloudData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -197,7 +238,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.StreamColoredPointCloudData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -216,7 +257,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.StreamBodyData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -235,7 +276,7 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.SendAsOne = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
@@ -256,12 +297,17 @@ namespace KinectDemoClient
                 kinectStreamer.KinectStreamerConfig.ProvideCalibrationData = false;
             }
 
-            SerializeAndSendMessage(new ClientConfigurationMessage()
+            client.SerializeAndSendMessage(new ClientConfigurationMessage()
             {
                 Configuration = kinectStreamer.KinectStreamerConfig
             });
         }
         #endregion
+
+        private void ConnectToServer(object sender, RoutedEventArgs e)
+        {
+            client.ConnectToServer();
+        }
 
 
     }

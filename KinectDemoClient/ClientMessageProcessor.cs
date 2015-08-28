@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
-using KinectDemoCommon;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Model;
@@ -12,6 +10,11 @@ namespace KinectDemoClient
     public delegate void KinectMessageArrived(KinectDemoMessage message);
     class ClientMessageProcessor
     {
+        public KinectMessageArrived ServerReadyMessageArrived;
+        public KinectMessageArrived WorkspaceMessageArrived;
+        public KinectMessageArrived ConfigurationMessageArrived;
+        public KinectMessageArrived CalibrationMessageArrived;
+
         private static ClientMessageProcessor clientMessageProcessor;
 
         public static ClientMessageProcessor Instance
@@ -31,44 +34,21 @@ namespace KinectDemoClient
                 }
                 else if (obj is KinectServerReadyMessage)
                 {
-                    serverReady = ((KinectServerReadyMessage)obj).Ready;
+                    ServerReadyMessageArrived((KinectServerReadyMessage)obj);
+                    
                 }
                 else if (obj is ClientConfigurationMessage)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        ClientConfigurationMessage msg = (ClientConfigurationMessage)obj;
-                        //  TODO: bind
-                        KinectStreamerConfig config = msg.Configuration;
-                        kinectStreamer.KinectStreamerConfig = config;
-                        DepthCheckbox.IsChecked = config.StreamDepthData;
-                        ColorCheckbox.IsChecked = config.StreamColorData;
-                        SkeletonCheckbox.IsChecked = config.StreamBodyData;
-                        UnifiedCheckbox.IsChecked = config.SendAsOne;
-                        PointCloudCheckbox.IsChecked = config.StreamPointCloudData;
-                        ColoredPointCloudCheckbox.IsChecked = config.StreamColoredPointCloudData;
-                        CalibrationCheckbox.IsChecked = config.ProvideCalibrationData;
-                    });
+                    ConfigurationMessageArrived((ClientConfigurationMessage) obj);
                 }
                 else if (obj is CalibrationMessage)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        CalibrationMessage msg = (CalibrationMessage)obj;
-                        if (msg.Message.Equals(CalibrationMessage.CalibrationMessageEnum.Start))
-                        {
-                            CalibrationCheckbox.IsChecked = true;
-                        }
-                        else
-                        {
-                            CalibrationCheckbox.IsChecked = false;
-                        }
-                    });
+                    CalibrationMessageArrived((CalibrationMessage) obj);
                 }
             }
         }
 
-        private static void ProcessWorkspaceMessage(object obj)
+        private void ProcessWorkspaceMessage(object obj)
         {
             WorkspaceMessage msg = (WorkspaceMessage) obj;
             Workspace workspace = WorkspaceProcessor.ProcessWorkspace(
@@ -81,7 +61,8 @@ namespace KinectDemoClient
                 Vertices3D = workspace.Vertices3D.ToArray(),
                 Vertices = workspace.Vertices.ToArray(),
             };
-            SerializeAndSendMessage(updatedMessage);
+
+            WorkspaceMessageArrived(updatedMessage);
         }
     }
 }

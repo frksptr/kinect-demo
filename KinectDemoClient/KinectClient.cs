@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using KinectDemoCommon.Messages;
+using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Util;
 
 namespace KinectDemoClient
@@ -28,6 +29,8 @@ namespace KinectDemoClient
         private bool serverReady = true;
         private bool calibrationDataSent = false;
 
+        private ClientMessageProcessor clientMessageProcessor = ClientMessageProcessor.Instance;
+
         private static KinectClient kinectClient;
 
         public static KinectClient Instance
@@ -38,9 +41,21 @@ namespace KinectDemoClient
         private KinectClient()
         {
             IP = NetworkHelper.LocalIPAddress();
+            clientMessageProcessor.WorkspaceMessageArrived += WorkspaceMessageArrived;
+            clientMessageProcessor.ServerReadyMessageArrived += ServerReadyMessageArrived;
         }
 
-        private void SerializeAndSendMessage(KinectDemoMessage msg)
+        private void ServerReadyMessageArrived(KinectDemoMessage message)
+        {
+            serverReady = ((KinectServerReadyMessage)message).Ready;
+        }
+
+        private void WorkspaceMessageArrived(KinectDemoMessage message)
+        {
+            SerializeAndSendMessage(message);
+        }
+
+        public void SerializeAndSendMessage(KinectDemoMessage msg)
         {
             if (!serverReady || clientSocket == null)
             {
@@ -144,7 +159,7 @@ namespace KinectDemoClient
             }
         }
 
-        private void ConnectToServer(object sender, RoutedEventArgs e)
+        public void ConnectToServer()
         {
             try
             {
