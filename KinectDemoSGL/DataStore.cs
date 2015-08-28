@@ -186,7 +186,15 @@ namespace KinectDemoSGL
 
         public KinectStreamerConfig GetConfigurationForClient(KinectClient client)
         {
-            return clientConfigurationDictionary[client];
+            try
+            {
+                return clientConfigurationDictionary[client];
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
         }
     }
 }

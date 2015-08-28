@@ -31,6 +31,8 @@ namespace KinectDemoClient
             client.ConnectedEvent += ConnectedEvent;
             client.DisconnectedEvent += DisconnectedEvent;
 
+            client.Start();
+
             clientMessageProcessor.ConfigurationMessageArrived += ConfigurationMessageArrived;
             clientMessageProcessor.CalibrationMessageArrived += CalibrationMessageArrived;
 
@@ -46,7 +48,6 @@ namespace KinectDemoClient
 
             //Restore permanent settings
             AutoConnectCheckbox.IsChecked = Settings.Default.AutoConnect;
-
 
         }
 

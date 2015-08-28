@@ -30,6 +30,7 @@
                                 <ScaleTransform ScaleX="1.2" ScaleY="1.2" />
                             </CheckBox.LayoutTransform>
                         </CheckBox>
+                        
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

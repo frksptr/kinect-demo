@@ -35,7 +35,6 @@ namespace KinectDemoClient
                 else if (obj is KinectServerReadyMessage)
                 {
                     ServerReadyMessageArrived((KinectServerReadyMessage)obj);
-                    
                 }
                 else if (obj is ClientConfigurationMessage)
                 {

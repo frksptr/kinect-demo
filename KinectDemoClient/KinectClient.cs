@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
+using KinectDemoClient.Properties;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Messages.KinectServerMessages;
 using KinectDemoCommon.Util;
@@ -21,11 +23,12 @@ namespace KinectDemoClient
 
         private Socket clientSocket;
         public string IP { get; set; }
+        public bool AutoReconnect { get;set; }
+        
         private byte[] buffer;
         private bool pointCloudSent = false;
         private bool serverReady = true;
         private bool calibrationDataSent = false;
-        private bool autoReconnect = true;
 
         private readonly ClientMessageProcessor clientMessageProcessor = ClientMessageProcessor.Instance;
         private readonly KinectStreamer kinectStreamer = KinectStreamer.Instance;
@@ -40,8 +43,19 @@ namespace KinectDemoClient
         private KinectClient()
         {
             IP = NetworkHelper.LocalIPAddress();
+
             clientMessageProcessor.WorkspaceMessageArrived += WorkspaceMessageArrived;
             clientMessageProcessor.ServerReadyMessageArrived += ServerReadyMessageArrived;
+
+            AutoReconnect = Settings.Default.AutoConnect;
+        }
+
+        public void Start()
+        {
+            if (AutoReconnect)
+            {
+                ConnectToServer();
+            }
         }
 
         private void ServerReadyMessageArrived(KinectDemoMessage message)
@@ -90,7 +104,10 @@ namespace KinectDemoClient
                 buffer = new byte[clientSocket.ReceiveBufferSize];
                 clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceiveCallback, null);
 
-                ConnectedEvent(null);
+                if (ConnectedEvent != null)
+                {
+                    ConnectedEvent(null);
+                }
 
                 SerializeAndSendMessage(new ClientConfigurationMessage()
                 {
@@ -99,7 +116,7 @@ namespace KinectDemoClient
             }
             catch (Exception ex)
             {
-                if (autoReconnect)
+                if (AutoReconnect)
                 {
                     ConnectToServer();
                 }
@@ -144,7 +161,7 @@ namespace KinectDemoClient
                 {
                     clientSocket = null;
                     DisconnectedEvent(null);
-                    if (autoReconnect)
+                    if (AutoReconnect)
                     {
                         ConnectToServer();
                     }
