@@ -2,7 +2,7 @@
 
 namespace KinectDemoCommon.Util
 {
-    public class ObservableKeyValuePair<TKey,TValue>
+    public class ObservableKeyValuePair<TKey,TValue> : INotifyPropertyChanged
     {
         private TKey key;
 

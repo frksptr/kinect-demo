@@ -32,6 +32,7 @@ namespace KinectDemoSGL.UIElement
 
         private ObservableCollection<ObservableKeyValuePair<KinectClient, CalibrationState>> clientCalibrationStates;
         private ObservableCollection<KinectClient> clients;
+        private KinectServer kinectServer = KinectServer.Instance;
 
         public CalibrationView()
         {
@@ -53,7 +54,7 @@ namespace KinectDemoSGL.UIElement
         {
             SetCalibrationState(kinectClient, CalibrationState.Done);
             bool allDone = true;
-            foreach (var keyValuePair in clientCalibrationStates)
+            foreach (ObservableKeyValuePair<KinectClient, CalibrationState> keyValuePair in clientCalibrationStates)
             {
                 if (!keyValuePair.Value.Equals(CalibrationState.Done))
                 {
@@ -72,14 +73,14 @@ namespace KinectDemoSGL.UIElement
             {
                 throw new Exception("Function requires 2 active clients");
             }
-            var clients = dataStore.GetClients();
-             
+            ObservableCollection<KinectClient> clients = dataStore.GetClients();
+
             CalibrationProcessor.Instance.CalculateTransformationFromAtoB(
                 dataStore.GetCalibrationBodiesForClient(clients[0]),
                 dataStore.GetCalibrationBodiesForClient(clients[1])
             );
 
-            foreach (var keyValuePair in clientCalibrationStates)
+            foreach (ObservableKeyValuePair<KinectClient, CalibrationState> keyValuePair in clientCalibrationStates)
             {
                 keyValuePair.Value = CalibrationState.Ready;
             }
@@ -112,17 +113,25 @@ namespace KinectDemoSGL.UIElement
             }
         }
 
+        private void SetCalibrationStates(CalibrationState state)
+        {
+            foreach (ObservableKeyValuePair<KinectClient, CalibrationState> observableKeyValuePair in clientCalibrationStates)
+            {
+                observableKeyValuePair.Value = state;
+            }
+        }
+
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (clientCalibrationStates.Any(keyValuePair => keyValuePair.Value != CalibrationState.Ready))
             {
                 return;
             }
-            foreach (var keyValuePair in clientCalibrationStates)
+            foreach (ObservableKeyValuePair<KinectClient, CalibrationState> keyValuePair in clientCalibrationStates)
             {
                 keyValuePair.Value = CalibrationState.Calibrating;
             }
-            KinectServer.Instance.StartCalibration();
+            kinectServer.StartCalibration();
         }
 
         //  TODO: visible only when calibrating        
@@ -135,9 +144,20 @@ namespace KinectDemoSGL.UIElement
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void AbortButton_Click(object sender, RoutedEventArgs e)
         {
+            List<KinectClient> workingClients = new List<KinectClient>();
+            foreach (var keyValuePair in clientCalibrationStates)
+            {
+                if (keyValuePair.Value.Equals(CalibrationState.Calibrating))
+                {
+                    workingClients.Add(keyValuePair.Key);
+                }
+            }
+
+            kinectServer.StopCalibration(workingClients);
+
             int maxCount = 0;
             Dictionary<KinectClient, List<SerializableBody>> dict = dataStore.GetAllCalibrationBodies();
-            foreach (var keyValuePair in dict)
+            foreach (KeyValuePair<KinectClient, List<SerializableBody>> keyValuePair in dict)
             {
                 int count = keyValuePair.Value.Count;
                 if (count > maxCount)
@@ -146,13 +166,21 @@ namespace KinectDemoSGL.UIElement
                 }
             }
 
-            foreach (var keyValuePair in dict)
+            foreach (KeyValuePair<KinectClient, List<SerializableBody>> keyValuePair in dict)
             {
                 if (maxCount > keyValuePair.Value.Count)
                 {
                     keyValuePair.Value.Remove(keyValuePair.Value.Last());
                 }
             }
+            SetCalibrationStates(CalibrationState.Ready);
+        }
+
+        private void EvaluateButton_Click(object sender, RoutedEventArgs e)
+        {
+            Dictionary<KinectClient, List<SerializableBody>> allCalibrationBodies = dataStore.GetAllCalibrationBodies();
+            List<SerializableBody>[] calibrationBodies = allCalibrationBodies.Values.ToArray();
+            CalibrationProcessor.Instance.CalculateTransformationFromAtoB(calibrationBodies[0], calibrationBodies[1]);
         }
     }
 }

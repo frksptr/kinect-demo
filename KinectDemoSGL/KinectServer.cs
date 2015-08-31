@@ -215,6 +215,14 @@ namespace KinectDemoSGL
             StartCalibration(DataStore.Instance.GetClients());
         }
 
+        public void StopCalibration(IEnumerable<KinectClient> clients)
+        {
+            foreach (KinectClient client in clients)
+            {
+                SerializeAndSendMessage(new CalibrationMessage(){ Message = CalibrationMessage.CalibrationMessageEnum.Stop}, clientStateObjectDictionary[client].WorkSocket);
+            }
+        }
+
         private void SerializeAndSendMessage(KinectDemoMessage msg, Socket socket)
         {
 

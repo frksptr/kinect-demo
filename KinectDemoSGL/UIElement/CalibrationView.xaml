@@ -32,6 +32,7 @@
                 </StackPanel.Resources>
                 <Button Name="StartButton" Content="Start calibration" Click="StartButton_Click"></Button>
                 <Button Name="AbortButton" Content="Abort" Click="AbortButton_Click"></Button>
+                <Button Name="EvaluateButton" Content="Evaluate" Click="EvaluateButton_Click"></Button>
             </StackPanel>
         </StackPanel>
     </Grid>
