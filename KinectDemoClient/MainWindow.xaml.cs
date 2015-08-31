@@ -14,8 +14,6 @@ namespace KinectDemoClient
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
-    ///     TODO: refactor to client + messageprocessor
     public partial class MainWindow : Window
     {
         private readonly KinectClient client = KinectClient.Instance;
@@ -169,7 +167,7 @@ namespace KinectDemoClient
             Settings.Default.Save();
         }
 
-        private void DepthCheckbox_Click(object sender, RoutedEventArgs e)
+        private void DepthCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -188,7 +186,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void ColorCheckbox_Click(object sender, RoutedEventArgs e)
+        private void ColorCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -207,7 +205,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void PointCloudCheckbox_Click(object sender, RoutedEventArgs e)
+        private void PointCloudCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -226,7 +224,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void ColoredPointCloudCheckbox_Click(object sender, RoutedEventArgs e)
+        private void ColoredPointCloudCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -245,7 +243,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void SkeletonCheckbox_Click(object sender, RoutedEventArgs e)
+        private void SkeletonCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -264,7 +262,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void UnifiedCheckbox_Click(object sender, RoutedEventArgs e)
+        private void UnifiedCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {
@@ -283,7 +281,7 @@ namespace KinectDemoClient
             });
         }
 
-        private void CalibrationCheckbox_Click(object sender, RoutedEventArgs e)
+        private void CalibrationCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (((CheckBox)sender).IsChecked.Value)
             {

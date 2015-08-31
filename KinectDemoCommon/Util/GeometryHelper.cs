@@ -213,9 +213,9 @@ namespace KinectDemoCommon.Util
             double theta = sphericalPoint.Y;
             double phi = sphericalPoint.Z;
             return new Point3D(
-                radius*Math.Sin(theta)*Math.Cos(phi),
-                radius*Math.Sin(theta)*Math.Sin(phi),
-                radius*Math.Cos(theta)
+                radius * Math.Sin(theta) * Math.Cos(phi),
+                radius * Math.Sin(theta) * Math.Sin(phi),
+                radius * Math.Cos(theta)
                 );
         }
 
@@ -251,6 +251,15 @@ namespace KinectDemoCommon.Util
             var t = -R * centerV1 + centerV2;
             return new Transformation(t, R);
 
+        }
+
+        public static double CalculateDistance(NullablePoint3D point1, NullablePoint3D point2)
+        {
+            return Math.Sqrt((
+                Math.Pow(point1.Y - point2.Y, 2) +
+                Math.Pow(point1.Z - point2.Z, 2) +
+                Math.Pow(point1.X - point2.X, 2)
+            ));
         }
     }
 }

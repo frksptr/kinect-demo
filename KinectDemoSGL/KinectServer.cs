@@ -22,8 +22,6 @@ namespace KinectDemoSGL
         private readonly string ip = NetworkHelper.LocalIPAddress();
         //private readonly string ip = "192.168.0.119";
 
-        //  TODO: consider using TCPClient instead of Socket as seen advised on various related SO questions
-
         private Socket streamerSocket;
         //private byte[] buffer;
 

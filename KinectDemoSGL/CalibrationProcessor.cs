@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
 using MathNet.Numerics.LinearAlgebra;
@@ -36,7 +37,6 @@ namespace KinectDemoSGL
 
         public List<NullablePoint3D> GetCloudATransformedToCloudB(List<NullablePoint3D> cloudA, List<NullablePoint3D> cloudB)
         {
-            DataStore dataStore = DataStore.Instance;
             List<NullablePoint3D> transformedPointCloudList = new List<NullablePoint3D>();
             foreach (NullablePoint3D point in cloudA)
             {
@@ -73,5 +73,41 @@ namespace KinectDemoSGL
             }
             return points;
         }
+
+        /// <summary>
+        /// Calculates the standard deviation of the transformation.
+        /// </summary>
+        /// <param name="mergedCloud">Point cloud A transformed to cloud B</param>
+        /// <param name="cloudB">Point cloud B</param>
+        /// <returns></returns>
+        public double CalculateStandardDeviation(List<NullablePoint3D> mergedCloud, List<NullablePoint3D> cloudB)
+        {
+            int count = mergedCloud.Count;
+
+            List<double> diffs = new List<double>();
+            double diffSum = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                double distance = GeometryHelper.CalculateDistance(mergedCloud[i], cloudB[i]);
+                diffs.Add(distance);
+                diffSum += distance;
+            }
+
+            double mean = diffSum / count;
+
+            List<double> deviations = new List<double>();
+            double deviationSum = 0;
+            foreach (double diff in diffs)
+            {
+                double deviation = Math.Pow(diff - mean, 2);
+                deviations.Add(deviation);
+                deviationSum += deviation;
+            }
+            double variance = deviationSum/count;
+
+            return Math.Sqrt(variance);
+        }
+
     }
 }

@@ -6,7 +6,6 @@ using KinectDemoCommon.Messages;
 namespace KinectDemoSGL.UIElement
 {
     public delegate void ClientSettingsChanged(KinectClient client, KinectStreamerConfig config);
-    //  TODO:   move to common, also use in client
     /// <summary>
     /// Interaction logic for ClientS.ettings.xaml
     /// </summary>
