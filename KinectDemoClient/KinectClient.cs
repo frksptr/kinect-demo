@@ -23,7 +23,7 @@ namespace KinectDemoClient
         public ClientEvent DisconnectedEvent;
 
         private Socket clientSocket;
-        public string IP { get; set; }
+        public string ServerIP { get; set; }
         public bool AutoReconnect { get;set; }
         
         private byte[] buffer;
@@ -44,7 +44,7 @@ namespace KinectDemoClient
         private KinectClient()
         {
             
-            IP = NetworkHelper.LocalIPAddress();
+            ServerIP = NetworkHelper.LocalIPAddress();
 
             clientMessageProcessor.WorkspaceMessageArrived += WorkspaceMessageArrived;
             clientMessageProcessor.ServerReadyMessageArrived += ServerReadyMessageArrived;
@@ -185,7 +185,7 @@ namespace KinectDemoClient
                 }
                 if (!clientSocket.Connected)
                 {
-                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(IP), 3333), ConnectCallback,
+                    clientSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(ServerIP), 3333), ConnectCallback,
                         null);
                 }
             }

@@ -31,16 +31,23 @@ namespace KinectDemoClient
 
             client.Start();
 
+            if (Settings.Default.LastIp != null)
+            {
+                client.ServerIP = Settings.Default.LastIp;
+            }
+
             clientMessageProcessor.ConfigurationMessageArrived += ConfigurationMessageArrived;
             clientMessageProcessor.CalibrationMessageArrived += CalibrationMessageArrived;
 
+
+
             ServerIpTextBox.SetBinding(TextBox.TextProperty, new Binding()
             {
-                Path = new PropertyPath("IP"),
+                Path = new PropertyPath("ServerIP"),
                 Source = client
             });
 
-            //ServerIpTextBox.Text = client.IP;
+            //ServerIpTextBox.Text = client.ServerIP;
 
             DataContext = this;
 
@@ -306,6 +313,8 @@ namespace KinectDemoClient
         private void ConnectToServer(object sender, RoutedEventArgs e)
         {
             client.ConnectToServer();
+            Settings.Default.LastIp = client.ServerIP;
+            Settings.Default.Save();
         }
 
 
