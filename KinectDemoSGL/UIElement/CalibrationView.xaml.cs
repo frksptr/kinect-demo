@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using KinectDemoCommon.Messages;
 using KinectDemoCommon.Model;
 using KinectDemoCommon.Util;
+using KinectDemoSGL.Properties;
 
 namespace KinectDemoSGL.UIElement
 {
@@ -33,6 +34,7 @@ namespace KinectDemoSGL.UIElement
         private ObservableCollection<ObservableKeyValuePair<KinectClient, CalibrationState>> clientCalibrationStates;
         private ObservableCollection<KinectClient> clients;
         private KinectServer kinectServer = KinectServer.Instance;
+        private Transformation transformation;
 
         public CalibrationView()
         {
@@ -180,7 +182,19 @@ namespace KinectDemoSGL.UIElement
         {
             Dictionary<KinectClient, List<SerializableBody>> allCalibrationBodies = dataStore.GetAllCalibrationBodies();
             List<SerializableBody>[] calibrationBodies = allCalibrationBodies.Values.ToArray();
-            CalibrationProcessor.Instance.CalculateTransformationFromAtoB(calibrationBodies[0], calibrationBodies[1]);
+            transformation = CalibrationProcessor.Instance.CalculateTransformationFromAtoB(calibrationBodies[0], calibrationBodies[1]);
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Transformation = transformation;
+            Settings.Default.Save();
+        }
+
+
+        private void LoadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            transformation = Settings.Default.Transformation;
         }
     }
 }

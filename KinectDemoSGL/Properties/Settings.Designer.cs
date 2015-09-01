@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using KinectDemoCommon.Util;
 
 namespace KinectDemoSGL.Properties {
     
@@ -31,9 +32,9 @@ namespace KinectDemoSGL.Properties {
         
         [UserScopedSetting()]
         [DebuggerNonUserCode()]
-        public Color Transformation {
+        public Transformation Transformation {
             get {
-                return ((Color)(this["Transformation"]));
+                return ((Transformation)(this["Transformation"]));
             }
             set {
                 this["Transformation"] = value;

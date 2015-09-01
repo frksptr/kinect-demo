@@ -45,7 +45,8 @@ namespace KinectDemoSGL.UIElement
         private Point3D projectedHandPoint = new Point3D();
 
         private DataStore dataStore = DataStore.Instance;
-private  bool showMerged;
+
+        private bool showMerged;
 
         public RoomPointCloudView()
         {
@@ -371,7 +372,7 @@ private  bool showMerged;
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-       
+
         }
 
         private void OpenGlControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)

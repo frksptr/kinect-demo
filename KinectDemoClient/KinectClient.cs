@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using KinectDemoClient.Properties;
@@ -42,6 +43,7 @@ namespace KinectDemoClient
 
         private KinectClient()
         {
+            
             IP = NetworkHelper.LocalIPAddress();
 
             clientMessageProcessor.WorkspaceMessageArrived += WorkspaceMessageArrived;

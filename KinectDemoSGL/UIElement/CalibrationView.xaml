@@ -6,6 +6,11 @@
              mc:Ignorable="d">
     <Grid>
         <StackPanel Orientation="Vertical">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="3"></Setter>
+                </Style>
+            </StackPanel.Resources>
             <StackPanel Name="ClientContainer" Orientation="Vertical">
                 <ListView Name="ClientList">
                     <ListView.ItemTemplate>
@@ -25,14 +30,13 @@
                 </ListView>
             </StackPanel>
             <StackPanel Name="ButtonContainer" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="3"></Setter>
-                    </Style>
-                </StackPanel.Resources>
                 <Button Name="StartButton" Content="Start calibration" Click="StartButton_Click"></Button>
                 <Button Name="AbortButton" Content="Abort" Click="AbortButton_Click"></Button>
                 <Button Name="EvaluateButton" Content="Evaluate" Click="EvaluateButton_Click"></Button>
+            </StackPanel>
+            <StackPanel >
+                <Button Name="SaveButton" Content="Save" Click="SaveButton_Click"></Button>
+                <Button Name="LoadButton" Content="Load last" Click="LoadButton_OnClick"></Button>
             </StackPanel>
         </StackPanel>
     </Grid>

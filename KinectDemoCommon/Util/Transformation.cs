@@ -1,7 +1,9 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using System;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace KinectDemoCommon.Util
 {
+    [Serializable]
     public class Transformation
     {
         public Vector<double> T { get; set; }
