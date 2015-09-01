@@ -6,8 +6,12 @@
              IsVisibleChanged="CameraWorkspace_OnIsVisibleChanged"
              mc:Ignorable="d" >
     <Grid>
-        <Viewbox x:Name="ImageViewbox" Grid.Row="1" HorizontalAlignment="Left">
-            <Image  Source="{Binding ImageSource}" Stretch="UniformToFill"/>
-        </Viewbox>
+        <StackPanel Orientation="Vertical">
+            <Viewbox x:Name="ImageViewbox" Grid.Row="1" HorizontalAlignment="Left">
+                <Image  Source="{Binding ImageSource}" Stretch="UniformToFill"/>
+            </Viewbox>
+            <Button Name="ChangeClientButton" Content="Switch client" Click="ChangeClientButton_OnClick"></Button>
+        </StackPanel>
+
     </Grid>
 </UserControl>

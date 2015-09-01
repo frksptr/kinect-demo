@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectDemoSGL", "KinectDemoSGL\KinectDemoSGL.csproj", "{0DF52E36-AF0D-4D1A-B607-1BDBB2238510}"
 EndProject
@@ -40,6 +40,7 @@ Global
 		{CE007B1A-C2E1-42E2-8A1C-7A226E572717}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CE007B1A-C2E1-42E2-8A1C-7A226E572717}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CE007B1A-C2E1-42E2-8A1C-7A226E572717}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE007B1A-C2E1-42E2-8A1C-7A226E572717}.Release|x86.Build.0 = Release|Any CPU
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -51,6 +52,7 @@ Global
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Release|x86.ActiveCfg = Release|Any CPU
+		{400221F6-41E4-417C-9356-6FCDAEE75A1F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

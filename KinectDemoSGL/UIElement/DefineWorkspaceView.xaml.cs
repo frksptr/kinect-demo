@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -95,6 +96,20 @@ namespace KinectDemoSGL.UIElement
             else
             {
                 serverMessageProcessor.DepthMessageArrived -= kinectServer_DepthDataReady;
+            }
+        }
+
+        private void ChangeClientButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ObservableCollection<KinectClient> clients = DataStore.Instance.GetClients();
+            var index = clients.IndexOf(ActiveClient);
+            try
+            {
+                ActiveClient = clients[index + 1];
+            }
+            catch (Exception ex)
+            {
+                ActiveClient = clients[0];
             }
         }
     }
